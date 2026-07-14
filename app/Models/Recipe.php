@@ -10,6 +10,8 @@ class Recipe extends Model
 
     protected $primaryKey = 'id';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'title',
         'description',

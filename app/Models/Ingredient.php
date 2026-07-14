@@ -10,6 +10,8 @@ class Ingredient extends Model
 
     protected $primaryKey = 'id';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'name',
         'calories',

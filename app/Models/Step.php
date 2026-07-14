@@ -10,6 +10,8 @@ class Step extends Model
 
      protected $primaryKey = 'id';
 
+     public $timestamps = false;
+
      protected $fillable = [
         'description',
         'recipe_id',

@@ -10,6 +10,8 @@ class IngredientRecipe extends Model
 
     protected $primaryKey = 'id';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'ingredient_id',
         'recipe_id',
