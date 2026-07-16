@@ -9,8 +9,8 @@
         @csrf
 
         <div>
-            <label for="nickname">Felhasználónév</label>
-            <input type="text" name="nickname" id="nickname" value="{{ old('nickname') }}" required>
+            <label for="username">Felhasználónév</label>
+            <input type="text" name="username" id="username" value="{{ old('username') }}" required>
             @error('nickname')
                 <span>{{ $message }}</span>
             @enderror
