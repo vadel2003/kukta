@@ -7,14 +7,22 @@
 </head>
 <body>
     <nav>
+        <a href="{{ route('home') }}">Kezdőlap</a>
+
         @auth
-        <span>Üdv, {{ Auth::user()->username }}!</span>
+            <span>Üdv, {{ Auth::user()->username }}!</span>
+            <ul>
+                    <li><a href="{{ route('profile.index') }}">Profil</a></li>
+                    <li><a href="{{ route('recipes.create') }}">Új recept</a></li>
+                    <li><a href="{{ route('recipes.my') }}">Saját receptek</a></li>
+                    <li><a href="{{ route('recipes.favorites') }}">Kedvenc receptek</a></li>
+            </ul>
             <form method="POST" action="{{ route('logout') }}" style="display:inline;">
                 @csrf
                 <button type="submit">Kijelentkezés</button>
             </form>
         @else
-        <a href="{{ route('login') }}">Bejelentkezés</a>
+            <a href="{{ route('login') }}">Bejelentkezés</a>
         @endauth
     </nav>
     <main>
