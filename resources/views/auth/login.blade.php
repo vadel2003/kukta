@@ -25,4 +25,5 @@
             <button type="submit">Bejelentkezés</button>
         </div>
     </form>
+    <p>Még nincs fiókod? <a href="{{ route('register') }}">Regisztrálj!</a></p>
 @endsection

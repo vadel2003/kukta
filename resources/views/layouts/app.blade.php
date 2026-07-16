@@ -23,6 +23,7 @@
             </form>
         @else
             <a href="{{ route('login') }}">Bejelentkezés</a>
+            <a href="{{ route('register') }}">Regisztráció</a>
         @endauth
     </nav>
     <main>
