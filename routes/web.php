@@ -21,6 +21,8 @@ Route::post('/register', [RegisterController::class, 'register']);
 
 // Profil
 Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
+Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
+Route::delete('/profil', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 // Receptek
 Route::get('/recept/uj', [RecipeController::class, 'create'])->name('recipes.create');
