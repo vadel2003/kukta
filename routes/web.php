@@ -25,6 +25,8 @@ Route::put('/profil', [ProfileController::class, 'update'])->name('profile.updat
 Route::delete('/profil', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 // Receptek
+// Receptek
 Route::get('/recept/uj', [RecipeController::class, 'create'])->name('recipes.create');
+Route::post('/recept/uj', [RecipeController::class, 'store'])->name('recipes.store');
 Route::get('/sajat-receptek', [RecipeController::class, 'myRecipes'])->name('recipes.my');
 Route::get('/kedvenc-receptek', [RecipeController::class, 'favorites'])->name('recipes.favorites');
