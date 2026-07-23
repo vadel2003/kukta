@@ -84,12 +84,12 @@ button {
 .btn-view {
     display: inline-block;
     padding: 8px 16px;
-    background-color: #007bff;
+    background-color: #ae8625;
     color: white;
     text-decoration: none;
     border-radius: 4px;
 }
 
 .btn-view:hover {
-    background-color: #0056b3;
+    background-color: #926f1e;
 }

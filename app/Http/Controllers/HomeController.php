@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Recipe;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        return view('home');
+        $latestRecipes = Recipe::with('user')
+            ->orderBy('creation_date', 'desc')
+            ->take(6)
+            ->get();
+
+        return view('home', compact('latestRecipes'));
     }
 }
+

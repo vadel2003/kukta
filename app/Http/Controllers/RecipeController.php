@@ -69,7 +69,11 @@ class RecipeController extends Controller
 
     public function myRecipes()
     {
-        return view('recipes.my');
+        $myRecipes = Recipe::where('user_id', Auth::id())
+            ->orderBy('creation_date', 'desc')
+            ->get();
+
+        return view('recipes.my', compact('myRecipes'));
     }
 
     public function favorites()
