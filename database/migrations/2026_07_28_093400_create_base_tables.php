@@ -1,0 +1,170 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        // cache table
+        Schema::create('cache', function (Blueprint $table) {
+            $table->string('key')->primary();
+            $table->mediumText('value');
+            $table->bigInteger('expiration')->index();
+        });
+
+        Schema::create('cache_locks', function (Blueprint $table) {
+            $table->string('key')->primary();
+            $table->string('owner');
+            $table->bigInteger('expiration')->index();
+        });
+
+        // jobs table
+        Schema::create('jobs', function (Blueprint $table) {
+            $table->id();
+            $table->string('queue')->index();
+            $table->longText('payload');
+            $table->unsignedSmallInteger('attempts');
+            $table->unsignedInteger('reserved_at')->nullable();
+            $table->unsignedInteger('available_at');
+            $table->unsignedInteger('created_at');
+        });
+
+        Schema::create('job_batches', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->string('name');
+            $table->integer('total_jobs');
+            $table->integer('pending_jobs');
+            $table->integer('failed_jobs');
+            $table->longText('failed_job_ids');
+            $table->mediumText('options')->nullable();
+            $table->integer('cancelled_at')->nullable();
+            $table->integer('created_at');
+            $table->integer('finished_at')->nullable();
+        });
+
+        Schema::create('failed_jobs', function (Blueprint $table) {
+            $table->id();
+            $table->string('uuid')->unique();
+            $table->string('connection');
+            $table->string('queue');
+            $table->longText('payload');
+            $table->longText('exception');
+            $table->timestamp('failed_at')->useCurrent();
+
+            $table->index(['connection', 'queue', 'failed_at']);
+        });
+
+        // Users table
+        Schema::create('user', function (Blueprint $table) {
+            $table->id()->autoIncrement()->primary();
+            $table->string('email', 50)->unique();
+            $table->string('name', 30)->unique();
+            $table->string('password', 64);
+            $table->integer('role');
+        });
+
+
+        Schema::create('password_reset_tokens', function (Blueprint $table) {
+            $table->string('email')->primary();
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
+        });
+
+        Schema::create('sessions', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->foreignId('user_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->longText('payload');
+            $table->integer('last_activity')->index();
+        });
+
+        // Recipes table
+        Schema::create('recipe', function (Blueprint $table) {
+            $table->id()->autoIncrement()->primary();
+            $table->string('title', 100);
+            $table->string('description', 1000);
+            $table->date('creation_date')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->timestamps();
+        });
+
+        // Foreign keys and indexes for recipe
+        Schema::table('recipe', function (Blueprint $table) {
+            $table->index('user_id');
+            $table->foreign('user_id')->references('id')->on('user')->onDelete('SET NULL');
+        });
+
+        // Ingredient table
+        Schema::create('ingredient', function (Blueprint $table) {
+            $table->id()->autoIncrement()->primary();
+            $table->string('name', 50)->unique();
+            $table->float('calories');
+            $table->float('carbohydrate');
+            $table->float('protein');
+            $table->float('fat');
+        });
+
+        // Step table
+        Schema::create('step', function (Blueprint $table) {
+            $table->id()->autoIncrement()->primary();
+            $table->string('description', 1000);
+            $table->unsignedBigInteger('recipe_id');
+            $table->integer('order');
+        });
+
+        // Unique constraint for step
+        Schema::table('step', function (Blueprint $table) {
+            $table->unique(['recipe_id', 'order']);
+        });
+
+        // Ingredient_Recipe table
+        Schema::create('ingreedient_recipe', function (Blueprint $table) {
+            $table->id()->autoIncrement()->primary();
+            $table->unsignedBigInteger('ingredient_id');
+            $table->unsignedBigInteger('recipe_id');
+            $table->integer('quantity');
+            $table->string('unit', 20);
+        });
+
+        Schema::table('ingreedient_recipe', function (Blueprint $table) {
+            $table->index('ingredient_id');
+            $table->index('recipe_id');
+            $table->foreign('ingredient_id')->references('id')->on('ingredient')->onDelete('CASCADE');
+            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE');
+        });
+
+        // Favorite table
+        Schema::create('favorites', function (Blueprint $table) {
+            $table->id()->autoIncrement()->primary();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('recipe_id');
+            $table->timestamps();
+
+            $table->unique(['user_id', 'recipe_id']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('cache');
+        Schema::dropIfExists('cache_locks');
+        Schema::dropIfExists('jobs');
+        Schema::dropIfExists('job_batches');
+        Schema::dropIfExists('failed_jobs');
+        Schema::dropIfExists('users');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('sessions');
+        Schema::dropIfExists('recipe');
+        Schema::dropIfExists('ingredient');
+        Schema::dropIfExists('step');
+        Schema::dropIfExists('ingreedient_recipe');
+        Schema::dropIfExists('favorites');
+    }
+};

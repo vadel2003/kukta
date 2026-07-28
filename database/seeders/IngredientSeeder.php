@@ -22,10 +22,8 @@ class IngredientSeeder extends Seeder
             'Cukkini', 'Gomba', 'Ketchup', 'Mustár', 'Zsemlemorzsa',
         ];
 
-        $i = 1;
         foreach ($ingredients as $name) {
             DB::table('ingredient')->insert([
-                'id' => $i++,
                 'name' => $name,
                 'calories' => 0,
                 'carbohydrate' => 0,
