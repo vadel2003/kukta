@@ -9,8 +9,6 @@ class IngredientSeeder extends Seeder
 {
     public function run(): void
     {
-        // Először kiürítjük a táblát
-        DB::table('ingredient')->truncate();
 
         $ingredients = [
             'Liszt', 'Cukor', 'Só', 'Tojás', 'Tej', 'Vaj', 'Olaj', 'Víz',

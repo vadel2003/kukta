@@ -15,11 +15,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Teszt felhasználó létrehozása (factory helyett közvetlen insert)
+        $this->call(UserSeeder::class);
 
-        User::factory()->create([
-            'name' => 'testuser',
-            'email' => 'test@example.com',
-        ]);
+        // IngredientSeeder meghívása
+        $this->call(IngredientSeeder::class);
     }
 }
