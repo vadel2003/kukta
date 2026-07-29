@@ -8,7 +8,9 @@
 </head>
 <body>
     <nav>
-        <a href="{{ route('home') }}"> </a>
+        <a href="{{ route('home') }}">
+            <img src="{{ asset('images/kukta-logo.svg') }}" alt="Kukta" style="height: 40px; vertical-align: middle;">
+        </a>
         <a href="{{ route('home') }}">Kezdőlap</a>
 
         @auth
