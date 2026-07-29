@@ -24,4 +24,12 @@ class Favorite extends Model
     {
         return $this->belongsTo(Recipe::class, 'recipe_id');
     }
+
+    protected function casts(): array
+    {
+        return [
+            'user_id' => 'integer',
+            'recipe_id' => 'integer',
+        ];
+    }
 }

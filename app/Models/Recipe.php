@@ -10,7 +10,7 @@ class Recipe extends Model
 
     protected $primaryKey = 'id';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'title',
@@ -39,7 +39,7 @@ class Recipe extends Model
 
     public function ingredients()
     {
-        return $this->belongsToMany(Ingredient::class, 'ingreedient_recipe', 'recipe_id', 'ingredient_id')
+        return $this->belongsToMany(Ingredient::class, 'ingredient_recipe', 'recipe_id', 'ingredient_id')
             ->withPivot('quantity', 'unit');
     }
 

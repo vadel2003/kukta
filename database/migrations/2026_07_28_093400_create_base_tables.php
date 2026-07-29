@@ -98,7 +98,7 @@ return new class extends Migration
         // Foreign keys and indexes for recipe
         Schema::table('recipe', function (Blueprint $table) {
             $table->index('user_id');
-            $table->foreign('user_id')->references('id')->on('user')->onDelete('SET NULL');
+            $table->foreign('user_id')->references('id')->on('user')->onDelete('SET NULL')->onUpdate('RESTRICT');
         });
 
         // Ingredient table
@@ -117,6 +117,8 @@ return new class extends Migration
             $table->string('description', 1000);
             $table->unsignedBigInteger('recipe_id');
             $table->integer('order');
+
+            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE');
         });
 
         // Unique constraint for step
@@ -125,7 +127,7 @@ return new class extends Migration
         });
 
         // Ingredient_Recipe table
-        Schema::create('ingreedient_recipe', function (Blueprint $table) {
+        Schema::create('ingredient_recipe', function (Blueprint $table) {
             $table->id()->autoIncrement()->primary();
             $table->unsignedBigInteger('ingredient_id');
             $table->unsignedBigInteger('recipe_id');
@@ -133,7 +135,7 @@ return new class extends Migration
             $table->string('unit', 20);
         });
 
-        Schema::table('ingreedient_recipe', function (Blueprint $table) {
+        Schema::table('ingredient_recipe', function (Blueprint $table) {
             $table->index('ingredient_id');
             $table->index('recipe_id');
             $table->foreign('ingredient_id')->references('id')->on('ingredient')->onDelete('CASCADE');
@@ -149,6 +151,12 @@ return new class extends Migration
 
             $table->unique(['user_id', 'recipe_id']);
         });
+
+        Schema::table('favorites', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('user')->onDelete('CASCADE');
+            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE');
+        });
+
     }
 
     public function down(): void
@@ -158,13 +166,13 @@ return new class extends Migration
         Schema::dropIfExists('jobs');
         Schema::dropIfExists('job_batches');
         Schema::dropIfExists('failed_jobs');
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('user');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
         Schema::dropIfExists('recipe');
         Schema::dropIfExists('ingredient');
         Schema::dropIfExists('step');
-        Schema::dropIfExists('ingreedient_recipe');
+        Schema::dropIfExists('ingredient_recipe');
         Schema::dropIfExists('favorites');
     }
 };

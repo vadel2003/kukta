@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class IngredientRecipe extends Model
 {
-    protected $table = 'ingreedient_recipe';
+    protected $table = 'ingredient_recipe';
 
     protected $primaryKey = 'id';
 
