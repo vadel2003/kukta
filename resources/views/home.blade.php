@@ -3,7 +3,7 @@
 @section('title', 'Főoldal')
 
 @section('content')
-    <h1>Üdvözöllek a Kuktában!</h1>
+    <h1>Tapasztald meg a receptek elkészítésének új élményét</h1>
 
     @if ($latestRecipes->isEmpty())
         <p>Még nincsenek receptek. Légy te az első, aki feltölt egyet!</p>
