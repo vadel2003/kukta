@@ -78,7 +78,7 @@ return new class extends Migration
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
+            $table->foreignId('user_id')->nullable()->constrained('user')->onDelete('cascade')->onUpdate('restrict');
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
@@ -118,7 +118,7 @@ return new class extends Migration
             $table->unsignedBigInteger('recipe_id');
             $table->integer('order');
 
-            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE');
+            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
         });
 
         // Unique constraint for step
@@ -138,8 +138,8 @@ return new class extends Migration
         Schema::table('ingredient_recipe', function (Blueprint $table) {
             $table->index('ingredient_id');
             $table->index('recipe_id');
-            $table->foreign('ingredient_id')->references('id')->on('ingredient')->onDelete('CASCADE');
-            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE');
+            $table->foreign('ingredient_id')->references('id')->on('ingredient')->onDelete('CASCADE')->onUpdate('RESTRICT');
+            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
         });
 
         // Favorite table
@@ -153,8 +153,8 @@ return new class extends Migration
         });
 
         Schema::table('favorites', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('user')->onDelete('CASCADE');
-            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE');
+            $table->foreign('user_id')->references('id')->on('user')->onDelete('CASCADE')->onUpdate('RESTRICT');
+            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
         });
 
     }
