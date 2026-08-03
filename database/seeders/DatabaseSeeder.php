@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,10 +14,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Teszt felhasználó létrehozása (factory helyett közvetlen insert)
-        $this->call(UserSeeder::class);
-
-        // IngredientSeeder meghívása
-        $this->call(IngredientSeeder::class);
+        $this->call([
+            UserSeeder::class,
+            IngredientSeeder::class,
+            RecipeSeeder::class,
+            StepSeeder::class,
+            IngredientRecipeSeeder::class,
+            FavoriteSeeder::class,
+        ]);
     }
 }

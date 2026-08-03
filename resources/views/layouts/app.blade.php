@@ -11,11 +11,10 @@
         <a href="{{ route('home') }}">
             <img src="{{ asset('images/kukta-logo.svg') }}" alt="Kukta" style="height: 40px; vertical-align: middle;">
         </a>
-        <a href="{{ route('home') }}">Kezdőlap</a>
 
         @auth
             <ul>
-                <li><a href="{{ route('profile.index') }}">Profil</a></li>
+                <li><a href="{{ route('profile.index') }}"><img src="{{ asset('images/profile_icon.png') }}" alt="Kukta" style="height: 40px; vertical-align: middle;"></a></li>
                 <li><a href="{{ route('recipes.create') }}">Új recept</a></li>
                 <li><a href="{{ route('recipes.my') }}">Saját receptek</a></li>
                 <li><a href="{{ route('recipes.favorites') }}">Kedvenc receptek</a></li>
