@@ -7,29 +7,47 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>
-    <nav>
-        <a href="{{ route('home') }}">
-            <img src="{{ asset('images/kukta-logo.svg') }}" alt="Kukta" style="height: 40px; vertical-align: middle;">
-        </a>
+    <header>
+        <div class="header-left">
+            <a href="{{ route('home') }}">
+                <img src="{{ asset('images/kukta-logo.svg') }}" alt="Kukta" class="logo">
+            </a>
+        </div>
 
-        @auth
-            <ul>
-                <li><a href="{{ route('profile.index') }}"><img src="{{ asset('images/profile_icon.png') }}" alt="Kukta" style="height: 40px; vertical-align: middle;"></a></li>
-                <li><a href="{{ route('recipes.create') }}">Új recept</a></li>
-                <li><a href="{{ route('recipes.my') }}">Saját receptek</a></li>
-                <li><a href="{{ route('recipes.favorites') }}">Kedvenc receptek</a></li>
-            </ul>
-            <form method="POST" action="{{ route('logout') }}" style="display:inline;">
-                @csrf
-                <button type="submit">Kijelentkezés</button>
-            </form>
-        @else
-            <a href="{{ route('login') }}">Bejelentkezés</a>
-            <a href="{{ route('register') }}">Regisztráció</a>
-        @endauth
-    </nav>
+        <span class="hamburger">☰</span>
+
+        <div class="header-right">
+            @auth
+                <div class="dropdown">
+                    <div class="dropdown-trigger">
+                        <img src="{{ asset('images/profile_icon.png') }}" alt="Profil" class="profile-icon">
+                        <span class="dropdown-arrow">▾</span>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="{{ route('profile.index') }}">Profil</a>
+                        <a href="{{ route('recipes.create') }}">Új recept</a>
+                        <a href="{{ route('recipes.my') }}">Saját receptek</a>
+                        <a href="{{ route('recipes.favorites') }}">Kedvenc receptek</a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit">Kijelentkezés</button>
+                        </form>
+                    </div>
+                </div>
+            @else
+                <a href="{{ route('login') }}">Bejelentkezés</a>
+            @endauth
+        </div>
+    </header>
+
     <main>
         @yield('content')
     </main>
+
+    <script>
+        document.querySelector('.hamburger').addEventListener('click', function() {
+            document.querySelector('.header-right').classList.toggle('open');
+        });
+    </script>
 </body>
 </html>

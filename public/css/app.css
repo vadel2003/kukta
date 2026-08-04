@@ -12,22 +12,141 @@ body {
     line-height: 1.6;
 }
 
-/* Navigációs sáv */
-nav {
+/* Fejléc (header) */
+header {
     background-color: #fff;
-    padding: 1rem 2rem;
+    padding: 0.5rem 2rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-nav a {
+.header-left .logo {
+    height: 40px;
+    vertical-align: middle;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-right a {
     text-decoration: none;
     color: #e67e22;
-    margin-right: 1rem;
     font-weight: 500;
 }
 
-nav a:hover {
+.header-right a:hover {
     color: #d35400;
+}
+
+/* Dropdown menü */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-trigger {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 4px;
+}
+
+.profile-icon {
+    height: 40px;
+    vertical-align: middle;
+}
+
+.dropdown-arrow {
+    font-size: 0.7rem;
+    color: #333;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    padding-top: 0.5rem;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a,
+.dropdown-menu form button {
+    display: block;
+    white-space: nowrap;
+    background-color: #fff;
+    padding: 0.6rem 1.2rem;
+    text-decoration: none;
+    color: #333;
+    border: none;
+    font-size: 0.95rem;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu form button:hover {
+    background-color: #f5f5f5;
+    color: #e67e22;
+}
+
+/* Hamburger ikon - alapból rejtve */
+.hamburger {
+    display: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Mobil nézet */
+@media (max-width: 768px) {
+    .hamburger {
+        display: block;
+    }
+
+    .header-right {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: #fff;
+        flex-direction: column;
+        padding: 1rem 2rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .header-right.open {
+        display: flex;
+    }
+
+    .header-right a {
+        padding: 0.5rem 0;
+    }
+
+    .dropdown .dropdown-menu {
+        position: static;
+        box-shadow: none;
+        padding-top: 0;
+        padding-left: 1rem;
+    }
+
+    .dropdown-menu a,
+    .dropdown-menu form button {
+        box-shadow: none;
+    }
 }
 
 /* Fő tartalom */
