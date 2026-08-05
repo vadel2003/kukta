@@ -80,5 +80,14 @@ class RecipeController extends Controller
     {
         return view('recipes.favorites');
     }
+
+    public function show($id)
+    {
+        $recipe = Recipe::with(['user', 'steps' => function($query) {
+            $query->orderBy('order');
+        }, 'ingredients'])->findOrFail($id);
+
+        return view('recipes.show', compact('recipe'));
+    }
 }
 

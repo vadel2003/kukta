@@ -11,7 +11,7 @@
                     <h2>{{ $recipe->title }}</h2>
                     <p class="recipe-author">Feltöltte: {{ $recipe->user->name }}</p>
                     <p class="recipe-description">{{ Str::limit($recipe->description, 100) }}</p>
-                    <a href="#" class="btn-view">Megtekintés</a>
+                    <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-view">Megtekintés</a>
                 </div>
             @endforeach
         </div>

@@ -29,3 +29,4 @@ Route::get('/recept/uj', [RecipeController::class, 'create'])->name('recipes.cre
 Route::post('/recept/uj', [RecipeController::class, 'store'])->name('recipes.store');
 Route::get('/sajat-receptek', [RecipeController::class, 'myRecipes'])->name('recipes.my');
 Route::get('/kedvenc-receptek', [RecipeController::class, 'favorites'])->name('recipes.favorites');
+Route::get('/recept/{id}', [RecipeController::class, 'show'])->name('recipes.show');

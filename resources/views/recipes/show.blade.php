@@ -1,0 +1,28 @@
+@extends('layouts.app')
+
+@section('title', $recipe->title)
+
+@section('content')
+    <h1>{{ $recipe->title }}</h1>
+
+    <img src="{{ asset('images/recipe_placeholder.jpg') }}" alt="{{ $recipe->title }}" class="recipe-detail-image">
+
+    <p><strong>Feltöltötte:</strong> {{ $recipe->user->name }}</p>
+    <p><strong>Dátum:</strong> {{ $recipe->creation_date->format('Y-m-d') }}</p>
+
+    <p>{{ $recipe->description }}</p>
+
+    <h2>Hozzávalók</h2>
+    <ul>
+        @foreach ($recipe->ingredients as $ingredient)
+            <li>{{ $ingredient->name }} – {{ $ingredient->pivot->quantity }} {{ $ingredient->pivot->unit }}</li>
+        @endforeach
+    </ul>
+
+    <h2>Elkészítés</h2>
+    <ol>
+        @foreach ($recipe->steps as $step)
+            <li>{{ $step->description }}</li>
+        @endforeach
+    </ol>
+@endsection

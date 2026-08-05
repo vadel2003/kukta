@@ -15,6 +15,7 @@
                     <h2>{{ $recipe->title }}</h2>
                     <p class="recipe-description">{{ Str::limit($recipe->description, 100) }}</p>
                     <p><strong>Létrehozva:</strong> {{ $recipe->creation_date->format('Y-m-d') }}</p>
+                    <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-view">Megtekintés</a>
                 </div>
             @endforeach
         </div>

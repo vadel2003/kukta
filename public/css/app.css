@@ -190,6 +190,14 @@ button {
     margin-bottom: 10px;
 }
 
+.recipe-detail-image {
+    max-width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
 .recipe-author {
     color: #666;
     font-size: 0.9em;
