@@ -131,11 +131,9 @@ class RecipeSeeder extends Seeder
             ['title' => 'Zöldséges omlett',             'description' => 'Zöldséges omlett sajttal. A tojásba paprikát, paradicsomot és sajtot keverünk.', 'creation_date' => '2026-07-01', 'user_id' => 10],
         ];
 
-        $now = now();
-
         foreach ($recipes as $recipe) {
-            $recipe['created_at'] = $now;
-            $recipe['updated_at'] = $now;
+            $recipe['created_at'] = $recipe['creation_date'];
+            $recipe['updated_at'] = $recipe['creation_date'];
             DB::table('recipe')->insert($recipe);
         }
     }

@@ -24,7 +24,7 @@ class IngredientRecipe extends Model
         return [
             'ingredient_id' => 'integer',
             'recipe_id' => 'integer',
-            'quantity' => 'integer',
+            'quantity' => 'float',
         ];
     }
 

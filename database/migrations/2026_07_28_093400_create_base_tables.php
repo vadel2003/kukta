@@ -131,7 +131,7 @@ return new class extends Migration
             $table->id()->autoIncrement()->primary();
             $table->unsignedBigInteger('ingredient_id');
             $table->unsignedBigInteger('recipe_id');
-            $table->integer('quantity');
+            $table->float('quantity');
             $table->string('unit', 20);
         });
 
