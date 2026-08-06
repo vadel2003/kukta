@@ -129,12 +129,131 @@ class RecipeSeeder extends Seeder
             ['title' => 'Hagymás rostélyos',            'description' => 'Hagymás rostélyos serpenyőben sütve. A húst hagymás alapon pirítjuk, fűszerezzük.', 'creation_date' => '2026-05-22', 'user_id' => 10],
             ['title' => 'Epres tiramisu',               'description' => 'Epres tiramisu mascarponéval. A piskótát kávéba áztatjuk, eperrel és krémmel rétegezzük.', 'creation_date' => '2026-06-12', 'user_id' => 10],
             ['title' => 'Zöldséges omlett',             'description' => 'Zöldséges omlett sajttal. A tojásba paprikát, paradicsomot és sajtot keverünk.', 'creation_date' => '2026-07-01', 'user_id' => 10],
+
+            // User 1 (admin) - receptek 101-105
+            ['title' => 'Hortobágyi palacsinta',        'description' => 'Csirkeraguval töltött palacsinta paprikás-tejfölös szósszal. A vékony palacsintákat fűszeres csirkeraguval töltjük, tejfölös-paprikás szósszal leöntjük, majd sütőben átsütjük.', 'creation_date' => '2026-07-15', 'user_id' => 1],
+            ['title' => 'Újházy-tyúkhúsleves',           'description' => 'Gazdag tyúkhúsleves zöldségekkel, gombával és csigatésztával. A lassú főzésnek köszönhetően az ízek mélyen összeérnek, a hús omlósra fő.', 'creation_date' => '2026-07-20', 'user_id' => 1],
+            ['title' => 'Brassói aprópecsenye',          'description' => 'Erdélyi sertéshúsos-burgonyás egytálétel fokhagymával. A húst és a burgonyát együtt pirítjuk, fokhagymával és pirospaprikával ízesítjük.', 'creation_date' => '2026-07-25', 'user_id' => 1],
+            ['title' => 'Somlói galuska',                'description' => 'Klasszikus magyar desszert háromféle piskótával, vaníliasodóval és csokoládéöntettel. Dióval és tejszínhabbal gazdagon tálalva.', 'creation_date' => '2026-07-30', 'user_id' => 1],
+            ['title' => 'Debreceni gulyás',              'description' => 'Kolbászos-burgonyás gulyásleves debreceni módra. A füstölt kolbász és a pirospaprika adja jellegzetes, füstös ízét.', 'creation_date' => '2026-08-05', 'user_id' => 1],
         ];
 
         foreach ($recipes as $recipe) {
             $recipe['created_at'] = $recipe['creation_date'];
             $recipe['updated_at'] = $recipe['creation_date'];
             DB::table('recipe')->insert($recipe);
+        }
+
+        // Pivot data: recipe ID => [meal_time_ids, food_type_ids, diet_ids, allergen_ids, cuisine_ids]
+        $pivotData = [];
+        for ($i = 1; $i <= 105; $i++) {
+            $pivotData[$i] = [
+                'meal_times' => [2, 3],
+                'food_types' => [2],
+                'diets' => [1],
+                'allergens' => [],
+                'cuisines' => [1],
+            ];
+        }
+
+        // --- Food types ---
+        // Soups
+        foreach ([1, 5, 14, 17, 22, 33, 36, 39, 42, 44, 46, 49, 54, 61, 64, 68, 74, 84, 96, 102, 105] as $id) {
+            $pivotData[$id]['food_types'] = [1];
+        }
+        // Desserts
+        foreach ([7, 10, 16, 19, 24, 27, 32, 43, 48, 56, 58, 70, 77, 80, 87, 90, 99, 104] as $id) {
+            $pivotData[$id]['food_types'] = [3];
+        }
+        // Appetizers
+        foreach ([6, 37, 66, 73, 94] as $id) {
+            $pivotData[$id]['food_types'] = [4];
+        }
+        // Side dishes
+        foreach ([40, 92] as $id) {
+            $pivotData[$id]['food_types'] = [5];
+        }
+        // Salads
+        foreach ([12, 62, 65] as $id) {
+            $pivotData[$id]['food_types'] = [6];
+        }
+        // Multi-type: Main Course + Side Dish
+        foreach ([3, 76, 83, 93] as $id) {
+            $pivotData[$id]['food_types'] = [2, 5];
+        }
+        // Multi-type: Dessert + Appetizer
+        foreach ([17, 27, 56, 80] as $id) {
+            $pivotData[$id]['food_types'] = [3, 4];
+        }
+
+        // --- Meal times ---
+        // Breakfast
+        foreach ([6, 43, 56, 60, 66, 70, 73, 80, 83, 90, 94, 99, 100] as $id) {
+            $pivotData[$id]['meal_times'] = [1, 2, 3, 4];
+        }
+        // Breakfast + Snack
+        foreach ([17, 27] as $id) {
+            $pivotData[$id]['meal_times'] = [1, 4];
+        }
+        // All day
+        foreach ([7, 10, 16, 19, 24, 32, 48, 58, 77, 87, 104] as $id) {
+            $pivotData[$id]['meal_times'] = [2, 3, 4];
+        }
+
+        // --- Diets ---
+        // Vegetarian
+        $vegetarian = [3, 6, 7, 10, 14, 15, 16, 17, 19, 20, 22, 24, 25, 27, 28, 30, 31, 32, 36, 37, 39, 40, 43, 46, 48, 51, 54, 56, 58, 60, 65, 66, 67, 68, 70, 73, 74, 76, 77, 78, 80, 83, 87, 89, 90, 92, 93, 94, 96, 97, 99, 100, 104];
+        foreach ($vegetarian as $id) {
+            $pivotData[$id]['diets'] = [2];
+        }
+        // Vegan
+        foreach ([22, 30, 39, 51, 54, 60, 68, 74, 89, 92, 96] as $id) {
+            $pivotData[$id]['diets'] = [3];
+        }
+
+        // --- Cuisines ---
+        // Italian
+        foreach ([11, 78, 89, 97, 99] as $id) {
+            $pivotData[$id]['cuisines'] = [2];
+        }
+        // Asian
+        foreach ([71, 95] as $id) {
+            $pivotData[$id]['cuisines'] = [4];
+        }
+        // American
+        foreach ([58, 60, 75] as $id) {
+            $pivotData[$id]['cuisines'] = [5];
+        }
+        // Mexican
+        foreach ([79, 86, 88] as $id) {
+            $pivotData[$id]['cuisines'] = [6];
+        }
+        // French
+        foreach ([83, 87] as $id) {
+            $pivotData[$id]['cuisines'] = [3];
+        }
+        // American + Mexican
+        $pivotData[79]['cuisines'] = [5, 6];
+        // Italian + American
+        $pivotData[97]['cuisines'] = [2, 5];
+
+        // Insert pivot records
+        foreach ($pivotData as $recipeId => $data) {
+            foreach ($data['meal_times'] as $mealTimeId) {
+                DB::table('meal_time_recipe')->insert(['meal_time_id' => $mealTimeId, 'recipe_id' => $recipeId]);
+            }
+            foreach ($data['food_types'] as $foodTypeId) {
+                DB::table('food_type_recipe')->insert(['food_type_id' => $foodTypeId, 'recipe_id' => $recipeId]);
+            }
+            foreach ($data['diets'] as $dietId) {
+                DB::table('diet_recipe')->insert(['diet_id' => $dietId, 'recipe_id' => $recipeId]);
+            }
+            foreach ($data['allergens'] as $allergenId) {
+                DB::table('allergen_recipe')->insert(['allergen_id' => $allergenId, 'recipe_id' => $recipeId]);
+            }
+            foreach ($data['cuisines'] as $cuisineId) {
+                DB::table('cuisine_recipe')->insert(['cuisine_id' => $cuisineId, 'recipe_id' => $recipeId]);
+            }
         }
     }
 }

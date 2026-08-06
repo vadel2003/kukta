@@ -111,6 +111,11 @@ class IngredientRecipeSeeder extends Seeder
             98 => [53, 15, 7, 3, 28],                               // Hagymás rostélyos
             99 => [34, 2, 5, 88, 101, 91, 4, 1],                    // Epres tiramisu (+tojás, +liszt)
             100=> [4, 17, 18, 26, 7, 3, 28],                        // Zöldséges omlett (+bors)
+            101=> [1, 4, 5, 2, 3, 19, 15, 7, 89, 28, 17, 18, 13],  // Hortobágyi palacsinta
+            102=> [19, 21, 15, 79, 37, 3, 28, 29, 70, 7],           // Újházy-tyúkhúsleves
+            103=> [53, 22, 16, 7, 89, 3, 28],                        // Brassói aprópecsenye
+            104=> [1, 4, 2, 6, 91, 49, 5, 92, 12, 14],               // Somlói galuska
+            105=> [15, 7, 89, 8, 22, 3, 28, 55, 17, 18],             // Debreceni gulyás
         ];
 
         // Hozzávaló metainfo: [min, max, unit]

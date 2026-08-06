@@ -9,7 +9,7 @@
         <p style="color: green;">{{ session('success') }}</p>
     @endif
 
-    <form method="POST" action="{{ route('recipes.store') }}">
+    <form method="POST" action="{{ route('recipes.store') }}" enctype="multipart/form-data">
         @csrf
 
         <div>
@@ -26,6 +26,42 @@
             @error('description')
                 <span style="color: red;">{{ $message }}</span>
             @enderror
+        </div>
+
+        <div>
+            <label>Kép kiválasztása</label>
+
+            <div>
+                <h3>Válassz előre definiált képet</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    @php
+                        $defaultImages = glob(public_path('images/recipes/default/*.{jpg,jpeg,png,gif,webp}'), GLOB_BRACE);
+                    @endphp
+                    @foreach ($defaultImages as $imagePath)
+                        @php
+                            $imageName = basename($imagePath);
+                            $imageUrl = asset('images/recipes/default/' . $imageName);
+                        @endphp
+                        <label style="text-align: center; cursor: pointer;">
+                            <input type="radio" name="default_image" value="images/recipes/default/{{ $imageName }}"
+                                {{ old('default_image') == 'images/recipes/default/' . $imageName ? 'checked' : '' }}>
+                            <img src="{{ $imageUrl }}" alt="{{ $imageName }}" style="width: 100px; height: 100px; object-fit: cover; display: block;">
+                            {{ $imageName }}
+                        </label>
+                    @endforeach
+                </div>
+                @error('default_image')
+                    <span style="color: red;">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div>
+                <h3>Vagy tölts fel saját képet</h3>
+                <input type="file" name="thumbnail_image" accept="image/jpeg,image/png,image/gif,image/webp">
+                @error('thumbnail_image')
+                    <span style="color: red;">{{ $message }}</span>
+                @enderror
+            </div>
         </div>
 
         <div>
@@ -86,6 +122,80 @@
             @error('ingredients')
                 <span style="color: red;">{{ $message }}</span>
             @enderror
+        </div>
+
+        <div>
+            <label>Kategóriák</label>
+
+            <div>
+                <h3>Napszak</h3>
+                @foreach ($mealTimes as $mealTime)
+                    <label>
+                        <input type="checkbox" name="meal_times[]" value="{{ $mealTime->id }}"
+                            {{ is_array(old('meal_times')) && in_array($mealTime->id, old('meal_times')) ? 'checked' : '' }}>
+                        {{ $mealTime->name }}
+                    </label>
+                @endforeach
+                @error('meal_times')
+                    <span style="color: red;">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div>
+                <h3>Étel típusa</h3>
+                @foreach ($foodTypes as $foodType)
+                    <label>
+                        <input type="checkbox" name="food_types[]" value="{{ $foodType->id }}"
+                            {{ is_array(old('food_types')) && in_array($foodType->id, old('food_types')) ? 'checked' : '' }}>
+                        {{ $foodType->name }}
+                    </label>
+                @endforeach
+                @error('food_types')
+                    <span style="color: red;">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div>
+                <h3>Étrend</h3>
+                @foreach ($diets as $diet)
+                    <label>
+                        <input type="radio" name="diet" value="{{ $diet->id }}"
+                            {{ old('diet') == $diet->id ? 'checked' : '' }}>
+                        {{ $diet->name }}
+                    </label>
+                @endforeach
+                @error('diet')
+                    <span style="color: red;">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div>
+                <h3>Allergén</h3>
+                @foreach ($allergens as $allergen)
+                    <label>
+                        <input type="checkbox" name="allergens[]" value="{{ $allergen->id }}"
+                            {{ is_array(old('allergens')) && in_array($allergen->id, old('allergens')) ? 'checked' : '' }}>
+                        {{ $allergen->name }}
+                    </label>
+                @endforeach
+                @error('allergens')
+                    <span style="color: red;">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div>
+                <h3>Konyha</h3>
+                @foreach ($cuisines as $cuisine)
+                    <label>
+                        <input type="checkbox" name="cuisines[]" value="{{ $cuisine->id }}"
+                            {{ is_array(old('cuisines')) && in_array($cuisine->id, old('cuisines')) ? 'checked' : '' }}>
+                        {{ $cuisine->name }}
+                    </label>
+                @endforeach
+                @error('cuisines')
+                    <span style="color: red;">{{ $message }}</span>
+                @enderror
+            </div>
         </div>
 
         <button type="submit">Recept feltöltése</button>

@@ -5,7 +5,7 @@
 @section('content')
     <h1>{{ $recipe->title }}</h1>
 
-    <img src="{{ asset('images/recipe_placeholder.jpg') }}" alt="{{ $recipe->title }}" class="recipe-detail-image">
+    <img src="{{ $recipe->thumbnail ? asset($recipe->thumbnail) : asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="{{ $recipe->title }}" class="recipe-detail-image">
 
     <p><strong>Feltöltötte:</strong> {{ $recipe->user->name }}</p>
     <p><strong>Dátum:</strong> {{ $recipe->creation_date->format('Y-m-d') }}</p>

@@ -15,6 +15,7 @@ class Recipe extends Model
     protected $fillable = [
         'title',
         'description',
+        'thumbnail',
         'creation_date',
         'user_id',
     ];
@@ -45,6 +46,31 @@ class Recipe extends Model
 
     public function favorites()
     {
-    return $this->hasMany(Favorite::class);
+        return $this->hasMany(Favorite::class);
+    }
+
+    public function mealTimes()
+    {
+        return $this->belongsToMany(MealTime::class, 'meal_time_recipe', 'recipe_id', 'meal_time_id');
+    }
+
+    public function foodTypes()
+    {
+        return $this->belongsToMany(FoodType::class, 'food_type_recipe', 'recipe_id', 'food_type_id');
+    }
+
+    public function diets()
+    {
+        return $this->belongsToMany(Diet::class, 'diet_recipe', 'recipe_id', 'diet_id');
+    }
+
+    public function allergens()
+    {
+        return $this->belongsToMany(Allergen::class, 'allergen_recipe', 'recipe_id', 'allergen_id');
+    }
+
+    public function cuisines()
+    {
+        return $this->belongsToMany(Cuisine::class, 'cuisine_recipe', 'recipe_id', 'cuisine_id');
     }
 }

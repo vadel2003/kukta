@@ -90,6 +90,7 @@ return new class extends Migration
             $table->id()->autoIncrement()->primary();
             $table->string('title', 100);
             $table->string('description', 1000);
+            $table->string('thumbnail', 255)->nullable();
             $table->date('creation_date')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
@@ -157,6 +158,93 @@ return new class extends Migration
             $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
         });
 
+        // Category tables
+        Schema::create('meal_time', function (Blueprint $table) {
+            $table->id()->autoIncrement()->primary();
+            $table->string('name', 50);
+            $table->string('thumbnail', 255)->nullable();
+        });
+
+        Schema::create('food_type', function (Blueprint $table) {
+            $table->id()->autoIncrement()->primary();
+            $table->string('name', 50);
+            $table->string('thumbnail', 255)->nullable();
+        });
+
+        Schema::create('diet', function (Blueprint $table) {
+            $table->id()->autoIncrement()->primary();
+            $table->string('name', 50);
+            $table->string('thumbnail', 255)->nullable();
+        });
+
+        Schema::create('allergen', function (Blueprint $table) {
+            $table->id()->autoIncrement()->primary();
+            $table->string('name', 50);
+            $table->string('thumbnail', 255)->nullable();
+        });
+
+        Schema::create('cuisine', function (Blueprint $table) {
+            $table->id()->autoIncrement()->primary();
+            $table->string('name', 50);
+            $table->string('thumbnail', 255)->nullable();
+        });
+
+        // Pivot tables
+        Schema::create('meal_time_recipe', function (Blueprint $table) {
+            $table->unsignedBigInteger('meal_time_id');
+            $table->unsignedBigInteger('recipe_id');
+            $table->primary(['meal_time_id', 'recipe_id']);
+        });
+
+        Schema::table('meal_time_recipe', function (Blueprint $table) {
+            $table->foreign('meal_time_id')->references('id')->on('meal_time')->onDelete('CASCADE')->onUpdate('RESTRICT');
+            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
+        });
+
+        Schema::create('food_type_recipe', function (Blueprint $table) {
+            $table->unsignedBigInteger('food_type_id');
+            $table->unsignedBigInteger('recipe_id');
+            $table->primary(['food_type_id', 'recipe_id']);
+        });
+
+        Schema::table('food_type_recipe', function (Blueprint $table) {
+            $table->foreign('food_type_id')->references('id')->on('food_type')->onDelete('CASCADE')->onUpdate('RESTRICT');
+            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
+        });
+
+        Schema::create('diet_recipe', function (Blueprint $table) {
+            $table->unsignedBigInteger('diet_id');
+            $table->unsignedBigInteger('recipe_id');
+            $table->primary(['diet_id', 'recipe_id']);
+        });
+
+        Schema::table('diet_recipe', function (Blueprint $table) {
+            $table->foreign('diet_id')->references('id')->on('diet')->onDelete('CASCADE')->onUpdate('RESTRICT');
+            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
+        });
+
+        Schema::create('allergen_recipe', function (Blueprint $table) {
+            $table->unsignedBigInteger('allergen_id');
+            $table->unsignedBigInteger('recipe_id');
+            $table->primary(['allergen_id', 'recipe_id']);
+        });
+
+        Schema::table('allergen_recipe', function (Blueprint $table) {
+            $table->foreign('allergen_id')->references('id')->on('allergen')->onDelete('CASCADE')->onUpdate('RESTRICT');
+            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
+        });
+
+        Schema::create('cuisine_recipe', function (Blueprint $table) {
+            $table->unsignedBigInteger('cuisine_id');
+            $table->unsignedBigInteger('recipe_id');
+            $table->primary(['cuisine_id', 'recipe_id']);
+        });
+
+        Schema::table('cuisine_recipe', function (Blueprint $table) {
+            $table->foreign('cuisine_id')->references('id')->on('cuisine')->onDelete('CASCADE')->onUpdate('RESTRICT');
+            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
+        });
+
     }
 
     public function down(): void
@@ -174,5 +262,15 @@ return new class extends Migration
         Schema::dropIfExists('step');
         Schema::dropIfExists('ingredient_recipe');
         Schema::dropIfExists('favorites');
+        Schema::dropIfExists('cuisine_recipe');
+        Schema::dropIfExists('allergen_recipe');
+        Schema::dropIfExists('diet_recipe');
+        Schema::dropIfExists('food_type_recipe');
+        Schema::dropIfExists('meal_time_recipe');
+        Schema::dropIfExists('cuisine');
+        Schema::dropIfExists('allergen');
+        Schema::dropIfExists('diet');
+        Schema::dropIfExists('food_type');
+        Schema::dropIfExists('meal_time');
     }
 };
