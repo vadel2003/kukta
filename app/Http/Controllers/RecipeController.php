@@ -31,11 +31,8 @@ class RecipeController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
-            'step1' => ['nullable', 'string', 'max:255'],
-            'step2' => ['nullable', 'string', 'max:255'],
-            'step3' => ['nullable', 'string', 'max:255'],
-            'step4' => ['nullable', 'string', 'max:255'],
-            'step5' => ['nullable', 'string', 'max:255'],
+            'steps' => ['nullable', 'array'],
+            'steps.*' => ['nullable', 'string', 'max:255'],
             'ingredients' => ['required', 'array', 'min:1'],
             'ingredients.*.id' => ['required', 'exists:ingredient,id'],
             'ingredients.*.quantity' => ['required', 'numeric', 'min:0'],
@@ -77,16 +74,17 @@ class RecipeController extends Controller
         ]);
 
         // 2. Lépések feldolgozása (csak a nem üreseket menti)
-        $stepNumber = 1;
-        for ($i = 1; $i <= 5; $i++) {
-            $stepField = 'step' . $i;
-            if (!empty($validated[$stepField])) {
-                Step::create([
-                    'description' => $validated[$stepField],
-                    'recipe_id' => $recipe->id,
-                    'order' => $stepNumber,
-                ]);
-                $stepNumber++;
+        if (!empty($validated['steps'])) {
+            $stepNumber = 1;
+            foreach ($validated['steps'] as $stepDescription) {
+                if (!empty($stepDescription)) {
+                    Step::create([
+                        'description' => $stepDescription,
+                        'recipe_id' => $recipe->id,
+                        'order' => $stepNumber,
+                    ]);
+                    $stepNumber++;
+                }
             }
         }
 
@@ -141,6 +139,114 @@ class RecipeController extends Controller
         }, 'ingredients'])->findOrFail($id);
 
         return view('recipes.show', compact('recipe'));
+    }
+
+    public function edit($id)
+    {
+        $recipe = Recipe::with(['steps', 'ingredients', 'mealTimes', 'foodTypes', 'diets', 'allergens', 'cuisines'])
+            ->where('user_id', Auth::id())
+            ->findOrFail($id);
+
+        $ingredients = Ingredient::orderBy('name')->get();
+        $mealTimes = MealTime::orderBy('id')->get();
+        $foodTypes = FoodType::orderBy('id')->get();
+        $diets = Diet::orderBy('id')->get();
+        $allergens = Allergen::orderBy('id')->get();
+        $cuisines = Cuisine::orderBy('id')->get();
+
+        return view('recipes.create', compact('recipe', 'ingredients', 'mealTimes', 'foodTypes', 'diets', 'allergens', 'cuisines'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $recipe = Recipe::where('user_id', Auth::id())->findOrFail($id);
+
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+            'steps' => ['nullable', 'array'],
+            'steps.*' => ['nullable', 'string', 'max:255'],
+            'ingredients' => ['required', 'array', 'min:1'],
+            'ingredients.*.id' => ['required', 'exists:ingredient,id'],
+            'ingredients.*.quantity' => ['required', 'numeric', 'min:0'],
+            'ingredients.*.unit' => ['required', 'string', 'max:50'],
+            'meal_times' => ['nullable', 'array'],
+            'meal_times.*' => ['exists:meal_time,id'],
+            'food_types' => ['nullable', 'array'],
+            'food_types.*' => ['exists:food_type,id'],
+            'diet' => ['nullable', 'integer', 'exists:diet,id'],
+            'allergens' => ['nullable', 'array'],
+            'allergens.*' => ['exists:allergen,id'],
+            'cuisines' => ['nullable', 'array'],
+            'cuisines.*' => ['exists:cuisine,id'],
+            'thumbnail_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'default_image' => ['nullable', 'string'],
+        ]);
+
+        // 1. Kép frissítése
+        $thumbnail = $recipe->thumbnail;
+
+        if ($request->hasFile('thumbnail_image')) {
+            $file = $request->file('thumbnail_image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('images/recipes'), $filename);
+            $thumbnail = 'images/recipes/' . $filename;
+        } elseif (!empty($validated['default_image'])) {
+            $thumbnail = $validated['default_image'];
+        }
+
+        // 2. Recept adatok frissítése
+        $recipe->update([
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'thumbnail' => $thumbnail,
+        ]);
+
+        // 3. Lépések frissítése (régi törlése, új beszúrása)
+        $recipe->steps()->delete();
+
+        if (!empty($validated['steps'])) {
+            $stepNumber = 1;
+            foreach ($validated['steps'] as $stepDescription) {
+                if (!empty($stepDescription)) {
+                    Step::create([
+                        'description' => $stepDescription,
+                        'recipe_id' => $recipe->id,
+                        'order' => $stepNumber,
+                    ]);
+                    $stepNumber++;
+                }
+            }
+        }
+
+        // 4. Alapanyagok frissítése (sync törli a régieket és beszúrja az újakat)
+        $ingredientData = [];
+        foreach ($validated['ingredients'] as $ingredient) {
+            if (!empty($ingredient['id'])) {
+                $ingredientData[$ingredient['id']] = [
+                    'quantity' => $ingredient['quantity'],
+                    'unit' => $ingredient['unit'],
+                ];
+            }
+        }
+        $recipe->ingredients()->sync($ingredientData);
+
+        // 5. Kategóriák frissítése
+        $recipe->mealTimes()->sync($validated['meal_times'] ?? []);
+        $recipe->foodTypes()->sync($validated['food_types'] ?? []);
+        $recipe->diets()->sync($validated['diet'] ?? []);
+        $recipe->allergens()->sync($validated['allergens'] ?? []);
+        $recipe->cuisines()->sync($validated['cuisines'] ?? []);
+
+        return redirect()->route('recipes.my')->with('success', 'Recept sikeresen módosítva!');
+    }
+
+    public function destroy($id)
+    {
+        $recipe = Recipe::where('user_id', Auth::id())->findOrFail($id);
+        $recipe->delete();
+
+        return redirect()->route('recipes.my')->with('success', 'Recept sikeresen törölve!');
     }
 }
 
