@@ -250,3 +250,39 @@ button {
 .btn-delete:hover {
     background-color: #c82333;
 }
+
+/* Kedvenc gomb */
+.btn-favorite {
+    background: none;
+    border: 2px solid #e74c3c;
+    color: #e74c3c;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+.btn-favorite.favorited {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-favorite:hover {
+    opacity: 0.8;
+}
+
+/* Kedvenc gomb a kártyán */
+.btn-favorite-card {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+    float: right;
+}
+
+.btn-favorite-card:hover {
+    transform: scale(1.2);
+}

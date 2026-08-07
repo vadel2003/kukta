@@ -25,4 +25,13 @@
             <li>{{ $step->description }}</li>
         @endforeach
     </ol>
+
+    @auth
+        <form action="{{ route('recipes.favorite', $recipe->id) }}" method="POST">
+            @csrf
+            <button type="submit" class="btn-favorite {{ $isFavorited ? 'favorited' : '' }}">
+                {{ $isFavorited ? '❤️ Kedvenc törlése' : '🤍 Kedvencnek jelölöm' }}
+            </button>
+        </form>
+    @endauth
 @endsection

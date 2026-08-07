@@ -29,6 +29,7 @@ Route::get('/recept/uj', [RecipeController::class, 'create'])->name('recipes.cre
 Route::post('/recept/uj', [RecipeController::class, 'store'])->name('recipes.store');
 Route::get('/sajat-receptek', [RecipeController::class, 'myRecipes'])->name('recipes.my');
 Route::get('/kedvenc-receptek', [RecipeController::class, 'favorites'])->name('recipes.favorites');
+Route::post('/recept/{id}/favorite', [RecipeController::class, 'toggleFavorite'])->name('recipes.favorite');
 Route::get('/recept/{id}', [RecipeController::class, 'show'])->name('recipes.show');
 Route::get('/recept/{id}/szerkesztes', [RecipeController::class, 'edit'])->name('recipes.edit');
 Route::put('/recept/{id}', [RecipeController::class, 'update'])->name('recipes.update');

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Recipe;
+use App\Models\Favorite;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -13,7 +15,14 @@ class HomeController extends Controller
             ->take(6)
             ->get();
 
-        return view('home', compact('latestRecipes'));
+        // A bejelentkezett felhasználó kedvenc recept ID-i
+        $favoriteIds = [];
+        if (Auth::check()) {
+            $favoriteIds = Favorite::where('user_id', Auth::id())
+                ->pluck('recipe_id')
+                ->toArray();
+        }
+
+        return view('home', compact('latestRecipes', 'favoriteIds'));
     }
 }
-

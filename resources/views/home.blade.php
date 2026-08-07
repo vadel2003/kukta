@@ -7,11 +7,19 @@
         <div class="recipe-gallery">
             @foreach ($latestRecipes as $recipe)
                 <div class="recipe-card">
-                    <img src="{{ asset('images/recipe_placeholder.jpg') }}" alt="{{ $recipe->title }}" class="recipe-image">
+                    <img src="{{ $recipe->thumbnail ? asset($recipe->thumbnail) : asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="{{ $recipe->title }}" class="recipe-image">
                     <h2>{{ $recipe->title }}</h2>
                     <p class="recipe-author">Feltöltte: {{ $recipe->user->name }}</p>
                     <p class="recipe-description">{{ Str::limit($recipe->description, 100) }}</p>
                     <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-view">Megtekintés</a>
+                    @auth
+                        <form action="{{ route('recipes.favorite', $recipe->id) }}" method="POST" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="btn-favorite-card {{ in_array($recipe->id, $favoriteIds) ? 'favorited' : '' }}">
+                                {{ in_array($recipe->id, $favoriteIds) ? '❤️' : '🤍' }}
+                            </button>
+                        </form>
+                    @endauth
                 </div>
             @endforeach
         </div>

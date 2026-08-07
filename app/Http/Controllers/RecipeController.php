@@ -12,6 +12,7 @@ use App\Models\FoodType;
 use App\Models\Diet;
 use App\Models\Allergen;
 use App\Models\Cuisine;
+use App\Models\Favorite;
 
 class RecipeController extends Controller
 {
@@ -129,7 +130,34 @@ class RecipeController extends Controller
 
     public function favorites()
     {
-        return view('recipes.favorites');
+        $favoriteRecipes = Auth::user()->favorites()
+            ->with('recipe.user')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->pluck('recipe');
+
+        return view('recipes.favorites', compact('favoriteRecipes'));
+    }
+
+    public function toggleFavorite($id)
+    {
+        $recipe = Recipe::findOrFail($id);
+        $user = Auth::user();
+
+        $existing = Favorite::where('user_id', $user->id)
+            ->where('recipe_id', $recipe->id)
+            ->first();
+
+        if ($existing) {
+            $existing->delete();
+        } else {
+            Favorite::create([
+                'user_id' => $user->id,
+                'recipe_id' => $recipe->id,
+            ]);
+        }
+
+        return back();
     }
 
     public function show($id)
@@ -138,7 +166,11 @@ class RecipeController extends Controller
             $query->orderBy('order');
         }, 'ingredients'])->findOrFail($id);
 
-        return view('recipes.show', compact('recipe'));
+        $isFavorited = Auth::check() && Favorite::where('user_id', Auth::id())
+            ->where('recipe_id', $recipe->id)
+            ->exists();
+
+        return view('recipes.show', compact('recipe', 'isFavorited'));
     }
 
     public function edit($id)

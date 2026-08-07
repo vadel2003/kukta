@@ -74,7 +74,6 @@
                             <input type="radio" name="default_image" value="{{ $imageValue }}"
                                 {{ old('default_image', $recipe->thumbnail ?? '') == $imageValue ? 'checked' : '' }}>
                             <img src="{{ $imageUrl }}" alt="{{ $imageName }}" style="width: 100px; height: 100px; object-fit: cover; display: block;">
-                            {{ $imageName }}
                         </label>
                     @endforeach
                 </div>
