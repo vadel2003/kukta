@@ -67,6 +67,7 @@ return new class extends Migration
             $table->string('name', 30)->unique();
             $table->string('password', 64);
             $table->integer('role');
+            $table->string('avatar', 255)->nullable();
         });
 
 

@@ -7,7 +7,11 @@
 
     <img src="{{ $recipe->thumbnail ? asset($recipe->thumbnail) : asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="{{ $recipe->title }}" class="recipe-detail-image">
 
-    <p><strong>Feltöltötte:</strong> {{ $recipe->user->name }}</p>
+    <p>
+        <strong>Feltöltötte:</strong>
+        <img src="{{ $recipe->user->avatar ? asset($recipe->user->avatar) : asset('images/default_avatar.svg') }}" alt="Profilkép" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; vertical-align: middle;">
+        {{ $recipe->user->name }}
+    </p>
     <p><strong>Dátum:</strong> {{ $recipe->creation_date->format('Y-m-d') }}</p>
 
     <p>{{ $recipe->description }}</p>

@@ -21,6 +21,7 @@ class ProfileController extends Controller
             'email' => ['required', 'string', 'email', 'max:50', 'unique:user,email,' . $user->id . ',id'],
             'current_password' => ['required', 'current_password'],
             'new_password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ]);
 
         $user->username = $validated['username'];
@@ -28,6 +29,19 @@ class ProfileController extends Controller
 
         if ($validated['new_password']) {
             $user->password = $validated['new_password'];
+        }
+
+        if ($request->hasFile('avatar')) {
+            // Régi kép törlése, ha van
+            if ($user->avatar && file_exists(public_path($user->avatar))) {
+                unlink(public_path($user->avatar));
+            }
+
+            // Új kép mentése
+            $file = $request->file('avatar');
+            $filename = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('avatars'), $filename);
+            $user->avatar = 'avatars/' . $filename;
         }
 
         $user->save();

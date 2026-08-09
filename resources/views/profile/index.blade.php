@@ -9,9 +9,22 @@
         <p style="color: green;">{{ session('success') }}</p>
     @endif
 
-    <form method="POST" action="{{ route('profile.update') }}">
+    <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
         @csrf
         @method('put')
+
+        <div>
+            <label for="avatar">Profilkép</label>
+            @if (Auth::user()->avatar)
+                <img src="{{ asset(Auth::user()->avatar) }}" alt="Profilkép" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+            @else
+                <img src="{{ asset('images/default_avatar.svg') }}" alt="Alapértelmezett profilkép" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+            @endif
+            <input type="file" name="avatar" id="avatar" accept="image/*">
+            @error('avatar')
+                <span style="color: red;">{{ $message }}</span>
+            @enderror
+        </div>
 
         <div>
             <label for="username">Felhasználónév</label>

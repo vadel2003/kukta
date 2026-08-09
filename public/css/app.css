@@ -152,7 +152,7 @@ header {
 /* Fő tartalom */
 main {
     max-width: 1200px;
-    margin: 2rem auto;
+    margin: 0 auto;
     padding: 0 1rem;
 }
 
@@ -358,4 +358,103 @@ button {
     color: #666;
     padding: 40px 0;
     width: 100%;
+}
+
+/* ===== HERO SZEKCIÓ ===== */
+html {
+    scroll-behavior: smooth;
+}
+
+.hero-section {
+    background-color: #1a1a1a;
+    padding: 80px 20px;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+}
+
+.hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 60px;
+}
+
+.hero-text {
+    flex: 1;
+}
+
+.hero-title {
+    font-size: 3rem;
+    color: white;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin-bottom: 30px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-primary {
+    background-color: #e67e22;
+    color: white;
+    padding: 12px 28px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #d35400;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: white;
+    padding: 12px 28px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    border: 2px solid white;
+    transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+    background-color: white;
+    color: #1a1a1a;
+}
+
+.hero-image {
+    flex: 1.2;
+}
+
+.hero-image img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    transform: translateY(30px);
+}
+
+/* ===== SZEKCIÓK ===== */
+.latest-section,
+.recipes-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    text-align: center;
+    color: #333;
 }

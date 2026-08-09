@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="Alapértelmezett profilkép">
+  <circle cx="128" cy="128" r="128" fill="#ffffff"/>
+  <circle cx="128" cy="102" r="42" fill="#d4d4d8"/>
+  <path d="M128 156c-42 0-76 30-76 68v4h152v-4c0-38-34-68-76-68z" fill="#d4d4d8"/>
+</svg>
