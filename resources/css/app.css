@@ -245,6 +245,7 @@ html {
     padding: 80px 20px;
     width: 100vw;
     margin-left: calc(-50vw + 50%);
+    overflow: visible;
 }
 
 .hero-container {
@@ -258,6 +259,7 @@ html {
 
 .hero-text {
     flex: 1;
+    min-width: 300px;
 }
 
 .hero-title {
@@ -309,14 +311,19 @@ html {
 }
 
 .hero-image {
-    flex: 1.2;
+    flex: 1.8;
+    background: transparent;
+    height: auto;
+    overflow: visible;
+    margin-left: 40px;
 }
 
 .hero-image img {
     width: 100%;
-    border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-    transform: translateY(30px);
+    position: relative;
+    z-index: 10;
+    filter: drop-shadow(0 30px 60px rgba(0,0,0,0.5));
+    margin-bottom: -150px;
 }
 
 /* ===== SZEKCIÓK ===== */
@@ -325,6 +332,12 @@ html {
     max-width: 1200px;
     margin: 0 auto;
     padding: 60px 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.latest-section {
+    padding-top: 0;
 }
 
 .section-title {
