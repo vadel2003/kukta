@@ -7,11 +7,10 @@
     <section id="hero" class="hero-section">
         <div class="hero-container">
             <div class="hero-text">
-                <h1 class="hero-title">Tapasztald meg az ételkészítés új élményét</h1>
+                <h1 class="hero-title">Tapasztald meg<br>az <span class="hero-highlight">ételkészítés</span> új élményét!</h1>
                 <p class="hero-subtitle">Fedezd fel receptjeinket és főzz otthon, mint egy profi!</p>
                 <div class="hero-buttons">
                     <a href="#recipes" class="btn-primary">Receptek keresése</a>
-                    <a href="#latest" class="btn-secondary">Legfrissebb receptek</a>
                 </div>
             </div>
             <div class="hero-image">
@@ -20,37 +19,8 @@
         </div>
     </section>
 
-    <!-- 2. LEGFRISSEBB RECEPTEK SZEKCIÓ -->
-    <section id="latest" class="latest-section">
-        <h2 class="section-title">Legfrissebb receptjeink</h2>
-        <div class="recipe-gallery">
-            @foreach ($latestRecipes as $recipe)
-                <div class="recipe-card">
-                    <img src="{{ $recipe->thumbnail ? asset($recipe->thumbnail) : asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="{{ $recipe->title }}" class="recipe-image">
-                    <h2>{{ $recipe->title }}</h2>
-                    <p class="recipe-author">
-                        Feltöltte:
-                        <img src="{{ $recipe->user->avatar ? asset($recipe->user->avatar) : asset('images/default_avatar.svg') }}" alt="Profilkép" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; vertical-align: middle;">
-                        {{ $recipe->user->name }}
-                    </p>
-                    <p class="recipe-description">{{ Str::limit($recipe->description, 100) }}</p>
-                    <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-view">Megtekintés</a>
-                    @auth
-                        <form action="{{ route('recipes.favorite', $recipe->id) }}" method="POST" style="display: inline;">
-                            @csrf
-                            <button type="submit" class="btn-favorite-card {{ in_array($recipe->id, $favoriteIds) ? 'favorited' : '' }}">
-                                {{ in_array($recipe->id, $favoriteIds) ? '❤️' : '🤍' }}
-                            </button>
-                        </form>
-                    @endauth
-                </div>
-            @endforeach
-        </div>
-    </section>
-
-    <!-- 3. RECEPT KERESŐ SZEKCIÓ -->
+    <!-- 2. RECEPT KERESŐ SZEKCIÓ -->
     <section id="recipes" class="recipes-section">
-        <h2 class="section-title">Recept kereső</h2>
 
         <!-- Szűrő űrlap -->
         <form action="{{ route('home') }}" method="GET" class="filter-form">

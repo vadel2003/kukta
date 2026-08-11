@@ -56,19 +56,13 @@ class HomeController extends Controller
                 ->toArray();
         }
 
-        // 6. Legfrissebb 6 recept a "Legfrissebb receptjeink" szekcióhoz
-        $latestRecipes = Recipe::with('user')
-            ->orderBy('creation_date', 'desc')
-            ->take(6)
-            ->get();
-
-        // 7. Kategóriák a szűrő legördülőkhöz
+        // 6. Kategóriák a szűrő legördülőkhöz
         $mealTimes = MealTime::orderBy('id')->get();
         $foodTypes = FoodType::orderBy('id')->get();
         $diets = Diet::orderBy('id')->get();
         $allergens = Allergen::orderBy('id')->get();
         $cuisines = Cuisine::orderBy('id')->get();
 
-        return view('home', compact('recipes', 'latestRecipes', 'favoriteIds', 'mealTimes', 'foodTypes', 'diets', 'allergens', 'cuisines'));
+        return view('home', compact('recipes', 'favoriteIds', 'mealTimes', 'foodTypes', 'diets', 'allergens', 'cuisines'));
     }
 }

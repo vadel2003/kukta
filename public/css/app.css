@@ -1,4 +1,27 @@
-/* Alapstílusok */
+:root {
+    --color-bg: #f8f9fa;
+    --color-text: #333;
+    --color-text-light: #666;
+    --color-text-lighter: #ccc;
+    --color-border: #ddd;
+    --color-bg-hover: #f5f5f5;
+    --color-white: #fff;
+    --color-bg-dark: #050505d9;
+    --color-shadow: rgba(0,0,0,0.1);
+    --color-shadow-dark: rgba(0,0,0,0.5);
+    --color-primary: #e67e22;
+    --color-primary-hover: #d35400;
+    --color-primary-soft: rgba(230, 126, 34, 0.2);
+    --color-gold: #ae8625;
+    --color-gold-hover: #926f1e;
+    --color-success: #28a745;
+    --color-success-hover: #1e7e34;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-favorite: #e74c3c;
+    --color-hero-highlight: #ca8e4e;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -7,16 +30,15 @@
 
 body {
     font-family: 'Instrument Sans', sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
+    background-color: var(--color-bg);
+    color: var(--color-text);
     line-height: 1.6;
 }
 
-/* Fejléc (header) */
 header {
-    background-color: #fff;
+    background-color: var(--color-white);
     padding: 0.5rem 2rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px var(--color-shadow);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -38,12 +60,12 @@ header {
 
 .header-right a {
     text-decoration: none;
-    color: #e67e22;
+    color: var(--color-primary);
     font-weight: 500;
 }
 
 .header-right a:hover {
-    color: #d35400;
+    color: var(--color-primary-hover);
 }
 
 /* Dropdown menü */
@@ -66,7 +88,7 @@ header {
 
 .dropdown-arrow {
     font-size: 0.7rem;
-    color: #333;
+    color: var(--color-text);
 }
 
 .dropdown-menu {
@@ -85,22 +107,22 @@ header {
 .dropdown-menu form button {
     display: block;
     white-space: nowrap;
-    background-color: #fff;
+    background-color: var(--color-white);
     padding: 0.6rem 1.2rem;
     text-decoration: none;
-    color: #333;
+    color: var(--color-text);
     border: none;
     font-size: 0.95rem;
     text-align: left;
     width: 100%;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px var(--color-shadow);
 }
 
 .dropdown-menu a:hover,
 .dropdown-menu form button:hover {
-    background-color: #f5f5f5;
-    color: #e67e22;
+    background-color: var(--color-bg-hover);
+    color: var(--color-primary);
 }
 
 /* Hamburger ikon - alapból rejtve */
@@ -122,10 +144,10 @@ header {
         top: 100%;
         left: 0;
         right: 0;
-        background-color: #fff;
+        background-color: var(--color-white);
         flex-direction: column;
         padding: 1rem 2rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px var(--color-shadow);
     }
 
     .header-right.open {
@@ -175,11 +197,13 @@ button {
 }
 
 .recipe-card {
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    padding: 15px;
+    padding: 20px;
     width: 300px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px var(--color-shadow);
+    display: flex;
+    flex-direction: column;
 }
 
 .recipe-image {
@@ -199,47 +223,49 @@ button {
 }
 
 .recipe-author {
-    color: #666;
+    color: var(--color-text-light);
     font-size: 0.9em;
 }
 
 .recipe-description {
-    color: #333;
+    color: var(--color-text);
     margin: 10px 0;
 }
 
 .btn-view {
-    display: inline-block;
-    padding: 8px 16px;
-    background-color: #ae8625;
-    color: white;
+    display: block;
+    padding: 12px 24px;
+    background-color: var(--color-gold);
+    color: var(--color-white);
     text-decoration: none;
     border-radius: 4px;
+    text-align: center;
+    margin-top: auto;
 }
 
 .btn-view:hover {
-    background-color: #926f1e;
+    background-color: var(--color-gold-hover);
 }
 
 .btn-edit {
     display: inline-block;
     padding: 8px 16px;
-    background-color: #28a745;
-    color: white;
+    background-color: var(--color-success);
+    color: var(--color-white);
     text-decoration: none;
     border-radius: 4px;
     margin-left: 5px;
 }
 
 .btn-edit:hover {
-    background-color: #1e7e34;
+    background-color: var(--color-success-hover);
 }
 
 .btn-delete {
     display: inline-block;
     padding: 8px 16px;
-    background-color: #dc3545;
-    color: white;
+    background-color: var(--color-danger);
+    color: var(--color-white);
     text-decoration: none;
     border: none;
     border-radius: 4px;
@@ -248,14 +274,14 @@ button {
 }
 
 .btn-delete:hover {
-    background-color: #c82333;
+    background-color: var(--color-danger-hover);
 }
 
 /* Kedvenc gomb */
 .btn-favorite {
     background: none;
-    border: 2px solid #e74c3c;
-    color: #e74c3c;
+    border: 2px solid var(--color-favorite);
+    color: var(--color-favorite);
     padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
@@ -264,8 +290,8 @@ button {
 }
 
 .btn-favorite.favorited {
-    background: #e74c3c;
-    color: white;
+    background: var(--color-favorite);
+    color: var(--color-white);
 }
 
 .btn-favorite:hover {
@@ -293,44 +319,44 @@ button {
     flex-wrap: wrap;
     align-items: center;
     gap: 10px;
-    background-color: #fff;
+    background-color: var(--color-white);
     padding: 15px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px var(--color-shadow);
     margin-bottom: 20px;
 }
 
 .filter-search {
     flex: 1 1 200px;
     padding: 8px 12px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     font-size: 1rem;
 }
 
 .filter-search:focus {
     outline: none;
-    border-color: #e67e22;
-    box-shadow: 0 0 0 2px rgba(230, 126, 34, 0.2);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary-soft);
 }
 
 .filter-select {
     padding: 8px 12px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     font-size: 1rem;
-    background-color: #fff;
+    background-color: var(--color-white);
     cursor: pointer;
 }
 
 .filter-select:focus {
     outline: none;
-    border-color: #e67e22;
+    border-color: var(--color-primary);
 }
 
 .btn-filter {
-    background-color: #e67e22;
-    color: white;
+    background-color: var(--color-primary);
+    color: var(--color-white);
     border: none;
     padding: 8px 16px;
     border-radius: 4px;
@@ -339,23 +365,23 @@ button {
 }
 
 .btn-filter:hover {
-    background-color: #d35400;
+    background-color: var(--color-primary-hover);
 }
 
 .btn-reset {
     text-decoration: none;
-    color: #666;
+    color: var(--color-text-light);
     padding: 8px 12px;
 }
 
 .btn-reset:hover {
-    color: #333;
+    color: var(--color-text);
     text-decoration: underline;
 }
 
 .no-results {
     text-align: center;
-    color: #666;
+    color: var(--color-text-light);
     padding: 40px 0;
     width: 100%;
 }
@@ -366,37 +392,46 @@ html {
 }
 
 .hero-section {
-    background-color: #1a1a1a;
-    padding: 80px 20px;
+    background-image: url('../images/hero-background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 120px 40px;
     width: 100vw;
     margin-left: calc(-50vw + 50%);
     overflow: visible;
 }
 
 .hero-container {
-    max-width: 1200px;
+    max-width: 1300px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 40px;
     display: flex;
     align-items: center;
-    gap: 60px;
+    gap: 80px;
+    position: relative;
 }
 
 .hero-text {
-    flex: 1;
-    min-width: 300px;
+    position: static;
+    flex: 3;
+    max-width: none;
 }
 
 .hero-title {
-    font-size: 3rem;
-    color: white;
+    font-size: 2.5rem;
+    color: var(--color-white);
     margin-bottom: 20px;
     line-height: 1.2;
 }
 
+.hero-highlight {
+    color: var(--color-hero-highlight);
+}
+
 .hero-subtitle {
     font-size: 1.2rem;
-    color: #ccc;
+    color: var(--color-text-lighter);
     margin-bottom: 30px;
 }
 
@@ -406,8 +441,8 @@ html {
 }
 
 .btn-primary {
-    background-color: #e67e22;
-    color: white;
+    background-color: var(--color-primary);
+    color: var(--color-white);
     padding: 12px 28px;
     border-radius: 6px;
     text-decoration: none;
@@ -416,39 +451,39 @@ html {
 }
 
 .btn-primary:hover {
-    background-color: #d35400;
+    background-color: var(--color-primary-hover);
 }
 
 .btn-secondary {
     background-color: transparent;
-    color: white;
+    color: var(--color-white);
     padding: 12px 28px;
     border-radius: 6px;
     text-decoration: none;
     font-weight: 500;
-    border: 2px solid white;
+    border: 2px solid var(--color-white);
     transition: all 0.3s;
 }
 
 .btn-secondary:hover {
-    background-color: white;
-    color: #1a1a1a;
+    background-color: var(--color-white);
+    color: var(--color-dark);
 }
 
 .hero-image {
-    flex: 1.8;
+    flex: 3.5;
     background: transparent;
     height: auto;
     overflow: visible;
-    margin-left: 40px;
+    margin-left: auto;
 }
 
 .hero-image img {
     width: 100%;
     position: relative;
     z-index: 10;
-    filter: drop-shadow(0 30px 60px rgba(0,0,0,0.5));
-    margin-bottom: -150px;
+    filter: drop-shadow(0 30px 60px var(--color-shadow-dark));
+    margin-bottom: -250px;
 }
 
 /* ===== SZEKCIÓK ===== */
@@ -461,13 +496,9 @@ html {
     z-index: 1;
 }
 
-.latest-section {
-    padding-top: 0;
-}
-
 .section-title {
     font-size: 1.8rem;
     margin-bottom: 30px;
     text-align: center;
-    color: #333;
+    color: var(--color-text);
 }
