@@ -194,16 +194,24 @@ button {
     flex-wrap: wrap;
     gap: 20px;
     padding: 20px 0;
+    justify-content: space-between;
+    max-width: 1200px;
 }
 
 .recipe-card {
     border: 1px solid var(--color-border);
     border-radius: 8px;
     padding: 20px;
-    width: 300px;
-    box-shadow: 0 2px 4px var(--color-shadow);
+    width: 350px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.08), 0 10px 20px rgba(0,0,0,0.12);
     display: flex;
     flex-direction: column;
+    position: relative;
+}
+
+.card-image-wrapper {
+    position: relative;
+    margin-bottom: 10px;
 }
 
 .recipe-image {
@@ -211,7 +219,6 @@ button {
     height: 200px;
     object-fit: cover;
     border-radius: 4px;
-    margin-bottom: 10px;
 }
 
 .recipe-detail-image {
@@ -299,18 +306,35 @@ button {
 }
 
 /* Kedvenc gomb a kártyán */
+.card-favorite-form {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 5;
+}
+
 .btn-favorite-card {
-    background: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-white);
     border: none;
-    font-size: 24px;
+    font-size: 1.2rem;
     cursor: pointer;
-    padding: 4px;
-    line-height: 1;
-    float: right;
+    box-shadow: 0 2px 6px var(--color-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .btn-favorite-card:hover {
-    transform: scale(1.2);
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px var(--color-shadow-dark);
+}
+
+.btn-favorite-card.favorited {
+    background: var(--color-favorite);
 }
 
 /* Szűrő űrlap stílusok */
@@ -493,7 +517,6 @@ html {
     margin: 0 auto;
     padding: 60px 20px;
     position: relative;
-    z-index: 1;
 }
 
 .section-title {
@@ -501,4 +524,486 @@ html {
     margin-bottom: 30px;
     text-align: center;
     color: var(--color-text);
+}
+
+/* ===== RECEPT RÉSZLETES OLDAL ===== */
+
+/* Banner szekció */
+.recipe-banner {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+}
+
+.banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.banner-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+}
+
+.banner-title {
+    color: var(--color-white);
+    font-size: 2.5rem;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Info szekció */
+.recipe-info {
+    margin-bottom: 2rem;
+}
+
+.recipe-meta {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.meta-author {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.author-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.meta-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text-light);
+}
+
+.meta-icon {
+    font-size: 1.2rem;
+}
+
+.recipe-description {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--color-text);
+}
+
+/* Tartalom szekció - két oszlop */
+.recipe-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Kártyák */
+.content-card {
+    background: var(--color-white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px var(--color-shadow);
+}
+
+.content-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-text);
+    border-bottom: 2px solid var(--color-primary-soft);
+    padding-bottom: 0.75rem;
+}
+
+.title-icon {
+    font-size: 1.5rem;
+}
+
+/* Hozzávalók listája */
+.ingredients-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ingredient-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.ingredient-item:last-child {
+    border-bottom: none;
+}
+
+.ingredient-quantity {
+    font-weight: 600;
+    color: var(--color-primary);
+    min-width: 100px;
+}
+
+.ingredient-name {
+    color: var(--color-text);
+}
+
+/* Lépések listája */
+.steps-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: step-counter;
+}
+
+.step-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.step-item:last-child {
+    border-bottom: none;
+}
+
+.step-number {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    background: var(--color-primary);
+    color: var(--color-white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.step-text {
+    margin: 0;
+    line-height: 1.6;
+    padding-top: 0.4rem;
+}
+
+/* Kedvenc gomb a banner jobb felső sarkában */
+.banner-favorite-form {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+}
+
+.btn-favorite-banner {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: var(--color-white);
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px var(--color-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-favorite-banner:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px var(--color-shadow-dark);
+}
+
+.btn-favorite-banner.favorited {
+    background: var(--color-favorite);
+}
+
+/* Reszponzív dizájn */
+@media (max-width: 768px) {
+    .recipe-banner {
+        height: 250px;
+    }
+
+    .banner-title {
+        font-size: 1.5rem;
+    }
+
+    .recipe-content {
+        grid-template-columns: 1fr;
+    }
+
+    .recipe-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+}
+
+/* ===== MODERN KERESŐ SÁV ===== */
+.search-bar {
+    max-width: 1200px;
+    margin: 3rem 0 2rem;
+    padding: 1rem;
+    position: sticky;
+    top: 56px;
+    z-index: 1001;
+    background-color: var(--color-white);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.08), 0 10px 20px rgba(0,0,0,0.12);
+}
+
+.search-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.search-input {
+    flex: 1;
+    max-width: 500px;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.btn-search,
+.btn-filters,
+.btn-sort {
+    padding: 0.75rem 1.25rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-search {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+.btn-search:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.btn-filters,
+.btn-sort {
+    background-color: var(--color-white);
+    color: var(--color-text);
+    border: 2px solid var(--color-border);
+}
+
+.btn-filters:hover,
+.btn-sort:hover {
+    background-color: var(--color-bg-hover);
+}
+
+.btn-filters:active,
+.btn-sort:active {
+    transform: scale(0.98);
+}
+
+/* ===== MODAL STÍLUSOK ===== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-shadow-dark);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--color-white);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-small {
+    max-width: 350px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-text-light);
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.close-btn:hover {
+    background-color: var(--color-bg-hover);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+/* ===== SZŰRŐ CSOPORTOK ===== */
+.filter-group {
+    margin-bottom: 1.5rem;
+}
+
+.filter-group:last-child {
+    margin-bottom: 0;
+}
+
+.filter-group h4 {
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+    color: var(--color-primary);
+    border-bottom: 2px solid var(--color-primary-soft);
+    padding-bottom: 0.5rem;
+}
+
+.checkbox-label,
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    cursor: pointer;
+}
+
+.checkbox-label:hover,
+.radio-label:hover {
+    background-color: var(--color-bg-hover);
+}
+
+.checkbox-label input,
+.radio-label input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* ===== GOMBOK A MODALBAN ===== */
+.btn-apply {
+    padding: 0.6rem 1.25rem;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-apply:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.modal-footer .btn-reset {
+    padding: 0.6rem 1.25rem;
+    background-color: var(--color-bg-hover);
+    color: var(--color-text);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.modal-footer .btn-reset:hover {
+    background-color: var(--color-border);
+}
+
+/* ===== RESPONSIVE - KERESŐ SÁV ===== */
+@media (max-width: 600px) {
+    .search-row {
+        flex-wrap: wrap;
+    }
+    
+    .search-input {
+        width: 100%;
+    }
+    
+    .btn-search,
+    .btn-filters,
+    .btn-sort {
+        flex: 1;
+    }
+}
+
+/* ===== LOADING SPINNER ===== */
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }

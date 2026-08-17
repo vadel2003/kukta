@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div class="hero-image">
-                <img src="{{ asset('images/hero-food.png') }}" alt="Ételkép">
+                <img src="{{ asset('images/hero-food-javitott.png') }}" alt="Ételkép">
             </div>
         </div>
     </section>
@@ -22,73 +22,129 @@
     <!-- 2. RECEPT KERESŐ SZEKCIÓ -->
     <section id="recipes" class="recipes-section">
 
-        <!-- Szűrő űrlap -->
-        <form action="{{ route('home') }}" method="GET" class="filter-form">
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Keresés a receptek között..." class="filter-search">
-
-            <select name="meal_time" class="filter-select">
-                <option value="">Étkezés: Összes</option>
-                @foreach ($mealTimes as $mealTime)
-                    <option value="{{ $mealTime->id }}" {{ request('meal_time') == $mealTime->id ? 'selected' : '' }}>{{ $mealTime->name }}</option>
-                @endforeach
-            </select>
-
-            <select name="food_type" class="filter-select">
-                <option value="">Ételtípus: Összes</option>
-                @foreach ($foodTypes as $foodType)
-                    <option value="{{ $foodType->id }}" {{ request('food_type') == $foodType->id ? 'selected' : '' }}>{{ $foodType->name }}</option>
-                @endforeach
-            </select>
-
-            <select name="diet" class="filter-select">
-                <option value="">Diéta: Összes</option>
-                @foreach ($diets as $diet)
-                    <option value="{{ $diet->id }}" {{ request('diet') == $diet->id ? 'selected' : '' }}>{{ $diet->name }}</option>
-                @endforeach
-            </select>
-
-            <select name="allergen" class="filter-select">
-                <option value="">Allergén: Összes</option>
-                @foreach ($allergens as $allergen)
-                    <option value="{{ $allergen->id }}" {{ request('allergen') == $allergen->id ? 'selected' : '' }}>{{ $allergen->name }}</option>
-                @endforeach
-            </select>
-
-            <select name="cuisine" class="filter-select">
-                <option value="">Konyha: Összes</option>
-                @foreach ($cuisines as $cuisine)
-                    <option value="{{ $cuisine->id }}" {{ request('cuisine') == $cuisine->id ? 'selected' : '' }}>{{ $cuisine->name }}</option>
-                @endforeach
-            </select>
-
-            <button type="submit" class="btn-filter">Szűrés</button>
-            <a href="{{ route('home') }}" class="btn-reset">Összes recept</a>
-        </form>
-
-        <div class="recipe-gallery">
-            @forelse ($recipes as $recipe)
-                <div class="recipe-card">
-                    <img src="{{ $recipe->thumbnail ? asset($recipe->thumbnail) : asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="{{ $recipe->title }}" class="recipe-image">
-                    <h2>{{ $recipe->title }}</h2>
-                    <p class="recipe-author">
-                        Feltöltte:
-                        <img src="{{ $recipe->user->avatar ? asset($recipe->user->avatar) : asset('images/default_avatar.svg') }}" alt="Profilkép" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; vertical-align: middle;">
-                        {{ $recipe->user->name }}
-                    </p>
-                    <p class="recipe-description">{{ Str::limit($recipe->description, 100) }}</p>
-                    <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-view">Megtekintés</a>
-                    @auth
-                        <form action="{{ route('recipes.favorite', $recipe->id) }}" method="POST" style="display: inline;">
-                            @csrf
-                            <button type="submit" class="btn-favorite-card {{ in_array($recipe->id, $favoriteIds) ? 'favorited' : '' }}">
-                                {{ in_array($recipe->id, $favoriteIds) ? '❤️' : '🤍' }}
-                            </button>
-                        </form>
-                    @endauth
+        <!-- Modern kereső sáv -->
+        <div class="search-bar">
+            <form action="{{ route('home') }}" method="GET" id="searchForm">
+                <div class="search-row">
+                    <!-- Kereső mező -->
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Receptek keresése kulcsszó szerint..." class="search-input">
+                    
+                    <!-- Keresés gomb -->
+                    <button type="submit" class="btn-search">Keresés</button>
+                    
+                    <!-- Szűrők gomb -->
+                    <button type="button" class="btn-filters" onclick="openModal('filtersModal')">Szűrők</button>
+                    
+                    <!-- Rendezés gomb -->
+                    <button type="button" class="btn-sort" onclick="openModal('sortModal')">Rendezés</button>
                 </div>
-            @empty
-                <p class="no-results">Nem található recept a megadott szűrési feltételekkel.</p>
-            @endforelse
+
+                <!-- Szűrők Modal -->
+                <div id="filtersModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Szűrők</h3>
+                            <button type="button" class="close-btn" onclick="closeModal('filtersModal')">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Étkezés -->
+                            <div class="filter-group">
+                                <h4>Étkezés</h4>
+                                @foreach ($mealTimes as $mealTime)
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="meal_time[]" value="{{ $mealTime->id }}" {{ in_array($mealTime->id, (array)request('meal_time')) ? 'checked' : '' }}>
+                                        {{ $mealTime->name }}
+                                    </label>
+                                @endforeach
+                            </div>
+
+                            <!-- Ételtípus -->
+                            <div class="filter-group">
+                                <h4>Ételtípus</h4>
+                                @foreach ($foodTypes as $foodType)
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="food_type[]" value="{{ $foodType->id }}" {{ in_array($foodType->id, (array)request('food_type')) ? 'checked' : '' }}>
+                                        {{ $foodType->name }}
+                                    </label>
+                                @endforeach
+                            </div>
+
+                            <!-- Diéta -->
+                            <div class="filter-group">
+                                <h4>Diéta</h4>
+                                @foreach ($diets as $diet)
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="diet[]" value="{{ $diet->id }}" {{ in_array($diet->id, (array)request('diet')) ? 'checked' : '' }}>
+                                        {{ $diet->name }}
+                                    </label>
+                                @endforeach
+                            </div>
+
+                            <!-- Allergén -->
+                            <div class="filter-group">
+                                <h4>Allergén</h4>
+                                @foreach ($allergens as $allergen)
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="allergen[]" value="{{ $allergen->id }}" {{ in_array($allergen->id, (array)request('allergen')) ? 'checked' : '' }}>
+                                        {{ $allergen->name }}
+                                    </label>
+                                @endforeach
+                            </div>
+
+                            <!-- Konyha -->
+                            <div class="filter-group">
+                                <h4>Konyha</h4>
+                                @foreach ($cuisines as $cuisine)
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="cuisine[]" value="{{ $cuisine->id }}" {{ in_array($cuisine->id, (array)request('cuisine')) ? 'checked' : '' }}>
+                                        {{ $cuisine->name }}
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn-apply">Szűrés alkalmazása</button>
+                            <a href="{{ route('home') }}" class="btn-reset">Összes recept</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rendezés Modal -->
+                <div id="sortModal" class="modal">
+                    <div class="modal-content modal-small">
+                        <div class="modal-header">
+                            <h3>Rendezés</h3>
+                            <button type="button" class="close-btn" onclick="closeModal('sortModal')">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <label class="radio-label">
+                                <input type="radio" name="sort" value="relevance" {{ request('sort', 'relevance') == 'relevance' ? 'checked' : '' }}>
+                                Relevancia
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="sort" value="date" {{ request('sort') == 'date' ? 'checked' : '' }}>
+                                Frissesség
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="sort" value="popularity" {{ request('sort') == 'popularity' ? 'checked' : '' }}>
+                                Népszerűség
+                            </label>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn-apply">Rendezés alkalmazása</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div id="recipe-gallery" class="recipe-gallery">
+            @include('partials.recipe-gallery')
+        </div>
+
+        <div id="loading-spinner" class="loading-spinner" style="display: none;">
+            <div class="spinner"></div>
+            <p>Betöltés...</p>
         </div>
     </section>
 @endsection
