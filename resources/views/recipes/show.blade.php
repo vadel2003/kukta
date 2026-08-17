@@ -16,6 +16,7 @@
                 <button type="submit" class="btn-favorite-banner {{ $isFavorited ? 'favorited' : '' }}" title="{{ $isFavorited ? 'Kedvenc törlése' : 'Kedvencnek jelölöm' }}">
                     {{ $isFavorited ? '❤️' : '🤍' }}
                 </button>
+                <span class="favorite-badge">{{ $favoriteCount }}</span>
             </form>
         @endauth
     </section>

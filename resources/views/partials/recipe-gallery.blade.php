@@ -8,6 +8,7 @@
                     <button type="submit" class="btn-favorite-card {{ in_array($recipe->id, $favoriteIds) ? 'favorited' : '' }}" title="{{ in_array($recipe->id, $favoriteIds) ? 'Kedvenc törlése' : 'Kedvencnek jelölöm' }}">
                         {{ in_array($recipe->id, $favoriteIds) ? '❤️' : '🤍' }}
                     </button>
+                    <span class="favorite-badge">{{ $recipe->favorites_count }}</span>
                 </form>
             @endauth
         </div>

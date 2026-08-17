@@ -17,7 +17,7 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         // 1. Recept-lekérdezés építése
-        $query = Recipe::with('user');
+        $query = Recipe::with('user')->withCount('favorites');
 
         // 2. Keresés: név, leírás, hozzávalók, elkészítés
         if ($request->filled('search')) {
@@ -76,7 +76,7 @@ class HomeController extends Controller
                 $query->orderBy('creation_date', 'desc');
         }
 
-        $recipes = $query->get();
+        $recipes = $query->paginate(21);
 
         // 5. A bejelentkezett felhasználó kedvenc recept ID-i
         $favoriteIds = [];
@@ -96,7 +96,10 @@ class HomeController extends Controller
         // Ha AJAX kérés, csak a galéria HTML-jét küldjük vissza
         if ($request->ajax()) {
             $html = view('partials.recipe-gallery', compact('recipes', 'favoriteIds'))->render();
-            return response()->json(['html' => $html]);
+            return response()->json([
+                'html' => $html,
+                'hasMore' => $recipes->hasMorePages(),
+            ]);
         }
 
         return view('home', compact('recipes', 'favoriteIds', 'mealTimes', 'foodTypes', 'diets', 'allergens', 'cuisines'));

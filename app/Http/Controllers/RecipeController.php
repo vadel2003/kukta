@@ -122,6 +122,7 @@ class RecipeController extends Controller
     public function myRecipes()
     {
         $myRecipes = Recipe::where('user_id', Auth::id())
+            ->withCount('favorites')
             ->orderBy('creation_date', 'desc')
             ->get();
 
@@ -135,6 +136,8 @@ class RecipeController extends Controller
             ->orderBy('created_at', 'desc')
             ->get()
             ->pluck('recipe');
+
+        $favoriteRecipes->loadCount('favorites');
 
         return view('recipes.favorites', compact('favoriteRecipes'));
     }
@@ -170,7 +173,9 @@ class RecipeController extends Controller
             ->where('recipe_id', $recipe->id)
             ->exists();
 
-        return view('recipes.show', compact('recipe', 'isFavorited'));
+        $favoriteCount = $recipe->favorites()->count();
+
+        return view('recipes.show', compact('recipe', 'isFavorited', 'favoriteCount'));
     }
 
     public function edit($id)

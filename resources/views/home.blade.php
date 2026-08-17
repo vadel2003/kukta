@@ -9,9 +9,6 @@
             <div class="hero-text">
                 <h1 class="hero-title">Tapasztald meg<br>az <span class="hero-highlight">ételkészítés</span> új élményét!</h1>
                 <p class="hero-subtitle">Fedezd fel receptjeinket és főzz otthon, mint egy profi!</p>
-                <div class="hero-buttons">
-                    <a href="#recipes" class="btn-primary">Receptek keresése</a>
-                </div>
             </div>
             <div class="hero-image">
                 <img src="{{ asset('images/hero-food-javitott.png') }}" alt="Ételkép">
@@ -141,6 +138,10 @@
         <div id="recipe-gallery" class="recipe-gallery">
             @include('partials.recipe-gallery')
         </div>
+
+        @if($recipes->hasMorePages())
+            <button id="load-more-btn" class="btn-load-more">További receptek betöltése...</button>
+        @endif
 
         <div id="loading-spinner" class="loading-spinner" style="display: none;">
             <div class="spinner"></div>

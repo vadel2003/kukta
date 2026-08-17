@@ -73,6 +73,13 @@
             const form = this;
             const gallery = document.getElementById('recipe-gallery');
             const spinner = document.getElementById('loading-spinner');
+            const loadMoreBtn = document.getElementById('load-more-btn');
+            
+            // "Load more" állapot reset
+            currentPage = 1;
+            if (loadMoreBtn) {
+                loadMoreBtn.style.display = 'none';
+            }
             
             // Loading spinner megjelenítése
             spinner.style.display = 'flex';
@@ -92,6 +99,15 @@
                 .then(response => response.json())
                 .then(data => {
                     gallery.innerHTML = data.html;
+                    
+                    // "Load more" gomb frissítése
+                    if (data.hasMore) {
+                        if (loadMoreBtn) {
+                            loadMoreBtn.style.display = 'block';
+                            loadMoreBtn.disabled = false;
+                            loadMoreBtn.textContent = 'További receptek betöltése...';
+                        }
+                    }
                     
                     // Várakozás a képek betöltődésére
                     const images = gallery.querySelectorAll('img');
@@ -127,6 +143,46 @@
                     spinner.style.display = 'none';
                     gallery.style.opacity = '1';
                 });
+        });
+
+        // "Load more" gomb kezelése
+        let currentPage = 1;
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.matches('#load-more-btn')) return;
+            
+            const btn = e.target;
+            const gallery = document.getElementById('recipe-gallery');
+            const spinner = document.getElementById('loading-spinner');
+            
+            currentPage++;
+            btn.disabled = true;
+            btn.textContent = 'Betöltés...';
+            spinner.style.display = 'flex';
+            
+            const url = new URL(window.location.href);
+            url.searchParams.set('page', currentPage);
+            
+            fetch(url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                gallery.insertAdjacentHTML('beforeend', data.html);
+                if (!data.hasMore) {
+                    btn.remove();
+                } else {
+                    btn.disabled = false;
+                    btn.textContent = 'További receptek betöltése...';
+                }
+                spinner.style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Hiba:', error);
+                spinner.style.display = 'none';
+                btn.disabled = false;
+                btn.textContent = 'További receptek betöltése...';
+            });
         });
     </script>
 </body>

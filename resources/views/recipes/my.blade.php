@@ -11,7 +11,10 @@
         <div class="recipe-gallery">
             @foreach ($myRecipes as $recipe)
                 <div class="recipe-card">
-                    <img src="{{ $recipe->thumbnail ? asset($recipe->thumbnail) : asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="{{ $recipe->title }}" class="recipe-image">
+                    <div class="card-image-wrapper">
+                        <img src="{{ $recipe->thumbnail ? asset($recipe->thumbnail) : asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="{{ $recipe->title }}" class="recipe-image">
+                        <span class="card-favorite-count">{{ $recipe->favorites_count }} kedvelés</span>
+                    </div>
                     <h2>{{ $recipe->title }}</h2>
                     <p class="recipe-description">{{ Str::limit($recipe->description, 100) }}</p>
                     <p><strong>Létrehozva:</strong> {{ $recipe->creation_date->format('Y-m-d') }}</p>
