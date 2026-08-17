@@ -200,13 +200,17 @@ button {
 
 .recipe-card {
     border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 20px;
     width: 350px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.08), 0 10px 20px rgba(0,0,0,0.12);
     display: flex;
     flex-direction: column;
     position: relative;
+}
+
+.recipe-card h2 {
+    color: #1a1a1a;
 }
 
 .card-image-wrapper {
@@ -242,7 +246,7 @@ button {
 .btn-view {
     display: block;
     padding: 12px 24px;
-    background-color: var(--color-gold);
+    background-color: #535353;
     color: var(--color-white);
     text-decoration: none;
     border-radius: 4px;
@@ -251,7 +255,7 @@ button {
 }
 
 .btn-view:hover {
-    background-color: var(--color-gold-hover);
+    background-color: #3b3b3b;
 }
 
 .btn-edit {
@@ -290,7 +294,7 @@ button {
     border: 2px solid var(--color-favorite);
     color: var(--color-favorite);
     padding: 8px 16px;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
     margin-top: 20px;
@@ -363,7 +367,7 @@ button {
     gap: 10px;
     background-color: var(--color-white);
     padding: 15px;
-    border-radius: 8px;
+    border-radius: 4px;
     box-shadow: 0 2px 4px var(--color-shadow);
     margin-bottom: 20px;
 }
@@ -481,7 +485,7 @@ html {
     background-color: transparent;
     color: var(--color-white);
     padding: 12px 28px;
-    border-radius: 6px;
+    border-radius: 4px;
     text-decoration: none;
     font-weight: 500;
     border: 2px solid var(--color-white);
@@ -522,7 +526,10 @@ html {
     font-size: 1.8rem;
     margin-bottom: 30px;
     text-align: center;
-    color: var(--color-text);
+    color: #1a1a1a;
+    border-bottom: 3px solid #535353;
+    display: inline-block;
+    padding-bottom: 8px;
 }
 
 /* ===== RECEPT RÉSZLETES OLDAL ===== */
@@ -531,10 +538,9 @@ html {
 .recipe-banner {
     position: relative;
     width: 100%;
-    height: 400px;
+    height: 300px;
     overflow: hidden;
-    border-radius: 12px;
-    margin-bottom: 2rem;
+    border-radius: 4px;
 }
 
 .banner-image {
@@ -559,9 +565,15 @@ html {
     text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
+.recipe-title {
+    font-size: 2.5rem;
+    margin: 1rem 0 0.5rem 0;
+    color: var(--color-text);
+}
+
 /* Info szekció */
 .recipe-info {
-    margin-bottom: 2rem;
+    margin-top: 1rem;
 }
 
 .recipe-meta {
@@ -602,18 +614,23 @@ html {
     color: var(--color-text);
 }
 
-/* Tartalom szekció - két oszlop */
-.recipe-content {
+/* Felső szekció: kép balra, hozzávalók jobbra */
+.recipe-top {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1.5fr 1fr;
     gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Alsó szekció */
+.steps-card {
     margin-bottom: 2rem;
 }
 
 /* Kártyák */
 .content-card {
     background: var(--color-white);
-    border-radius: 12px;
+    border-radius: 4px;
     padding: 1.5rem;
     box-shadow: 0 2px 8px var(--color-shadow);
 }
@@ -742,7 +759,7 @@ html {
         font-size: 1.5rem;
     }
 
-    .recipe-content {
+    .recipe-top {
         grid-template-columns: 1fr;
     }
 
@@ -762,7 +779,7 @@ html {
     top: 56px;
     z-index: 1001;
     background-color: var(--color-white);
-    border-radius: 12px;
+    border-radius: 4px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.08), 0 10px 20px rgba(0,0,0,0.12);
 }
 
@@ -777,7 +794,7 @@ html {
     max-width: 500px;
     padding: 0.75rem 1rem;
     border: 2px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: 4px;
     font-size: 1rem;
     transition: border-color 0.2s;
 }
@@ -792,7 +809,7 @@ html {
 .btn-sort {
     padding: 0.75rem 1.25rem;
     border: none;
-    border-radius: 8px;
+    border-radius: 4px;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
@@ -845,7 +862,7 @@ html {
 
 .modal-content {
     background: var(--color-white);
-    border-radius: 12px;
+    border-radius: 4px;
     width: 90%;
     max-width: 600px;
     max-height: 80vh;
@@ -945,7 +962,7 @@ html {
     background-color: var(--color-primary);
     color: var(--color-white);
     border: none;
-    border-radius: 8px;
+    border-radius: 4px;
     font-weight: 600;
     cursor: pointer;
 }
@@ -959,7 +976,7 @@ html {
     background-color: var(--color-bg-hover);
     color: var(--color-text);
     border: none;
-    border-radius: 8px;
+    border-radius: 4px;
     font-weight: 600;
     text-decoration: none;
 }
@@ -1015,7 +1032,7 @@ html {
     background: var(--color-primary);
     color: var(--color-white);
     border: none;
-    border-radius: 8px;
+    border-radius: 4px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
