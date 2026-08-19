@@ -203,7 +203,7 @@ button {
     border-radius: 4px;
     padding: 20px;
     width: 350px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.08), 0 10px 20px rgba(0,0,0,0.12);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -246,8 +246,9 @@ button {
 .btn-view {
     display: block;
     padding: 12px 24px;
-    background-color: #535353;
-    color: var(--color-white);
+    background-color: #dfdbd3;
+    color: #2b2320;
+    font-weight: 600;
     text-decoration: none;
     border-radius: 4px;
     text-align: center;
@@ -255,7 +256,7 @@ button {
 }
 
 .btn-view:hover {
-    background-color: #3b3b3b;
+    background-color: #c4bfb5;
 }
 
 .btn-edit {
@@ -438,7 +439,7 @@ html {
 }
 
 .hero-section {
-    background-image: url('../images/new-hero-background.png');
+    background-image: url('../images/hero_background.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -466,7 +467,7 @@ html {
 
 .hero-title {
     font-size: 2.5rem;
-    color: var(--color-white);
+    color: #2b2320;
     margin-bottom: 20px;
     line-height: 1.2;
 }
@@ -477,24 +478,24 @@ html {
 
 .hero-subtitle {
     font-size: 1.2rem;
-    color: var(--color-text-lighter);
+    color: #333;
     margin-bottom: 30px;
 }
 
 .btn-secondary {
     background-color: transparent;
-    color: var(--color-white);
+    color: #2b2320;
     padding: 12px 28px;
     border-radius: 4px;
     text-decoration: none;
     font-weight: 500;
-    border: 2px solid var(--color-white);
+    border: 2px solid #2b2320;
     transition: all 0.3s;
 }
 
 .btn-secondary:hover {
-    background-color: var(--color-white);
-    color: var(--color-dark);
+    background-color: #2b2320;
+    color: var(--color-white);
 }
 
 .hero-image {
@@ -632,7 +633,7 @@ html {
     background: var(--color-white);
     border-radius: 4px;
     padding: 1.5rem;
-    box-shadow: 0 2px 8px var(--color-shadow);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .content-title {
@@ -773,13 +774,13 @@ html {
 /* ===== MODERN KERESŐ SÁV ===== */
 .search-bar {
     max-width: 1200px;
-    margin: 3rem 0 2rem;
+    margin: 0 0 2rem;
     padding: 1rem;
     position: sticky;
     top: 56px;
     z-index: 1001;
     background-color: var(--color-white);
-    border-radius: 4px;
+    border-radius: 0 0 4px 4px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.08), 0 10px 20px rgba(0,0,0,0.12);
 }
 
@@ -819,6 +820,7 @@ html {
 .btn-search {
     background-color: var(--color-primary);
     color: var(--color-white);
+    border: 2px solid var(--color-border);
 }
 
 .btn-search:hover {
