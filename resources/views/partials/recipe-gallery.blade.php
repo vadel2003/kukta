@@ -13,11 +13,6 @@
             @endauth
         </div>
         <h2>{{ $recipe->title }}</h2>
-        <p class="recipe-author">
-            Feltöltte:
-            <img src="{{ $recipe->user->avatar ? asset($recipe->user->avatar) : asset('images/default_avatar.svg') }}" alt="Profilkép" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; vertical-align: middle;">
-            {{ $recipe->user->name }}
-        </p>
         <p class="recipe-description">{{ Str::limit($recipe->description, 100) }}</p>
         <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-view">Megtekintés</a>
     </div>

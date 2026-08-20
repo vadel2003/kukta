@@ -40,6 +40,7 @@ header {
     padding: 0.5rem 2rem;
     box-shadow: 0 2px 4px var(--color-shadow);
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     position: sticky;
@@ -771,17 +772,43 @@ html {
     }
 }
 
+
 /* ===== MODERN KERESŐ SÁV ===== */
 .search-bar {
     max-width: 1200px;
-    margin: 0 0 2rem;
+    margin: 3rem 0 2rem;
     padding: 1rem;
-    position: sticky;
-    top: 56px;
-    z-index: 1001;
     background-color: var(--color-white);
-    border-radius: 0 0 4px 4px;
+    border-radius: 4px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.08), 0 10px 20px rgba(0,0,0,0.12);
+}
+
+/* ===== Kereső a header-ben (görgetés után) ===== */
+.header-search {
+    display: none;
+    flex: 1;
+    max-width: 500px;
+    gap: 0.5rem;
+    margin: 0 1rem;
+}
+
+header.scrolled .header-search {
+    display: flex;
+}
+
+header.scrolled ~ main .search-bar {
+    display: none;
+}
+
+.header-search .search-input {
+    padding: 0.4rem 0.75rem;
+}
+
+.header-search .btn-search,
+.header-search .btn-filters,
+.header-search .btn-sort {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
 }
 
 .search-row {
@@ -792,7 +819,7 @@ html {
 
 .search-input {
     flex: 1;
-    max-width: 500px;
+    max-width: 450px;
     padding: 0.75rem 1rem;
     border: 2px solid var(--color-border);
     border-radius: 4px;
@@ -842,6 +869,10 @@ html {
 .btn-filters:active,
 .btn-sort:active {
     transform: scale(0.98);
+}
+
+.search-row .btn-sort {
+    margin-left: auto;
 }
 
 /* ===== MODAL STÍLUSOK ===== */

@@ -14,6 +14,13 @@
             </a>
         </div>
 
+        <form action="{{ route('home') }}" method="GET" class="header-search">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Keresés..." class="search-input">
+            <button type="submit" class="btn-search">Keresés</button>
+            <button type="button" class="btn-filters" onclick="openModal('filtersModal')">Szűrők</button>
+            <button type="button" class="btn-sort" onclick="openModal('sortModal')">Rendezés</button>
+        </form>
+
         <span class="hamburger">☰</span>
 
         <div class="header-right">
@@ -38,6 +45,7 @@
                 <a href="{{ route('login') }}">Bejelentkezés</a>
             @endauth
         </div>
+
     </header>
 
     <main>
@@ -66,8 +74,23 @@
             }
         }
 
+        // Scroll figyelés - kereső sáv megjelenítése header-ben
+        // Egyszer, betöltéskor mérjük le a search-bar pozícióját
+        const searchBar = document.querySelector('.search-bar');
+        const header = document.querySelector('header');
+        if (searchBar && header) {
+            const searchBarOffset = searchBar.getBoundingClientRect().top + window.scrollY;
+            const headerHeight = header.offsetHeight;
+
+            window.addEventListener('scroll', function() {
+                header.classList.toggle('scrolled',
+                    window.scrollY >= searchBarOffset - headerHeight);
+            });
+        }
+
         // AJAX form submit kezelés
-        document.getElementById('searchForm').addEventListener('submit', function(e) {
+        const searchForm = document.getElementById('searchForm');
+        if (searchForm) searchForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
             const form = this;

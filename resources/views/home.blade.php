@@ -23,21 +23,16 @@
         <div class="search-bar">
             <form action="{{ route('home') }}" method="GET" id="searchForm">
                 <div class="search-row">
-                    <!-- Kereső mező -->
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Receptek keresése kulcsszó szerint..." class="search-input">
-                    
-                    <!-- Keresés gomb -->
                     <button type="submit" class="btn-search">Keresés</button>
-                    
-                    <!-- Szűrők gomb -->
                     <button type="button" class="btn-filters" onclick="openModal('filtersModal')">Szűrők</button>
-                    
-                    <!-- Rendezés gomb -->
                     <button type="button" class="btn-sort" onclick="openModal('sortModal')">Rendezés</button>
                 </div>
+            </form>
+        </div>
 
-                <!-- Szűrők Modal -->
-                <div id="filtersModal" class="modal">
+        <!-- Szűrők Modal -->
+        <div id="filtersModal" class="modal">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h3>Szűrők</h3>
@@ -106,33 +101,31 @@
                     </div>
                 </div>
 
-                <!-- Rendezés Modal -->
-                <div id="sortModal" class="modal">
-                    <div class="modal-content modal-small">
-                        <div class="modal-header">
-                            <h3>Rendezés</h3>
-                            <button type="button" class="close-btn" onclick="closeModal('sortModal')">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <label class="radio-label">
-                                <input type="radio" name="sort" value="relevance" {{ request('sort', 'relevance') == 'relevance' ? 'checked' : '' }}>
-                                Relevancia
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="sort" value="date" {{ request('sort') == 'date' ? 'checked' : '' }}>
-                                Frissesség
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="sort" value="popularity" {{ request('sort') == 'popularity' ? 'checked' : '' }}>
-                                Népszerűség
-                            </label>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn-apply">Rendezés alkalmazása</button>
-                        </div>
-                    </div>
+        <!-- Rendezés Modal -->
+        <div id="sortModal" class="modal">
+            <div class="modal-content modal-small">
+                <div class="modal-header">
+                    <h3>Rendezés</h3>
+                    <button type="button" class="close-btn" onclick="closeModal('sortModal')">&times;</button>
                 </div>
-            </form>
+                <div class="modal-body">
+                    <label class="radio-label">
+                        <input type="radio" name="sort" value="relevance" {{ request('sort', 'relevance') == 'relevance' ? 'checked' : '' }}>
+                        Relevancia
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="sort" value="date" {{ request('sort') == 'date' ? 'checked' : '' }}>
+                        Frissesség
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="sort" value="popularity" {{ request('sort') == 'popularity' ? 'checked' : '' }}>
+                        Népszerűség
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn-apply">Rendezés alkalmazása</button>
+                </div>
+            </div>
         </div>
 
         <div id="recipe-gallery" class="recipe-gallery">
