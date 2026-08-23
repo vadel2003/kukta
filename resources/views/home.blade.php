@@ -23,7 +23,7 @@
         <div class="search-bar">
             <form action="{{ route('home') }}" method="GET" id="searchForm">
                 <div class="search-row">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Receptek keresése kulcsszó szerint..." class="search-input">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Receptek keresése kulcsszó szerint..." class="search-input" autofocus>
                     <button type="submit" class="btn-search">Keresés</button>
                     <button type="button" class="btn-filters" onclick="openModal('filtersModal')">Szűrők</button>
                     <button type="button" class="btn-sort" onclick="openModal('sortModal')">Rendezés</button>
