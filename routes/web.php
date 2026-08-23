@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\PageController;
 
 // Főoldal
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -34,3 +35,8 @@ Route::get('/recept/{id}', [RecipeController::class, 'show'])->name('recipes.sho
 Route::get('/recept/{id}/szerkesztes', [RecipeController::class, 'edit'])->name('recipes.edit');
 Route::put('/recept/{id}', [RecipeController::class, 'update'])->name('recipes.update');
 Route::delete('/recept/{id}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
+
+// Statikus oldalak
+Route::get('/adatkezelesi-tajekoztato', [PageController::class, 'privacy'])->name('page.privacy');
+Route::get('/suti-kezeles', [PageController::class, 'cookies'])->name('page.cookies');
+Route::get('/aszf', [PageController::class, 'terms'])->name('page.terms');

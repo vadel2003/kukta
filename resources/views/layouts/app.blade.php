@@ -52,6 +52,8 @@
         @yield('content')
     </main>
 
+    @include('partials.footer')
+
     <script>
         // Hamburger menü
         document.querySelector('.hamburger').addEventListener('click', function() {
