@@ -851,6 +851,9 @@ header.scrolled ~ main .search-bar {
 .btn-search,
 .btn-filters,
 .btn-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
     padding: 0.75rem 1.25rem;
     border: none;
     border-radius: 4px;
@@ -858,6 +861,22 @@ header.scrolled ~ main .search-bar {
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-search svg,
+.btn-filters svg,
+.btn-sort svg {
+    width: 1em;
+    height: 1em;
+    margin-right: 0.3em;
+}
+
+.header-search .btn-search svg,
+.header-search .btn-filters svg,
+.header-search .btn-sort svg {
+    width: 1em;
+    height: 1em;
+    margin-right: 0.25em;
 }
 
 .btn-search {
@@ -1157,4 +1176,63 @@ header.scrolled ~ main .search-bar {
     padding-top: 0.5rem;
     border-top: 1px solid var(--color-footer-border);
     font-size: 0.9rem;
+}
+
+/* ===== CSILLAGOS ÉRTÉKELÉS ===== */
+
+/* Közös alap: flex elrendezés, hogy a csillagok, szám és darabszám egy sorban legyen */
+.star-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Csillagok színe és mérete */
+.star-rating .stars {
+    color: #f5a623;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+/* Átlag szám (pl. 4.2) — félkövér, hogy kitűnjön */
+.star-rating .rating-number {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #555;
+}
+
+/* Értékelések darabszáma — halványabb, kisebb */
+.star-rating .review-count {
+    font-size: 0.8rem;
+    color: #999;
+}
+
+/* Kártyán belüli csillag: kis függőleges margó */
+.recipe-card .star-rating {
+    margin: 6px 0 4px 0;
+}
+
+/* Részletes oldalon: nagyobb, hangsúlyosabb megjelenés */
+.star-rating-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0 6px 0;
+}
+
+.star-rating-section .stars {
+    font-size: 1.3rem;
+    color: #f5a623;
+    letter-spacing: 2px;
+}
+
+.star-rating-section .rating-number {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.star-rating-section .review-count {
+    font-size: 0.9rem;
+    color: #888;
 }

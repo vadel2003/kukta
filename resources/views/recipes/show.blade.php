@@ -34,6 +34,14 @@
                         <span>{{ $recipe->creation_date->format('Y. m. d.') }}</span>
                     </div>
                 </div>
+
+                {{-- ⭐ Csillagos értékelés szekció (statikus placeholder, backend később) --}}
+                <div class="star-rating-section">
+                    <span class="stars">★★★★☆</span>
+                    <span class="rating-number">4.2</span>
+                    <span class="review-count">(12 értékelés)</span>
+                </div>
+
                 <p class="recipe-description">{{ $recipe->description }}</p>
             </div>
         </div>

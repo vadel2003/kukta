@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Kukta - @yield('title', 'Főoldal')</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <header>
@@ -16,9 +17,9 @@
 
         <form action="{{ route('home') }}" method="GET" class="header-search">
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Keresés..." class="search-input">
-            <button type="submit" class="btn-search">Keresés</button>
-            <button type="button" class="btn-filters" onclick="openModal('filtersModal')">Szűrők</button>
-            <button type="button" class="btn-sort" onclick="openModal('sortModal')">Rendezés</button>
+            <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
+            <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők</button>
+            <button type="button" class="btn-sort" onclick="openModal('sortModal')"><i data-lucide="arrow-up-down"></i> Rendezés</button>
         </form>
 
         <span class="hamburger">☰</span>
@@ -209,6 +210,9 @@
                 btn.textContent = 'További receptek betöltése...';
             });
         });
+
+        // Lucide ikonok inicializálása
+        lucide.createIcons();
     </script>
 </body>
 </html>

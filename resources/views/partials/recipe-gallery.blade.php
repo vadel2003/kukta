@@ -13,6 +13,14 @@
             @endauth
         </div>
         <h2>{{ $recipe->title }}</h2>
+
+        {{-- ⭐ Csillagos értékelés (statikus placeholder, backend később) --}}
+        <div class="star-rating">
+            <span class="stars">★★★★☆</span>
+            <span class="rating-number">4.2</span>
+            <span class="review-count">(12)</span>
+        </div>
+
         <p class="recipe-description">{{ Str::limit($recipe->description, 100) }}</p>
         <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-view">Megtekintés</a>
     </div>

@@ -24,9 +24,9 @@
             <form action="{{ route('home') }}" method="GET" id="searchForm">
                 <div class="search-row">
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Receptek keresése kulcsszó szerint..." class="search-input" autofocus>
-                    <button type="submit" class="btn-search">Keresés</button>
-                    <button type="button" class="btn-filters" onclick="openModal('filtersModal')">Szűrők</button>
-                    <button type="button" class="btn-sort" onclick="openModal('sortModal')">Rendezés</button>
+                    <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
+                    <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők</button>
+                    <button type="button" class="btn-sort" onclick="openModal('sortModal')"><i data-lucide="arrow-up-down"></i> Rendezés</button>
                 </div>
             </form>
         </div>
