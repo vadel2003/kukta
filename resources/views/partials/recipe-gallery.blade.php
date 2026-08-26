@@ -23,6 +23,11 @@
 
         <p class="recipe-description">{{ Str::limit($recipe->description, 100) }}</p>
         <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-view">Megtekintés</a>
+
+        {{-- Hover tooltip: a recept teljes leírása --}}
+        <div class="card-tooltip">
+            <p class="tooltip-description">{{ $recipe->description }}</p>
+        </div>
     </div>
 @empty
     <p class="no-results">Nem található recept a megadott szűrési feltételekkel.</p>

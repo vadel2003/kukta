@@ -1,5 +1,5 @@
 :root {
-    --color-bg: #f8f9fa;
+    --color-bg: #FAF6F0;
     --color-text: #333;
     --color-text-light: #666;
     --color-text-lighter: #ccc;
@@ -26,6 +26,7 @@
     --color-border-dark: #535353;
     --color-footer-bg: #402d13;
     --color-footer-border: #444;
+    --color-search-bg: #fff4e6;
 }
 
 * {
@@ -44,7 +45,7 @@ body {
 header {
     background-color: var(--color-white);
     padding: 0.5rem 2rem;
-    box-shadow: 0 2px 4px var(--color-shadow);
+    box-shadow: 0 4px 12px rgba(70,50,35,0.10);
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -206,7 +207,8 @@ button {
 }
 
 .recipe-card {
-    border: 1px solid var(--color-border);
+    background: var(--color-white);
+    border: 1px solid #ECE3D8;
     border-radius: 4px;
     padding: 20px;
     width: 350px;
@@ -214,6 +216,7 @@ button {
     display: flex;
     flex-direction: column;
     position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .recipe-card h2 {
@@ -253,8 +256,8 @@ button {
 .btn-view {
     display: block;
     padding: 12px 24px;
-    background: transparent;
-    color: var(--color-primary);
+    background: var(--color-primary);
+    color: var(--color-white);
     font-weight: 600;
     text-decoration: none;
     border: 2px solid var(--color-primary);
@@ -265,7 +268,7 @@ button {
 }
 
 .btn-view:hover {
-    background: var(--color-primary);
+    background: var(--color-primary-hover);
     color: var(--color-white);
 }
 
@@ -460,10 +463,23 @@ html {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    padding: 120px 40px;
+    padding: 64px 40px;
     width: 100vw;
     margin-left: calc(-50vw + 50%);
     overflow: visible;
+    position: relative;
+}
+
+.hero-section::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 30px;
+    background: linear-gradient(to bottom, rgba(250, 246, 240, 0) 0%, #FAF6F0 100%);
+    pointer-events: none;
+    z-index: 5;
 }
 
 .hero-container {
@@ -516,7 +532,7 @@ html {
 }
 
 .hero-image {
-    flex: 3.5;
+    flex: 2.5;
     background: transparent;
     height: auto;
     overflow: visible;
@@ -528,7 +544,8 @@ html {
     position: relative;
     z-index: 10;
     filter: drop-shadow(0 30px 60px var(--color-shadow-dark));
-    margin-bottom: -250px;
+    margin-top: 0px;
+    margin-bottom: -180px;
 }
 
 /* ===== SZEKCIÓK ===== */
@@ -536,7 +553,7 @@ html {
 .recipes-section {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 60px 20px;
+    padding: 45px 20px 60px 20px;
     position: relative;
 }
 
@@ -638,6 +655,7 @@ html {
     grid-template-columns: 1.5fr 1fr;
     gap: 2rem;
     margin-bottom: 2rem;
+    margin-top: 2rem;
 }
 
 /* Alsó szekció */
@@ -823,8 +841,9 @@ header.scrolled ~ main .search-bar {
 .header-search .btn-search,
 .header-search .btn-filters,
 .header-search .btn-sort {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.9rem;
+    padding: 0.4rem 0.75rem;
+    font-size: 1rem;
+    border: 2px solid transparent;
 }
 
 .search-row {
@@ -841,11 +860,13 @@ header.scrolled ~ main .search-bar {
     border-radius: 4px;
     font-size: 1rem;
     transition: border-color 0.2s;
+    background-color: var(--color-search-bg);
 }
 
 .search-input:focus {
     outline: none;
     border-color: var(--color-search-border);
+    background-color: var(--color-search-bg);
 }
 
 .btn-search,
@@ -854,10 +875,10 @@ header.scrolled ~ main .search-bar {
     display: inline-flex;
     align-items: center;
     gap: 0;
-    padding: 0.75rem 1.25rem;
-    border: none;
+    padding: 0.75rem 1rem;
+    border: 2px solid transparent;
     border-radius: 4px;
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.1s;
@@ -1154,10 +1175,12 @@ header.scrolled ~ main .search-bar {
 
 .footer-section ul {
     list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .footer-section ul li {
-    margin-bottom: 0.5rem;
+    padding: 0.25rem 0;
 }
 
 .footer-section a {
@@ -1235,4 +1258,47 @@ header.scrolled ~ main .search-bar {
 .star-rating-section .review-count {
     font-size: 0.9rem;
     color: #888;
+}
+
+/* ===== HOVER TOOLTIP A KÁRTYÁKON ===== */
+
+/* Tooltip alapállapot: rejtett, a kártyán belül abszolút pozícióval */
+.card-tooltip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 10;
+}
+
+/* Hover-re a tooltip megjelenik + kártya a többi fölé kerül */
+.recipe-card:hover {
+    z-index: 5;
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.recipe-description:hover ~ .card-tooltip,
+.card-tooltip:hover {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Tooltip szöveg stílusa */
+.tooltip-description {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    text-align: center;
 }
