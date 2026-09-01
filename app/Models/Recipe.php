@@ -49,6 +49,16 @@ class Recipe extends Model
         return $this->hasMany(Favorite::class);
     }
 
+    public function scores()
+    {
+        return $this->hasMany(Score::class);
+    }
+
+    public function averageScore()
+    {
+        return $this->scores()->avg('score');
+    }
+
     public function mealTimes()
     {
         return $this->belongsToMany(MealTime::class, 'meal_time_recipe', 'recipe_id', 'meal_time_id');

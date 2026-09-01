@@ -246,6 +246,21 @@ return new class extends Migration
             $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
         });
 
+        // Score table
+        Schema::create('score', function (Blueprint $table) {
+            $table->id()->autoIncrement()->primary();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('recipe_id');
+            $table->unsignedTinyInteger('score');
+
+            $table->unique(['user_id', 'recipe_id']);
+        });
+
+        Schema::table('score', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('user')->onDelete('CASCADE')->onUpdate('RESTRICT');
+            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
+        });
+
     }
 
     public function down(): void
@@ -263,6 +278,7 @@ return new class extends Migration
         Schema::dropIfExists('step');
         Schema::dropIfExists('ingredient_recipe');
         Schema::dropIfExists('favorites');
+        Schema::dropIfExists('score');
         Schema::dropIfExists('cuisine_recipe');
         Schema::dropIfExists('allergen_recipe');
         Schema::dropIfExists('diet_recipe');

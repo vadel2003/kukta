@@ -14,11 +14,15 @@
         </div>
         <h2>{{ $recipe->title }}</h2>
 
-        {{-- ⭐ Csillagos értékelés (statikus placeholder, backend később) --}}
+        {{-- ⭐ Csillagos értékelés (dinamikus) --}}
         <div class="star-rating">
-            <span class="stars">★★★★☆</span>
-            <span class="rating-number">4.2</span>
-            <span class="review-count">(12)</span>
+            <span class="stars">
+                @for ($i = 1; $i <= 5; $i++)
+                    <span class="{{ $i <= round($recipe->scores_avg_score ?? 0) ? 'filled' : '' }}">★</span>
+                @endfor
+            </span>
+            <span class="rating-number">{{ number_format($recipe->scores_avg_score ?? 0, 1) }}</span>
+            <span class="review-count">({{ $recipe->scores_count ?? 0 }})</span>
         </div>
 
         <p class="recipe-description">{{ Str::limit($recipe->description, 100) }}</p>

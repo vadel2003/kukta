@@ -13,6 +13,7 @@ use App\Models\Diet;
 use App\Models\Allergen;
 use App\Models\Cuisine;
 use App\Models\Favorite;
+use App\Models\Score;
 
 class RecipeController extends Controller
 {
@@ -167,7 +168,7 @@ class RecipeController extends Controller
     {
         $recipe = Recipe::with(['user', 'steps' => function($query) {
             $query->orderBy('order');
-        }, 'ingredients'])->findOrFail($id);
+        }, 'ingredients', 'scores.user'])->findOrFail($id);
 
         $isFavorited = Auth::check() && Favorite::where('user_id', Auth::id())
             ->where('recipe_id', $recipe->id)
@@ -175,7 +176,78 @@ class RecipeController extends Controller
 
         $favoriteCount = $recipe->favorites()->count();
 
-        return view('recipes.show', compact('recipe', 'isFavorited', 'favoriteCount'));
+        $averageScore = round($recipe->averageScore() ?? 0, 1);
+        $scoreCount = $recipe->scores()->count();
+        $userScore = Auth::check() ? $recipe->scores()->where('user_id', Auth::id())->first() : null;
+
+        // Eloszlás számítása
+        $distribution = $recipe->scores()
+            ->selectRaw('score, COUNT(*) as count')
+            ->groupBy('score')
+            ->pluck('count', 'score')
+            ->toArray();
+
+        $distributionPercentages = [];
+        for ($i = 5; $i >= 1; $i--) {
+            $count = $distribution[$i] ?? 0;
+            $percentage = $scoreCount > 0 ? round(($count / $scoreCount) * 100) : 0;
+            $distributionPercentages[$i] = [
+                'count' => $count,
+                'percentage' => $percentage,
+            ];
+        }
+
+        return view('recipes.show', compact('recipe', 'isFavorited', 'favoriteCount', 'averageScore', 'scoreCount', 'userScore', 'distributionPercentages'));
+    }
+
+    public function storeScore(Request $request, $id)
+    {
+        $request->validate([
+            'score' => 'required|integer|min:1|max:5',
+        ]);
+
+        $recipe = Recipe::findOrFail($id);
+
+        Score::updateOrCreate(
+            [
+                'user_id' => Auth::id(),
+                'recipe_id' => $recipe->id,
+            ],
+            [
+                'score' => $request->score,
+            ]
+        );
+
+        // AJAX válasz
+        if ($request->ajax()) {
+            $averageScore = round($recipe->averageScore(), 1);
+            $scoreCount = $recipe->scores()->count();
+
+            $distribution = $recipe->scores()
+                ->selectRaw('score, COUNT(*) as count')
+                ->groupBy('score')
+                ->pluck('count', 'score')
+                ->toArray();
+
+            $distributionPercentages = [];
+            for ($i = 5; $i >= 1; $i--) {
+                $count = $distribution[$i] ?? 0;
+                $percentage = $scoreCount > 0 ? round(($count / $scoreCount) * 100) : 0;
+                $distributionPercentages[$i] = [
+                    'count' => $count,
+                    'percentage' => $percentage,
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'averageScore' => $averageScore,
+                'scoreCount' => $scoreCount,
+                'distribution' => $distributionPercentages,
+            ]);
+        }
+
+        return redirect()->route('recipes.show', $id)->with('success', 'Értékelés mentve!');
     }
 
     public function edit($id)

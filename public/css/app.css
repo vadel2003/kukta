@@ -24,8 +24,8 @@
     --color-heading: #1a1a1a;
     --color-dark-brown: #2b2320;
     --color-border-dark: #535353;
-    --color-footer-bg: #402d13;
-    --color-footer-border: #444;
+    --color-footer-bg: #a89f93;
+    --color-footer-border: #888;
     --color-search-bg: #fff4e6;
 }
 
@@ -45,6 +45,7 @@ body {
 header {
     background-color: var(--color-white);
     padding: 0.5rem 2rem;
+    border-bottom: 1.5px solid var(--color-primary);
     box-shadow: 0 4px 12px rgba(70,50,35,0.10);
     display: flex;
     flex-wrap: wrap;
@@ -233,6 +234,8 @@ button {
     height: 200px;
     object-fit: cover;
     border-radius: 4px;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.35);
 }
 
 .recipe-detail-image {
@@ -241,6 +244,8 @@ button {
     object-fit: cover;
     border-radius: 4px;
     margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.35);
 }
 
 .recipe-author {
@@ -260,8 +265,8 @@ button {
     color: var(--color-white);
     font-weight: 600;
     text-decoration: none;
-    border: 2px solid var(--color-primary);
-    border-radius: 8px;
+    border: 2px solid var(--color-search-border);
+    border-radius: 4px;
     text-align: center;
     margin-top: auto;
     transition: all 0.3s ease;
@@ -476,7 +481,7 @@ html {
     left: 0;
     right: 0;
     bottom: 0;
-    height: 30px;
+    height: 80px;
     background: linear-gradient(to bottom, rgba(250, 246, 240, 0) 0%, #FAF6F0 100%);
     pointer-events: none;
     z-index: 5;
@@ -582,6 +587,8 @@ html {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.35);
 }
 
 .banner-overlay {
@@ -630,6 +637,8 @@ html {
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.35);
 }
 
 .meta-date {
@@ -1145,9 +1154,10 @@ header.scrolled ~ main .search-bar {
 /* ===== FOOTER ===== */
 .site-footer {
     background-color: var(--color-footer-bg);
-    color: var(--color-white);
-    padding: 2rem 2rem 0.5rem;
-    margin-top: 3rem;
+    color: #fff;
+    padding: 1.5rem 2rem 0.5rem;
+    margin-top: 2rem;
+    box-shadow: 0 -4px 12px rgba(70,50,35,0.10);
 }
 
 .footer-container {
@@ -1184,13 +1194,14 @@ header.scrolled ~ main .search-bar {
 }
 
 .footer-section a {
-    color: var(--color-text-lighter);
+    color: #fff;
     text-decoration: none;
-    transition: color 0.2s;
+    transition: all 0.2s;
 }
 
 .footer-section a:hover {
-    color: var(--color-primary);
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: underline;
 }
 
 .footer-bottom {
@@ -1208,13 +1219,32 @@ header.scrolled ~ main .search-bar {
     display: flex;
     align-items: center;
     gap: 6px;
+    margin: 8px 0;
 }
 
 /* Csillagok színe és mérete */
 .star-rating .stars {
-    color: #f5a623;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     letter-spacing: 1px;
+}
+
+.star-rating .stars span {
+    color: #DBD3C8;
+}
+
+.star-rating .stars span.filled {
+    color: var(--color-primary);
+}
+
+.star-rating .rating-number {
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: 0.95rem;
+}
+
+.star-rating .review-count {
+    color: var(--color-text-light);
+    font-size: 0.85rem;
 }
 
 /* Átlag szám (pl. 4.2) — félkövér, hogy kitűnjön */
@@ -1260,6 +1290,176 @@ header.scrolled ~ main .search-bar {
     color: #888;
 }
 
+/* ===== ÉRTÉKELÉSI KÁRTYA ===== */
+.rating-summary {
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+}
+
+.rating-summary-left {
+    text-align: center;
+    min-width: 150px;
+}
+
+.rating-average {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    line-height: 1;
+}
+
+.rating-stars-display {
+    margin: 0.5rem 0;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+}
+
+.rating-stars-display .star {
+    color: #DBD3C8;
+}
+
+.rating-stars-display .star.filled {
+    color: var(--color-primary);
+}
+
+.rating-count {
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+}
+
+.rating-summary-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.rating-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.rating-bar-label {
+    min-width: 30px;
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: 0.9rem;
+}
+
+.rating-bar-track {
+    flex: 1;
+    height: 8px;
+    background: #F1EBE2;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.rating-bar-fill {
+    height: 100%;
+    background: var(--color-primary);
+    transition: width 0.3s ease;
+}
+
+.rating-bar-count {
+    min-width: 30px;
+    text-align: right;
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+}
+
+.rating-divider {
+    border-top: 1px solid var(--color-border);
+    margin: 1.5rem 0;
+}
+
+.rating-personal {
+    text-align: center;
+}
+
+.rating-personal-title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: var(--color-text);
+}
+
+.rating-stars-interactive {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.star-label {
+    cursor: pointer;
+    position: relative;
+}
+
+.star-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.star-icon {
+    font-size: 2.5rem;
+    color: #D3C9BC;
+    transition: color 0.15s ease, transform 0.15s ease;
+    display: inline-block;
+}
+
+.star-icon.filled {
+    color: var(--color-primary);
+}
+
+.star-label:hover .star-icon {
+    color: var(--color-primary);
+    transform: scale(1.15);
+}
+
+.star-input:checked ~ .star-icon {
+    color: var(--color-primary);
+}
+
+.rating-personal-status {
+    color: var(--color-text-light);
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.rating-login-prompt {
+    font-size: 1.1rem;
+    color: var(--color-text-light);
+}
+
+.rating-login-prompt a {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+/* Reszponzív: mobilon függőleges elrendezés */
+@media (max-width: 768px) {
+    .rating-summary {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .rating-summary-left {
+        min-width: auto;
+    }
+
+    .rating-average {
+        font-size: 2.5rem;
+    }
+
+    .star-icon {
+        font-size: 2rem;
+    }
+}
+
 /* ===== HOVER TOOLTIP A KÁRTYÁKON ===== */
 
 /* Tooltip alapállapot: rejtett, a kártyán belül abszolút pozícióval */
@@ -1301,4 +1501,36 @@ header.scrolled ~ main .search-bar {
     font-size: 0.9rem;
     line-height: 1.6;
     text-align: center;
+}
+
+/* ===== SCROLL TO TOP GOMB ===== */
+.scroll-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 50px;
+    height: 50px;
+    background-color: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease, background-color 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.scroll-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.scroll-to-top:hover {
+    background-color: var(--color-primary-hover);
+    transform: translateY(-3px);
 }

@@ -16,9 +16,9 @@
         <div>
             <label for="avatar">Profilkép</label>
             @if (Auth::user()->avatar)
-                <img src="{{ asset(Auth::user()->avatar) }}" alt="Profilkép" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+                <img src="{{ asset(Auth::user()->avatar) }}" alt="Profilkép" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 1px solid #ccc; box-shadow: inset 0 0 15px rgba(0,0,0,0.35);">
             @else
-                <img src="{{ asset('images/default_avatar.svg') }}" alt="Alapértelmezett profilkép" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+                <img src="{{ asset('images/default_avatar.svg') }}" alt="Alapértelmezett profilkép" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 1px solid #ccc; box-shadow: inset 0 0 15px rgba(0,0,0,0.35);">
             @endif
             <input type="file" name="avatar" id="avatar" accept="image/*">
             @error('avatar')

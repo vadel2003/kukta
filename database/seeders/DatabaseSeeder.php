@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             StepSeeder::class,
             IngredientRecipeSeeder::class,
             FavoriteSeeder::class,
+            ScoreSeeder::class,
         ]);
     }
 }

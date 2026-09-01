@@ -55,6 +55,10 @@
 
     @include('partials.footer')
 
+    <button id="scrollToTop" class="scroll-to-top" title="Vissza a tetejére">
+        <i data-lucide="arrow-up"></i>
+    </button>
+
     <script>
         // Hamburger menü
         document.querySelector('.hamburger').addEventListener('click', function() {
@@ -208,6 +212,24 @@
                 spinner.style.display = 'none';
                 btn.disabled = false;
                 btn.textContent = 'További receptek betöltése...';
+            });
+        });
+
+        // Scroll to top gomb kezelése
+        const scrollToTopBtn = document.getElementById('scrollToTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
             });
         });
 

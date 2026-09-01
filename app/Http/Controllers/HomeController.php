@@ -17,7 +17,10 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         // 1. Recept-lekérdezés építése
-        $query = Recipe::with('user')->withCount('favorites');
+        $query = Recipe::with('user')
+            ->withCount('favorites')
+            ->withCount('scores')
+            ->withAvg('scores', 'score');
 
         // 2. Keresés: név, leírás, hozzávalók, elkészítés
         if ($request->filled('search')) {
