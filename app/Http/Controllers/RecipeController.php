@@ -136,14 +136,16 @@ class RecipeController extends Controller
             ->with('recipe.user')
             ->orderBy('created_at', 'desc')
             ->get()
-            ->pluck('recipe');
+            ->map(fn ($f) => $f->recipe);
 
         $favoriteRecipes->loadCount('favorites');
+        $favoriteRecipes->loadCount('scores');
+        $favoriteRecipes->loadAvg('scores', 'score');
 
         return view('recipes.favorites', compact('favoriteRecipes'));
     }
 
-    public function toggleFavorite($id)
+    public function toggleFavorite(Request $request, $id)
     {
         $recipe = Recipe::findOrFail($id);
         $user = Auth::user();
@@ -154,10 +156,20 @@ class RecipeController extends Controller
 
         if ($existing) {
             $existing->delete();
+            $isFavorited = false;
         } else {
             Favorite::create([
                 'user_id' => $user->id,
                 'recipe_id' => $recipe->id,
+            ]);
+            $isFavorited = true;
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'isFavorited' => $isFavorited,
+                'favoriteCount' => $recipe->favorites()->count(),
             ]);
         }
 

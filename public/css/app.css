@@ -344,19 +344,20 @@ button {
     display: flex;
     align-items: center;
     gap: 0.3rem;
-    background: rgba(0, 0, 0, 0.3);
+    background: #fff;
     padding: 0.25rem 0.6rem;
     border-radius: 20px;
 }
 
 .btn-favorite-card {
-    background: none;
+    background: #fff;
     border: none;
     font-size: 1.1rem;
     cursor: pointer;
     padding: 0;
     line-height: 1;
     transition: transform 0.2s;
+    color: var(--color-primary);
 }
 
 .btn-favorite-card:hover {
@@ -364,7 +365,8 @@ button {
 }
 
 .btn-favorite-card.favorited {
-    background: none;
+    background: #fff;
+    color: var(--color-primary);
 }
 
 .card-favorite-count {
@@ -372,16 +374,16 @@ button {
     top: 0.5rem;
     right: 0.5rem;
     font-size: 0.85rem;
-    color: var(--color-white);
+    color: var(--color-primary);
     font-weight: 600;
-    background: rgba(0, 0, 0, 0.3);
+    background: #fff;
     padding: 0.25rem 0.6rem;
     border-radius: 20px;
 }
 
 .favorite-badge {
     font-size: 0.85rem;
-    color: var(--color-white);
+    color: var(--color-primary);
     font-weight: 600;
 }
 
@@ -771,19 +773,20 @@ html {
     display: flex;
     align-items: center;
     gap: 0.3rem;
-    background: rgba(0, 0, 0, 0.3);
+    background: #fff;
     padding: 0.25rem 0.6rem;
     border-radius: 20px;
 }
 
 .btn-favorite-banner {
-    background: none;
+    background: #fff;
     border: none;
     font-size: 1.2rem;
     cursor: pointer;
     padding: 0;
     line-height: 1;
     transition: transform 0.2s;
+    color: var(--color-primary);
 }
 
 .btn-favorite-banner:hover {
@@ -791,7 +794,19 @@ html {
 }
 
 .btn-favorite-banner.favorited {
-    background: none;
+    background: #fff;
+    color: var(--color-primary);
+}
+
+/* Kedvenc szív kitöltése */
+.btn-favorite-card:not(.favorited) .lucide path,
+.btn-favorite-banner:not(.favorited) .lucide path {
+    fill: none;
+}
+
+.btn-favorite-card.favorited .lucide path,
+.btn-favorite-banner.favorited .lucide path {
+    fill: currentColor;
 }
 
 /* Reszponzív dizájn */

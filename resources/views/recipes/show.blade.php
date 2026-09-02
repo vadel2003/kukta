@@ -14,7 +14,7 @@
                     <form action="{{ route('recipes.favorite', $recipe->id) }}" method="POST" class="banner-favorite-form">
                         @csrf
                         <button type="submit" class="btn-favorite-banner {{ $isFavorited ? 'favorited' : '' }}" title="{{ $isFavorited ? 'Kedvenc törlése' : 'Kedvencnek jelölöm' }}">
-                            {{ $isFavorited ? '❤️' : '🤍' }}
+                            <i data-lucide="heart"></i>
                         </button>
                         <span class="favorite-badge">{{ $favoriteCount }}</span>
                     </form>

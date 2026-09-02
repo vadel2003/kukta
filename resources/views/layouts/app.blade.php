@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Kukta - @yield('title', 'Főoldal')</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -231,6 +232,54 @@
                 top: 0,
                 behavior: 'smooth'
             });
+        });
+
+        // Kedvenc toggle AJAX kezelése
+        document.addEventListener('submit', function(e) {
+            const form = e.target.closest('.card-favorite-form, .banner-favorite-form');
+            if (!form) return;
+
+            e.preventDefault();
+
+            const btn = form.querySelector('.btn-favorite-card, .btn-favorite-banner');
+            const badge = form.querySelector('.favorite-badge');
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                },
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.success) return;
+
+                // Kártya eltávolítása a kedvenc listából törléskor
+                if (form.hasAttribute('data-remove-card') && !data.isFavorited) {
+                    const card = form.closest('.recipe-card');
+                    if (card) {
+                        card.remove();
+
+                        // Ha nincs több kártya, üzenet megjelenítése
+                        const gallery = document.querySelector('.recipe-gallery');
+                        if (gallery && gallery.querySelectorAll('.recipe-card').length === 0) {
+                            const empty = document.createElement('p');
+                            empty.textContent = 'Még nincsenek kedvenc receptjeid.';
+                            gallery.replaceWith(empty);
+                        }
+
+                        return;
+                    }
+                }
+
+                btn.classList.toggle('favorited', data.isFavorited);
+                if (badge) badge.textContent = data.favoriteCount;
+                btn.title = data.isFavorited ? 'Kedvenc törlése' : 'Kedvencnek jelölöm';
+                lucide.createIcons();
+            })
+            .catch(error => console.error('Hiba:', error));
         });
 
         // Lucide ikonok inicializálása
