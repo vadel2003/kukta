@@ -9,9 +9,24 @@
             <div class="hero-text">
                 <h1 class="hero-title">Tapasztald meg<br>az <span class="hero-highlight">ételkészítés</span> új élményét!</h1>
                 <p class="hero-subtitle">Fedezd fel receptjeinket és főzz otthon, mint egy profi!</p>
+                <a href="#recipes" class="btn-hero-mobile">Receptek</a>
             </div>
             <div class="hero-image">
                 <img src="{{ asset('images/hero-food-javitott.png') }}" alt="Ételkép">
+            </div>
+        </div>
+
+        {{-- Mobil kereső sáv (desktopon rejtett, mobilon sticky) --}}
+        <div class="mobile-hero-search">
+            <div class="mobile-search-bar">
+                <form action="{{ route('home') }}" method="GET">
+                    <div class="search-row">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Receptek keresése..." class="search-input">
+                        <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
+                        <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők</button>
+                        <button type="button" class="btn-sort" onclick="openModal('sortModal')"><i data-lucide="arrow-up-down"></i> Rendezés</button>
+                    </div>
+                </form>
             </div>
         </div>
     </section>

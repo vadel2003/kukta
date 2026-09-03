@@ -13,6 +13,7 @@
         <div class="header-left">
             <a href="{{ route('home') }}">
                 <img src="{{ asset('images/kukta-logo.svg') }}" alt="Kukta" class="logo">
+                <img src="{{ asset('images/kukta-sapka.svg') }}" alt="Kukta" class="logo-mobile">
             </a>
         </div>
 
@@ -27,7 +28,7 @@
 
         <div class="header-right">
             @auth
-                <div class="dropdown">
+                <div class="dropdown desktop-user">
                     <div class="dropdown-trigger">
                         <img src="{{ asset('images/profile_icon.png') }}" alt="Profil" class="profile-icon">
                         <span class="dropdown-arrow">▾</span>
@@ -43,12 +44,33 @@
                         </form>
                     </div>
                 </div>
+                <button type="button" class="mobile-menu-btn" aria-label="Menü">
+                    <i data-lucide="menu"></i>
+                </button>
             @else
                 <a href="{{ route('login') }}">Bejelentkezés</a>
             @endauth
         </div>
 
     </header>
+
+    {{-- Mobil oldalsó menü panel --}}
+    <div class="mobile-menu-overlay">
+        <nav class="mobile-menu">
+            @auth
+                <a href="{{ route('profile.index') }}">Profil</a>
+                <a href="{{ route('recipes.create') }}">Új recept</a>
+                <a href="{{ route('recipes.my') }}">Saját receptek</a>
+                <a href="{{ route('recipes.favorites') }}">Kedvenc receptek</a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit">Kijelentkezés</button>
+                </form>
+            @else
+                <a href="{{ route('login') }}">Bejelentkezés</a>
+            @endauth
+        </nav>
+    </div>
 
     <main>
         @yield('content')
@@ -281,6 +303,46 @@
             })
             .catch(error => console.error('Hiba:', error));
         });
+
+        // Header sticky viselkedés (csak mobilon aktív)
+        let lastScrollTop = 0;
+        const stickyHeader = document.querySelector('header');
+
+        function updateHeaderSticky() {
+            if (window.innerWidth > 768) {
+                stickyHeader.classList.add('header-visible');
+                return;
+            }
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop && scrollTop > 80) {
+                stickyHeader.classList.remove('header-visible');
+            } else {
+                stickyHeader.classList.add('header-visible');
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        }
+
+        window.addEventListener('scroll', updateHeaderSticky);
+        window.addEventListener('resize', updateHeaderSticky);
+        stickyHeader.classList.add('header-visible');
+
+        // Mobil menü toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+        if (mobileMenuBtn && mobileMenuOverlay) {
+            mobileMenuBtn.addEventListener('click', function() {
+                mobileMenuOverlay.classList.toggle('open');
+            });
+
+            // Kattintás az overlay-n kívül bezárja a menüt
+            document.addEventListener('click', function(e) {
+                if (mobileMenuOverlay.classList.contains('open') &&
+                    !mobileMenuOverlay.contains(e.target) &&
+                    !mobileMenuBtn.contains(e.target)) {
+                    mobileMenuOverlay.classList.remove('open');
+                }
+            });
+        }
 
         // Lucide ikonok inicializálása
         lucide.createIcons();

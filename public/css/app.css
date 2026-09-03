@@ -1549,3 +1549,211 @@ header.scrolled ~ main .search-bar {
     background-color: var(--color-primary-hover);
     transform: translateY(-3px);
 }
+
+/* ===== MOBIL-SPECIFIKUS ELEMEK - DESKTOPON REJTVE ===== */
+.logo-mobile,
+.mobile-menu-btn,
+.btn-hero-mobile,
+.mobile-hero-search,
+.mobile-menu-overlay {
+    display: none;
+}
+
+/* ===== MOBIL NÉZET ===== */
+@media (max-width: 768px) {
+    /* Vízszintes csúszka tiltása */
+    body {
+        overflow-x: hidden;
+    }
+
+    /* Desktop elemek elrejtése mobilon */
+    .logo,
+    .header-search,
+    .desktop-user,
+    .hero-subtitle,
+    .hero-image {
+        display: none;
+    }
+
+    /* Mobil elemek megjelenítése */
+    .logo-mobile {
+        display: block;
+        height: 40px;
+        width: auto;
+    }
+
+    .mobile-menu-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        padding: 0.5rem;
+        cursor: pointer;
+        color: var(--color-primary);
+    }
+
+    .mobile-menu-btn svg {
+        width: 28px;
+        height: 28px;
+    }
+
+    .btn-hero-mobile {
+        display: inline-block;
+        background-color: var(--color-primary);
+        color: var(--color-white);
+        padding: 12px 32px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 6px rgba(230, 126, 34, 0.3);
+    }
+
+    .mobile-hero-search {
+        display: block;
+        width: 100%;
+        padding: 0.5rem 1rem 2rem;
+        position: sticky;
+        top: 60px;
+        z-index: 900;
+        flex-basis: 100%;
+        order: 2;
+    }
+
+    .mobile-search-bar {
+        max-width: 1200px;
+        margin: 0;
+        padding: 1rem;
+        background-color: var(--color-white);
+        border-radius: 4px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.08), 0 10px 20px rgba(0,0,0,0.12);
+    }
+
+    .mobile-search-bar .search-row {
+        flex-wrap: nowrap;
+        gap: 0.4rem;
+    }
+
+    .mobile-search-bar .search-input {
+        flex: 2;
+        min-width: 0;
+        padding: 0.6rem 0.9rem;
+        font-size: 1rem;
+    }
+
+    .mobile-search-bar .btn-search,
+    .mobile-search-bar .btn-filters,
+    .mobile-search-bar .btn-sort {
+        flex: 0 0 auto;
+        padding: 0.6rem 0.5rem;
+        font-size: 0;
+        justify-content: center;
+    }
+
+    .mobile-search-bar .btn-search svg,
+    .mobile-search-bar .btn-filters svg,
+    .mobile-search-bar .btn-sort svg {
+        margin-right: 0;
+        width: 1.1rem;
+        height: 1.1rem;
+    }
+
+    /* Header - sticky csak felfele görgetésnél */
+    header {
+        padding: 0.5rem 1rem;
+        transform: translateY(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    header.header-visible {
+        transform: translateY(0);
+    }
+
+    /* Hero szekció */
+    .hero-section {
+        padding: 2rem 1rem;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .hero-container {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 0 1rem;
+        justify-content: center;
+        order: 1;
+    }
+
+    .hero-text {
+        text-align: center;
+    }
+
+    .hero-title {
+        font-size: 1.8rem;
+    }
+
+    /* Mobil oldalsó menü panel */
+    .mobile-menu-overlay {
+        display: block;
+        position: fixed;
+        top: 0;
+        right: -300px;
+        width: 280px;
+        height: 100%;
+        background-color: var(--color-white);
+        box-shadow: -4px 0 16px rgba(0,0,0,0.15);
+        z-index: 1100;
+        transition: right 0.3s ease;
+        overflow-y: auto;
+    }
+
+    .mobile-menu-overlay.open {
+        right: 0;
+    }
+
+    .mobile-menu {
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+    }
+
+    .mobile-menu a,
+    .mobile-menu form button {
+        display: block;
+        padding: 0.9rem 1rem;
+        text-decoration: none;
+        color: var(--color-text);
+        font-size: 1rem;
+        border: none;
+        background: none;
+        text-align: left;
+        width: 100%;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .mobile-menu a:hover,
+    .mobile-menu form button:hover {
+        background-color: var(--color-bg-hover);
+        color: var(--color-primary);
+    }
+
+    /* Alsó kereső sáv elrejtése mobilon */
+    .recipes-section .search-bar {
+        display: none;
+    }
+
+    /* Kártyák egymás alatt, középen */
+    .recipe-gallery {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .recipe-card {
+        width: 100%;
+        max-width: 400px;
+    }
+}
