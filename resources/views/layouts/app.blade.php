@@ -106,7 +106,7 @@
 
         // Scroll figyelés - kereső sáv megjelenítése header-ben
         // Egyszer, betöltéskor mérjük le a search-bar pozícióját
-        const searchBar = document.querySelector('.search-bar');
+        const searchBar = document.querySelector('.recipes-section .search-bar');
         const header = document.querySelector('header');
         if (searchBar && header) {
             const searchBarOffset = searchBar.getBoundingClientRect().top + window.scrollY;

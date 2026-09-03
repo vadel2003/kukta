@@ -1632,6 +1632,7 @@ header.scrolled ~ main .search-bar {
         padding: 0.5rem;
         font-size: 0;
         justify-content: center;
+        margin-left: 0 !important;
     }
 
     header .header-search .btn-search svg,
@@ -1680,6 +1681,7 @@ header.scrolled ~ main .search-bar {
         padding: 0.6rem 0.5rem;
         font-size: 0;
         justify-content: center;
+        margin-left: 0 !important;
     }
 
     .mobile-search-sticky .btn-search svg,
