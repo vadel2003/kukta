@@ -16,9 +16,9 @@
             </div>
         </div>
 
-        {{-- Mobil kereső sáv (desktopon rejtett, mobilon sticky) --}}
-        <div class="mobile-hero-search">
-            <div class="mobile-search-bar">
+        {{-- Mobil kereső sáv (desktopon rejtett, mobilon a hero-ban) --}}
+        <div class="mobile-search-sticky">
+            <div class="search-bar">
                 <form action="{{ route('home') }}" method="GET">
                     <div class="search-row">
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Receptek keresése..." class="search-input">

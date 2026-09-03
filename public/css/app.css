@@ -1554,7 +1554,7 @@ header.scrolled ~ main .search-bar {
 .logo-mobile,
 .mobile-menu-btn,
 .btn-hero-mobile,
-.mobile-hero-search,
+.mobile-search-sticky,
 .mobile-menu-overlay {
     display: none;
 }
@@ -1568,11 +1568,10 @@ header.scrolled ~ main .search-bar {
 
     /* Desktop elemek elrejtése mobilon */
     .logo,
-    .header-search,
     .desktop-user,
     .hero-subtitle,
     .hero-image {
-        display: none;
+        display: none !important;
     }
 
     /* Mobil elemek megjelenítése */
@@ -1610,64 +1609,93 @@ header.scrolled ~ main .search-bar {
         box-shadow: 0 4px 6px rgba(230, 126, 34, 0.3);
     }
 
-    .mobile-hero-search {
+    /* Header kereső sáv mobilon */
+    header .header-search {
+        display: flex !important;
+        flex: 1;
+        max-width: none;
+        margin: 0 0.5rem;
+        gap: 0.3rem;
+    }
+
+    header .header-search .search-input {
+        flex: 2;
+        min-width: 0;
+        padding: 0.5rem 0.7rem;
+        font-size: 0.9rem;
+    }
+
+    header .header-search .btn-search,
+    header .header-search .btn-filters,
+    header .header-search .btn-sort {
+        flex: 0 0 auto;
+        padding: 0.5rem;
+        font-size: 0;
+        justify-content: center;
+    }
+
+    header .header-search .btn-search svg,
+    header .header-search .btn-filters svg,
+    header .header-search .btn-sort svg {
+        margin-right: 0;
+        width: 1rem;
+        height: 1rem;
+    }
+
+    /* Mobil kereső sáv a hero-ban */
+    .mobile-search-sticky {
         display: block;
         width: 100%;
-        padding: 0.5rem 1rem 2rem;
-        position: sticky;
-        top: 60px;
-        z-index: 900;
+        padding: 1rem;
+        margin-top: 2rem;
         flex-basis: 100%;
         order: 2;
     }
 
-    .mobile-search-bar {
+    .mobile-search-sticky .search-bar {
         max-width: 1200px;
         margin: 0;
-        padding: 1rem;
+        padding: 0.8rem;
         background-color: var(--color-white);
         border-radius: 4px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.08), 0 10px 20px rgba(0,0,0,0.12);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    .mobile-search-bar .search-row {
+    .mobile-search-sticky .search-row {
         flex-wrap: nowrap;
         gap: 0.4rem;
     }
 
-    .mobile-search-bar .search-input {
+    .mobile-search-sticky .search-input {
         flex: 2;
         min-width: 0;
         padding: 0.6rem 0.9rem;
         font-size: 1rem;
     }
 
-    .mobile-search-bar .btn-search,
-    .mobile-search-bar .btn-filters,
-    .mobile-search-bar .btn-sort {
+    .mobile-search-sticky .btn-search,
+    .mobile-search-sticky .btn-filters,
+    .mobile-search-sticky .btn-sort {
         flex: 0 0 auto;
         padding: 0.6rem 0.5rem;
         font-size: 0;
         justify-content: center;
     }
 
-    .mobile-search-bar .btn-search svg,
-    .mobile-search-bar .btn-filters svg,
-    .mobile-search-bar .btn-sort svg {
+    .mobile-search-sticky .btn-search svg,
+    .mobile-search-sticky .btn-filters svg,
+    .mobile-search-sticky .btn-sort svg {
         margin-right: 0;
         width: 1.1rem;
         height: 1.1rem;
     }
 
-    /* Header - sticky csak felfele görgetésnél */
+    /* Header - sticky viselkedés mobilon */
     header {
         padding: 0.5rem 1rem;
-        transform: translateY(-100%);
-        transition: transform 0.3s ease;
-    }
-
-    header.header-visible {
-        transform: translateY(0);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
     }
 
     /* Hero szekció */
@@ -1677,6 +1705,7 @@ header.scrolled ~ main .search-bar {
         display: flex;
         align-items: center;
         flex-direction: column;
+        justify-content: center;
     }
 
     .hero-container {

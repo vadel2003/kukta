@@ -304,28 +304,6 @@
             .catch(error => console.error('Hiba:', error));
         });
 
-        // Header sticky viselkedés (csak mobilon aktív)
-        let lastScrollTop = 0;
-        const stickyHeader = document.querySelector('header');
-
-        function updateHeaderSticky() {
-            if (window.innerWidth > 768) {
-                stickyHeader.classList.add('header-visible');
-                return;
-            }
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            if (scrollTop > lastScrollTop && scrollTop > 80) {
-                stickyHeader.classList.remove('header-visible');
-            } else {
-                stickyHeader.classList.add('header-visible');
-            }
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-        }
-
-        window.addEventListener('scroll', updateHeaderSticky);
-        window.addEventListener('resize', updateHeaderSticky);
-        stickyHeader.classList.add('header-visible');
-
         // Mobil menü toggle
         const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
         const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
