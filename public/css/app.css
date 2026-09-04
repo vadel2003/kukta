@@ -1708,6 +1708,7 @@ header.scrolled ~ main .search-bar {
         align-items: center;
         flex-direction: column;
         justify-content: center;
+        background-position: top center;
     }
 
     .hero-container {
