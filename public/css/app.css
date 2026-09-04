@@ -1512,12 +1512,14 @@ header.scrolled ~ main .search-bar {
 }
 
 /* ===== MOBIL-SPECIFIKUS ELEMEK - DESKTOPON REJTVE ===== */
-.logo-mobile,
-.mobile-menu-btn,
-.btn-hero-mobile,
-.mobile-search-sticky,
-.mobile-menu-overlay {
-    display: none;
+@media (min-width: 769px) {
+    .logo-mobile,
+    .mobile-menu-btn,
+    .btn-hero-mobile,
+    .mobile-search-sticky,
+    .mobile-menu-overlay {
+        display: none;
+    }
 }
 
 /* ===== MOBIL NÉZET ===== */
