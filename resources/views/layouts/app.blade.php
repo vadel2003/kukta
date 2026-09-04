@@ -48,7 +48,10 @@
                     <i data-lucide="menu"></i>
                 </button>
             @else
-                <a href="{{ route('login') }}">Bejelentkezés</a>
+                <a href="{{ route('login') }}" class="login-link">
+                    <img src="{{ asset('images/profile_icon.png') }}" alt="Bejelentkezés" class="profile-icon mobile-login-icon">
+                    <span class="login-text">Bejelentkezés</span>
+                </a>
             @endauth
         </div>
 

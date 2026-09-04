@@ -1537,6 +1537,11 @@ header.scrolled ~ main .search-bar {
         display: none !important;
     }
 
+    /* Bejelentkezés szöveg elrejtése mobilon, csak az avatar ikon látszódjon */
+    .login-link .login-text {
+        display: none;
+    }
+
     /* Hamburger elrejtése mobilon (az új mobile-menu-btn rendszert használjuk) */
     .hamburger {
         display: none !important;
@@ -1712,7 +1717,7 @@ header.scrolled ~ main .search-bar {
         position: fixed;
         top: 0;
         right: -300px;
-        width: 280px;
+        width: 240px;
         height: 100%;
         background-color: var(--color-white);
         box-shadow: -4px 0 16px rgba(0,0,0,0.15);
