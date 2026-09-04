@@ -1,4 +1,4 @@
-:root {
+﻿:root {
     --color-bg: #FAF6F0;
     --color-text: #333;
     --color-text-light: #666;
@@ -1573,6 +1573,7 @@ header.scrolled ~ main .search-bar {
     .mobile-menu-btn svg {
         width: 28px;
         height: 28px;
+        stroke: currentColor;
     }
 
     .btn-hero-mobile {

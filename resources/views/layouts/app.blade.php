@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="hu">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Kukta - @yield('title', 'Főoldal')</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ time() }}">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
@@ -304,6 +304,7 @@
         const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
         if (mobileMenuBtn && mobileMenuOverlay) {
             mobileMenuBtn.addEventListener('click', function() {
+                alert('Mobil menü gomb kattintás!');
                 mobileMenuOverlay.classList.toggle('open');
             });
 
