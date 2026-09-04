@@ -141,45 +141,6 @@ header {
     cursor: pointer;
 }
 
-/* Mobil nézet */
-@media (max-width: 768px) {
-    .hamburger {
-        display: block;
-    }
-
-    .header-right {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background-color: var(--color-white);
-        flex-direction: column;
-        padding: 1rem 2rem;
-        box-shadow: 0 2px 4px var(--color-shadow);
-    }
-
-    .header-right.open {
-        display: flex;
-    }
-
-    .header-right a {
-        padding: 0.5rem 0;
-    }
-
-    .dropdown .dropdown-menu {
-        position: static;
-        box-shadow: none;
-        padding-top: 0;
-        padding-left: 1rem;
-    }
-
-    .dropdown-menu a,
-    .dropdown-menu form button {
-        box-shadow: none;
-    }
-}
-
 /* Fő tartalom */
 main {
     max-width: 1200px;
@@ -1572,6 +1533,21 @@ header.scrolled ~ main .search-bar {
     .hero-subtitle,
     .hero-image {
         display: none !important;
+    }
+
+    /* Hamburger elrejtése mobilon (az új mobile-menu-btn rendszert használjuk) */
+    .hamburger {
+        display: none !important;
+    }
+
+    /* Header-right megjelenítése mobilon (a mobile-menu-btn miatt) */
+    header .header-right {
+        display: flex !important;
+        position: static;
+        flex-direction: row;
+        padding: 0;
+        box-shadow: none;
+        gap: 0.5rem;
     }
 
     /* Mobil elemek megjelenítése */

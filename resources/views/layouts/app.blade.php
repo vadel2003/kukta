@@ -83,11 +83,6 @@
     </button>
 
     <script>
-        // Hamburger menü
-        document.querySelector('.hamburger').addEventListener('click', function() {
-            document.querySelector('.header-right').classList.toggle('open');
-        });
-
         // Modal kezelő függvények
         function openModal(modalId) {
             document.getElementById(modalId).classList.add('active');
