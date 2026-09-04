@@ -815,7 +815,7 @@ header.scrolled .header-search {
     display: flex;
 }
 
-header.scrolled ~ main .search-bar {
+header.scrolled ~ main .recipes-section .search-bar {
     display: none;
 }
 
