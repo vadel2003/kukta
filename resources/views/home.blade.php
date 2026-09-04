@@ -21,7 +21,7 @@
             <div class="search-bar">
                 <form action="{{ route('home') }}" method="GET">
                     <div class="search-row">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Receptek keresése..." class="search-input">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Keresés..." class="search-input">
                         <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
                         <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők</button>
                         <button type="button" class="btn-sort" onclick="openModal('sortModal')"><i data-lucide="arrow-up-down"></i> Rendezés</button>
