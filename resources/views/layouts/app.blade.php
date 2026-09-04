@@ -304,7 +304,6 @@
         const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
         if (mobileMenuBtn && mobileMenuOverlay) {
             mobileMenuBtn.addEventListener('click', function() {
-                alert('Mobil menü gomb kattintás!');
                 mobileMenuOverlay.classList.toggle('open');
             });
 

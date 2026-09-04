@@ -1722,7 +1722,7 @@ header.scrolled ~ main .search-bar {
     }
 
     .mobile-menu-overlay.open {
-        right: 0;
+        right: 0 !important;
     }
 
     .mobile-menu {
