@@ -1696,7 +1696,7 @@ header.scrolled ~ main .recipes-section .search-bar {
         background-position: center center;
     }
     .hero-section::after {
-        height: 150px;
+        height: 100px;
         background: linear-gradient(to bottom,
             rgba(250, 246, 240, 0) 0%,
             rgba(250, 246, 240, 0.3) 50%,
@@ -1770,6 +1770,10 @@ header.scrolled ~ main .recipes-section .search-bar {
     /* Alsó kereső sáv elrejtése mobilon */
     .recipes-section .search-bar {
         display: none;
+    }
+
+    .recipes-section {
+        padding-top: 20px;
     }
 
     /* Kártyák egymás alatt, középen */
