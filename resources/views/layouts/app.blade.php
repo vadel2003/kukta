@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Kukta - @yield('title', 'Főoldal')</title>
-    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}?v={{ filemtime(public_path('images/favicon.svg')) }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -13,8 +13,8 @@
     <header>
         <div class="header-left">
             <a href="{{ route('home') }}">
-                <img src="{{ asset('images/kukta-logo.svg') }}" alt="Kukta" class="logo">
-                <img src="{{ asset('images/kukta-sapka.svg') }}" alt="Kukta" class="logo-mobile">
+                <img src="{{ asset('images/kukta-logo.svg') }}?v={{ filemtime(public_path('images/kukta-logo.svg')) }}" alt="Kukta" class="logo">
+                <img src="{{ asset('images/kukta-sapka.svg') }}?v={{ filemtime(public_path('images/kukta-sapka.svg')) }}" alt="Kukta" class="logo-mobile">
             </a>
         </div>
 
@@ -31,7 +31,7 @@
             @auth
                 <div class="dropdown desktop-user">
                     <div class="dropdown-trigger">
-                        <img src="{{ asset('images/profile_icon.svg') }}" alt="Profil" class="profile-icon">
+                        <img src="{{ asset('images/profile_icon.svg') }}?v={{ filemtime(public_path('images/profile_icon.svg')) }}" alt="Profil" class="profile-icon">
                         <span class="dropdown-arrow">▾</span>
                     </div>
                     <div class="dropdown-menu">
@@ -51,7 +51,7 @@
             @else
                 <div class="dropdown desktop-user">
                     <div class="dropdown-trigger" title="Bejelentkezés">
-                        <img src="{{ asset('images/profile_icon.svg') }}" alt="Bejelentkezés" class="profile-icon">
+                        <img src="{{ asset('images/profile_icon.svg') }}?v={{ filemtime(public_path('images/profile_icon.svg')) }}" alt="Bejelentkezés" class="profile-icon">
                         <span class="dropdown-arrow">▾</span>
                     </div>
                     <div class="dropdown-menu">
