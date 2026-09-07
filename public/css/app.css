@@ -88,6 +88,7 @@ header {
     align-items: center;
     cursor: pointer;
     gap: 4px;
+    user-select: none;
 }
 
 .profile-icon {
@@ -96,7 +97,7 @@ header {
 }
 
 .dropdown-arrow {
-    font-size: 0.7rem;
+    font-size: 0.9rem;
     color: var(--color-text);
 }
 
@@ -1535,11 +1536,6 @@ header.scrolled ~ main .recipes-section .search-bar {
     .hero-subtitle,
     .hero-image {
         display: none !important;
-    }
-
-    /* Bejelentkezés szöveg elrejtése mobilon, csak az avatar ikon látszódjon */
-    .login-link .login-text {
-        display: none;
     }
 
     /* Hamburger elrejtése mobilon (az új mobile-menu-btn rendszert használjuk) */

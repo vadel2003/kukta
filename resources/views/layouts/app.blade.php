@@ -30,7 +30,7 @@
             @auth
                 <div class="dropdown desktop-user">
                     <div class="dropdown-trigger">
-                        <img src="{{ asset('images/profile_icon.png') }}" alt="Profil" class="profile-icon">
+                        <img src="{{ asset('images/profile_icon.svg') }}" alt="Profil" class="profile-icon">
                         <span class="dropdown-arrow">▾</span>
                     </div>
                     <div class="dropdown-menu">
@@ -48,10 +48,16 @@
                     <i data-lucide="menu"></i>
                 </button>
             @else
-                <a href="{{ route('login') }}" class="login-link">
-                    <img src="{{ asset('images/profile_icon.png') }}" alt="Bejelentkezés" class="profile-icon mobile-login-icon">
-                    <span class="login-text">Bejelentkezés</span>
-                </a>
+                <div class="dropdown desktop-user">
+                    <div class="dropdown-trigger" title="Bejelentkezés">
+                        <img src="{{ asset('images/profile_icon.svg') }}" alt="Bejelentkezés" class="profile-icon">
+                        <span class="dropdown-arrow">▾</span>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="{{ route('login') }}">Bejelentkezés</a>
+                        <a href="{{ route('register') }}">Regisztráció</a>
+                    </div>
+                </div>
             @endauth
         </div>
 
