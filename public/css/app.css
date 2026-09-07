@@ -1783,3 +1783,200 @@ header.scrolled ~ main .recipes-section .search-bar {
         max-width: 400px;
     }
 }
+
+/* ===== 404 HIBAOLDAL ===== */
+.error-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 60vh;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+}
+
+/* --- Kukta (kuktafazék) CSS-rajz + gőz animáció --- */
+.kukta {
+    position: relative;
+    width: 220px;
+    height: 170px;
+    margin: 0 auto 1.5rem;
+}
+
+.kukta-lid {
+    position: absolute;
+    bottom: 82px;
+    left: 35px;
+    width: 150px;
+    height: 18px;
+    background: #a85a24;
+    border-radius: 9px;
+}
+
+.kukta-body {
+    position: absolute;
+    bottom: 0;
+    left: 45px;
+    width: 130px;
+    height: 85px;
+    background: #CD7230;
+    border-radius: 10px 10px 34px 34px;
+    box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.08);
+}
+
+.kukta-handle {
+    position: absolute;
+    bottom: 38px;
+    width: 34px;
+    height: 16px;
+    background: #a85a24;
+    border-radius: 8px;
+}
+
+.kukta-handle-l { left: 14px; }
+.kukta-handle-r { right: 14px; }
+
+.kukta-valve {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 24px;
+    background: #5a4638;
+    border-radius: 6px 6px 4px 4px;
+}
+
+/* Szomorkodó arc a kuktán */
+.kukta-eye {
+    position: absolute;
+    bottom: 22px;
+    width: 9px;
+    height: 11px;
+    background: #4a3424;
+    border-radius: 50%;
+}
+
+.kukta-eye-l { left: 38px; }
+.kukta-eye-r { right: 38px; }
+
+.kukta-mouth {
+    position: absolute;
+    bottom: 7px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 18px;
+    height: 9px;
+    border: 2.5px solid #4a3424;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+}
+
+/* Gőzpöffögés a szelep felett */
+.kukta-steam {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 46px;
+    pointer-events: none;
+}
+
+.kukta-puff {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(205, 114, 48, 0.6) 0%, rgba(205, 114, 48, 0) 70%);
+    opacity: 0;
+    animation: kuktaSteam 2.4s ease-out infinite;
+}
+
+.kukta-puff:nth-child(1) { margin-left: -16px; animation-delay: 0s; }
+.kukta-puff:nth-child(2) { margin-left: -2px; animation-delay: 0.8s; }
+.kukta-puff:nth-child(3) { margin-left: 12px; animation-delay: 1.6s; }
+
+@keyframes kuktaSteam {
+    0%   { transform: translateY(0) scale(0.4); opacity: 0; }
+    30%  { opacity: 0.85; }
+    100% { transform: translateY(-78px) scale(2); opacity: 0; }
+}
+
+/* --- Szövegek, gomb --- */
+.error-code {
+    margin: 0;
+    font-size: clamp(5rem, 12vw, 7.5rem);
+    font-weight: 800;
+    line-height: 1;
+    color: #CD7230;
+    letter-spacing: 0.02em;
+}
+
+.error-title {
+    margin: 0.75rem 0 0;
+    font-size: clamp(1.4rem, 4vw, 1.9rem);
+    color: var(--color-dark-brown);
+}
+
+.error-text {
+    margin: 0.6rem auto 0;
+    max-width: 480px;
+    font-size: 1.05rem;
+    color: var(--color-text-light);
+    line-height: 1.5;
+}
+
+.btn-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.8rem;
+    padding: 0.9rem 2rem;
+    background-color: #CD7230;
+    color: var(--color-white);
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(205, 114, 48, 0.35);
+    transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.btn-home:hover {
+    background-color: #a85a24;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(205, 114, 48, 0.4);
+}
+
+.btn-home svg {
+    width: 1.15em;
+    height: 1.15em;
+}
+
+.error-redirect {
+    margin: 1rem 0 0;
+    font-size: 0.95rem;
+    color: var(--color-text-light);
+}
+
+.error-redirect #error-countdown {
+    font-weight: 700;
+    color: #CD7230;
+}
+
+@media (max-width: 480px) {
+    .kukta {
+        transform: scale(0.85);
+    }
+
+    .error-text {
+        padding: 0 0.5rem;
+    }
+}
+
