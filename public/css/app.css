@@ -40,6 +40,9 @@ body {
     background-color: var(--color-bg);
     color: var(--color-text);
     line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 header {
@@ -147,6 +150,7 @@ main {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 1rem;
+    flex: 1;
 }
 
 /* Gombok */
@@ -305,21 +309,24 @@ button {
     z-index: 5;
     display: flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.4rem;
     background: #fff;
-    padding: 0.25rem 0.6rem;
-    border-radius: 20px;
+    padding: 0.5rem 0.9rem;
+    border-radius: 24px;
 }
 
 .btn-favorite-card {
     background: #fff;
     border: none;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     cursor: pointer;
     padding: 0;
     line-height: 1;
     transition: transform 0.2s;
-    color: var(--color-primary);
+    color: var(--color-favorite);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-favorite-card:hover {
@@ -328,7 +335,7 @@ button {
 
 .btn-favorite-card.favorited {
     background: #fff;
-    color: var(--color-primary);
+    color: var(--color-favorite);
 }
 
 .card-favorite-count {
@@ -336,7 +343,7 @@ button {
     top: 0.5rem;
     right: 0.5rem;
     font-size: 0.85rem;
-    color: var(--color-primary);
+    color: var(--color-b);
     font-weight: 600;
     background: #fff;
     padding: 0.25rem 0.6rem;
@@ -345,7 +352,7 @@ button {
 
 .favorite-badge {
     font-size: 0.85rem;
-    color: var(--color-primary);
+    color: var(--color-text);
     font-weight: 600;
 }
 
@@ -432,7 +439,7 @@ html {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    padding: 64px 40px;
+    padding: 64px 0;
     width: 100vw;
     margin-left: calc(-50vw + 50%);
     overflow: visible;
@@ -452,9 +459,9 @@ html {
 }
 
 .hero-container {
-    max-width: 1300px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 40px;
+    padding: 0 20px;
     display: flex;
     align-items: center;
     gap: 80px;
@@ -465,6 +472,7 @@ html {
     position: static;
     flex: 3;
     max-width: none;
+    padding-left: 1rem;
 }
 
 .hero-title {
@@ -734,10 +742,10 @@ html {
     z-index: 10;
     display: flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.4rem;
     background: #fff;
-    padding: 0.25rem 0.6rem;
-    border-radius: 20px;
+    padding: 0.5rem 0.9rem;
+    border-radius: 24px;
 }
 
 .btn-favorite-banner {
@@ -748,7 +756,10 @@ html {
     padding: 0;
     line-height: 1;
     transition: transform 0.2s;
-    color: var(--color-primary);
+    color: var(--color-favorite);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-favorite-banner:hover {
@@ -757,7 +768,7 @@ html {
 
 .btn-favorite-banner.favorited {
     background: #fff;
-    color: var(--color-primary);
+    color: var(--color-favorite);
 }
 
 /* Kedvenc szív kitöltése */
@@ -901,9 +912,9 @@ header.scrolled ~ main .recipes-section .search-bar {
 
 .btn-filters,
 .btn-sort {
-    background-color: var(--color-white);
-    color: var(--color-text);
-    border: 2px solid var(--color-border);
+    background: var(--color-white);
+    color: var(--color-primary);
+    border: 2px solid var(--color-search-border);
 }
 
 .btn-filters:hover,
@@ -1107,13 +1118,13 @@ header.scrolled ~ main .recipes-section .search-bar {
     display: block;
     margin: 2rem auto;
     padding: 0.8rem 2rem;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
-    color: var(--color-white);
-    border: 2px solid var(--color-primary-hover);
     border-radius: 4px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
+    background: var(--color-white);
+    color: var(--color-primary);
+    border: 2px solid var(--color-search-border);
     box-shadow: 0 4px 6px rgba(230, 126, 34, 0.3);
     transition: all 0.3s ease;
 }
