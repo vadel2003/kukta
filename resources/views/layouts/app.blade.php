@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Kukta - @yield('title', 'Főoldal')</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
@@ -78,6 +78,7 @@
                 </form>
             @else
                 <a href="{{ route('login') }}">Bejelentkezés</a>
+                <a href="{{ route('register') }}">Regisztráció</a>
             @endauth
         </nav>
     </div>
@@ -312,6 +313,17 @@
         // Mobil menü toggle
         const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
         const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+        const desktopUserTrigger = document.querySelector('header .desktop-user .dropdown-trigger');
+
+        // Az avatar gomb is nyitja/zárja a mobil menüt
+        if (desktopUserTrigger && mobileMenuOverlay) {
+            desktopUserTrigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                mobileMenuOverlay.classList.toggle('open');
+            });
+        }
+
         if (mobileMenuBtn && mobileMenuOverlay) {
             mobileMenuBtn.addEventListener('click', function() {
                 mobileMenuOverlay.classList.toggle('open');
@@ -321,7 +333,8 @@
             document.addEventListener('click', function(e) {
                 if (mobileMenuOverlay.classList.contains('open') &&
                     !mobileMenuOverlay.contains(e.target) &&
-                    !mobileMenuBtn.contains(e.target)) {
+                    !mobileMenuBtn.contains(e.target) &&
+                    !(desktopUserTrigger && desktopUserTrigger.contains(e.target))) {
                     mobileMenuOverlay.classList.remove('open');
                 }
             });

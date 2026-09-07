@@ -1543,14 +1543,19 @@ header.scrolled ~ main .recipes-section .search-bar {
 
     /* Desktop elemek elrejtése mobilon */
     .logo,
-    .desktop-user,
     .hero-subtitle,
     .hero-image {
         display: none !important;
     }
 
-    /* Hamburger elrejtése mobilon (az új mobile-menu-btn rendszert használjuk) */
-    .hamburger {
+    /* Hamburger elrejtése mobilon (az avatar veszi át a szerepét) */
+    .mobile-menu-btn {
+        display: none !important;
+    }
+
+    /* Hover-legördülő menü és nyíl rejtése mobilon (az overlay navigál) */
+    .dropdown-menu,
+    .dropdown-arrow {
         display: none !important;
     }
 
