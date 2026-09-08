@@ -324,16 +324,19 @@
             });
         }
 
+        // Hamburger gomb nyitja/zárja a mobil menüt (ha van ilyen elem)
         if (mobileMenuBtn && mobileMenuOverlay) {
             mobileMenuBtn.addEventListener('click', function() {
                 mobileMenuOverlay.classList.toggle('open');
             });
+        }
 
-            // Kattintás az overlay-n kívül bezárja a menüt
+        // Kattintás az overlay-n kívül bezárja a menüt (mindig)
+        if (mobileMenuOverlay) {
             document.addEventListener('click', function(e) {
                 if (mobileMenuOverlay.classList.contains('open') &&
                     !mobileMenuOverlay.contains(e.target) &&
-                    !mobileMenuBtn.contains(e.target) &&
+                    !(mobileMenuBtn && mobileMenuBtn.contains(e.target)) &&
                     !(desktopUserTrigger && desktopUserTrigger.contains(e.target))) {
                     mobileMenuOverlay.classList.remove('open');
                 }

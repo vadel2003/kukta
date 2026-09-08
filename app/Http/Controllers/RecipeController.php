@@ -36,12 +36,12 @@ class RecipeController extends Controller
             'steps' => ['nullable', 'array'],
             'steps.*' => ['nullable', 'string', 'max:255'],
             'ingredients' => ['required', 'array', 'min:1'],
-            'ingredients.*.id' => ['required', 'exists:ingredient,id'],
+            'ingredients.*.name' => ['required', 'string', 'max:255'],
             'ingredients.*.quantity' => ['required', 'numeric', 'min:0'],
             'ingredients.*.unit' => ['required', 'string', 'max:50'],
             'meal_times' => ['nullable', 'array'],
             'meal_times.*' => ['exists:meal_time,id'],
-            'food_types' => ['nullable', 'array'],
+            'food_types' => ['required', 'array', 'min:1'],
             'food_types.*' => ['exists:food_type,id'],
             'diet' => ['nullable', 'integer', 'exists:diet,id'],
             'allergens' => ['nullable', 'array'],
@@ -50,6 +50,9 @@ class RecipeController extends Controller
             'cuisines.*' => ['exists:cuisine,id'],
             'thumbnail_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
             'default_image' => ['nullable', 'string'],
+        ], [
+            'food_types.required' => 'Válassz legalább egy ételtípust!',
+            'food_types.min' => 'Válassz legalább egy ételtípust!',
         ]);
 
         // 1. Recept létrehozása
@@ -90,14 +93,17 @@ class RecipeController extends Controller
             }
         }
 
-        // 3. Alapanyagok feldolgozása
+        // 3. Alapanyagok feldolgozása (új alapanyag automatikusan létrejön)
         foreach ($validated['ingredients'] as $ingredient) {
-            if (!empty($ingredient['id'])) {
-                $recipe->ingredients()->attach($ingredient['id'], [
-                    'quantity' => $ingredient['quantity'],
-                    'unit' => $ingredient['unit'],
-                ]);
+            $name = trim($ingredient['name'] ?? '');
+            if ($name === '') {
+                continue;
             }
+            $ingredientModel = Ingredient::firstOrCreate(['name' => $name]);
+            $recipe->ingredients()->attach($ingredientModel->id, [
+                'quantity' => $ingredient['quantity'],
+                'unit' => $ingredient['unit'],
+            ]);
         }
 
         // 4. Kategóriák mentése
@@ -288,12 +294,12 @@ class RecipeController extends Controller
             'steps' => ['nullable', 'array'],
             'steps.*' => ['nullable', 'string', 'max:255'],
             'ingredients' => ['required', 'array', 'min:1'],
-            'ingredients.*.id' => ['required', 'exists:ingredient,id'],
+            'ingredients.*.name' => ['required', 'string', 'max:255'],
             'ingredients.*.quantity' => ['required', 'numeric', 'min:0'],
             'ingredients.*.unit' => ['required', 'string', 'max:50'],
             'meal_times' => ['nullable', 'array'],
             'meal_times.*' => ['exists:meal_time,id'],
-            'food_types' => ['nullable', 'array'],
+            'food_types' => ['required', 'array', 'min:1'],
             'food_types.*' => ['exists:food_type,id'],
             'diet' => ['nullable', 'integer', 'exists:diet,id'],
             'allergens' => ['nullable', 'array'],
@@ -302,6 +308,9 @@ class RecipeController extends Controller
             'cuisines.*' => ['exists:cuisine,id'],
             'thumbnail_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
             'default_image' => ['nullable', 'string'],
+        ], [
+            'food_types.required' => 'Válassz legalább egy ételtípust!',
+            'food_types.min' => 'Válassz legalább egy ételtípust!',
         ]);
 
         // 1. Kép frissítése
@@ -343,12 +352,15 @@ class RecipeController extends Controller
         // 4. Alapanyagok frissítése (sync törli a régieket és beszúrja az újakat)
         $ingredientData = [];
         foreach ($validated['ingredients'] as $ingredient) {
-            if (!empty($ingredient['id'])) {
-                $ingredientData[$ingredient['id']] = [
-                    'quantity' => $ingredient['quantity'],
-                    'unit' => $ingredient['unit'],
-                ];
+            $name = trim($ingredient['name'] ?? '');
+            if ($name === '') {
+                continue;
             }
+            $ingredientModel = Ingredient::firstOrCreate(['name' => $name]);
+            $ingredientData[$ingredientModel->id] = [
+                'quantity' => $ingredient['quantity'],
+                'unit' => $ingredient['unit'],
+            ];
         }
         $recipe->ingredients()->sync($ingredientData);
 

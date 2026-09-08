@@ -20,6 +20,7 @@
             foreach ($recipe->ingredients as $index => $ingredient) {
                 $ingredientValues[$index] = [
                     'id' => $ingredient->id,
+                    'name' => $ingredient->name,
                     'quantity' => $ingredient->pivot->quantity,
                     'unit' => $ingredient->pivot->unit,
                 ];
@@ -105,6 +106,7 @@
                         @error('steps.' . $i)
                             <span style="color: red;">{{ $message }}</span>
                         @enderror
+                        <button type="button" class="remove-step" title="Lépés eltávolítása">×</button>
                     </div>
                 @endfor
             </div>
@@ -118,15 +120,8 @@
             <label>Alapanyagok</label>
             <div id="ingredients">
                 @for ($i = 0; $i < 5; $i++)
-                    <div>
-                        <select name="ingredients[{{ $i }}][id]">
-                            <option value="">-- Válassz alapanyagot --</option>
-                            @foreach ($ingredients as $ingredient)
-                                <option value="{{ $ingredient->id }}" {{ old('ingredients.' . $i . '.id', $ingredientValues[$i]['id'] ?? '') == $ingredient->id ? 'selected' : '' }}>
-                                    {{ $ingredient->name }}
-                                </option>
-                            @endforeach
-                        </select>
+                    <div class="ingredient-item">
+                        <input type="text" name="ingredients[{{ $i }}][name]" list="ingredient-options" value="{{ old('ingredients.' . $i . '.name', $ingredientValues[$i]['name'] ?? '') }}" placeholder="Alapanyag neve">
 
                         <input type="number" name="ingredients[{{ $i }}][quantity]" step="0.1" min="0" placeholder="Mennyiség" value="{{ old('ingredients.' . $i . '.quantity', $ingredientValues[$i]['quantity'] ?? '') }}">
 
@@ -144,7 +139,9 @@
                             <option value="ízlés szerint" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'ízlés szerint' ? 'selected' : '' }}>ízlés szerint</option>
                         </select>
 
-                        @error('ingredients.' . $i . '.id')
+                        <button type="button" class="remove-ingredient" title="Alapanyag eltávolítása">×</button>
+
+                        @error('ingredients.' . $i . '.name')
                             <span style="color: red;">{{ $message }}</span>
                         @enderror
                         @error('ingredients.' . $i . '.quantity')
@@ -156,6 +153,15 @@
                     </div>
                 @endfor
             </div>
+
+            <datalist id="ingredient-options">
+                @foreach ($ingredients as $ingredient)
+                    <option value="{{ $ingredient->name }}"></option>
+                @endforeach
+            </datalist>
+
+            <button type="button" id="add-ingredient">+ Alapanyag hozzáadása</button>
+
             @error('ingredients')
                 <span style="color: red;">{{ $message }}</span>
             @enderror
@@ -179,7 +185,7 @@
             </div>
 
             <div>
-                <h3>Étel típusa</h3>
+                <h3>Étel típusa <span style="color: red;">*</span></h3>
                 @foreach ($foodTypes as $foodType)
                     <label>
                         <input type="checkbox" name="food_types[]" value="{{ $foodType->id }}"
@@ -244,15 +250,10 @@
             const steps = container.querySelectorAll('.step-item');
             const lastStep = steps[steps.length - 1];
             const newStep = lastStep.cloneNode(true);
-            const newIndex = steps.length;
-
-            // Címke frissítése
-            newStep.querySelector('label').textContent = (newIndex + 1) + '. lépés';
 
             // Input érték törlése
             const input = newStep.querySelector('input');
             input.value = '';
-            input.placeholder = 'Add meg a(z) ' + (newIndex + 1) + '. lépést';
 
             // Hibaüzenet törlése (ha volt előzőleg)
             const errorSpan = newStep.querySelector('span');
@@ -261,6 +262,62 @@
             }
 
             container.appendChild(newStep);
+            relabelSteps();
         });
+
+        // Lépés sor eltávolítása
+        document.getElementById('steps-container').addEventListener('click', function(e) {
+            const btn = e.target.closest('.remove-step');
+            if (!btn) return;
+            const rows = this.querySelectorAll('.step-item');
+            if (rows.length <= 1) return;
+            btn.closest('.step-item').remove();
+            relabelSteps();
+        });
+
+        // Lépések címkéinek és placeholderjeinek újraszámozása
+        function relabelSteps() {
+            document.querySelectorAll('#steps-container .step-item').forEach((row, index) => {
+                row.querySelector('label').textContent = (index + 1) + '. lépés';
+                row.querySelector('input').placeholder = 'Add meg a(z) ' + (index + 1) + '. lépést';
+            });
+        }
+
+        // Alapanyag sor hozzáadása
+        document.getElementById('add-ingredient').addEventListener('click', function() {
+            const container = document.getElementById('ingredients');
+            const rows = container.querySelectorAll('.ingredient-item');
+            const lastRow = rows[rows.length - 1];
+            const newRow = lastRow.cloneNode(true);
+
+            newRow.querySelector('input[name*="[name]"]').value = '';
+            newRow.querySelector('input[name*="[quantity]"]').value = '';
+            newRow.querySelector('select[name*="[unit]"]').value = '';
+
+            newRow.querySelectorAll('span').forEach(s => s.remove());
+
+            container.appendChild(newRow);
+            reindexIngredients();
+        });
+
+        // Alapanyag sor eltávolítása
+        document.getElementById('ingredients').addEventListener('click', function(e) {
+            const btn = e.target.closest('.remove-ingredient');
+            if (!btn) return;
+            const rows = this.querySelectorAll('.ingredient-item');
+            if (rows.length <= 1) return;
+            btn.closest('.ingredient-item').remove();
+            reindexIngredients();
+        });
+
+        // Alapanyag sorok újraindexelése
+        function reindexIngredients() {
+            const rows = document.querySelectorAll('#ingredients .ingredient-item');
+            rows.forEach((row, index) => {
+                row.querySelector('input[name*="[name]"]').name = 'ingredients[' + index + '][name]';
+                row.querySelector('input[name*="[quantity]"]').name = 'ingredients[' + index + '][quantity]';
+                row.querySelector('select[name*="[unit]"]').name = 'ingredients[' + index + '][unit]';
+            });
+        }
     </script>
 @endsection
