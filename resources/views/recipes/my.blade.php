@@ -18,7 +18,7 @@
                     <h2>{{ $recipe->title }}</h2>
                     <p class="recipe-description">{{ Str::limit($recipe->description, 100) }}</p>
                     <p><strong>Létrehozva:</strong> {{ $recipe->creation_date->format('Y-m-d') }}</p>
-                    <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-view">Megtekintés</a>
+                    <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-view">Részletek</a>
                     <a href="{{ route('recipes.edit', $recipe->id) }}" class="btn-edit">Szerkesztés</a>
                     <form action="{{ route('recipes.destroy', $recipe->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Biztosan törlöd ezt a receptet?')">
                         @csrf

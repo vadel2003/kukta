@@ -28,24 +28,5 @@
         <a href="{{ route('home') }}" class="btn-home">
             <i data-lucide="home"></i> Vissza a főoldalra
         </a>
-        <p class="error-redirect">Visszairányítunk a főoldalra <span id="error-countdown">6</span> másodperc múlva…</p>
     </div>
-
-    <script>
-        (function () {
-            const target = @json(route('home'));
-            const el = document.getElementById('error-countdown');
-            const initial = 6;
-            let left = initial;
-            const timer = setInterval(function () {
-                left--;
-                if (left <= 0) {
-                    clearInterval(timer);
-                    window.location.href = target;
-                    return;
-                }
-                if (el) el.textContent = left;
-            }, 1000);
-        })();
-    </script>
 @endsection

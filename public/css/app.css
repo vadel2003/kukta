@@ -46,10 +46,10 @@ body {
 }
 
 header {
-    background-color: var(--color-white);
+    background-color: var(--color-primary);
     padding: 0.5rem 2rem;
-    border-bottom: 1.5px solid var(--color-primary);
-    box-shadow: 0 4px 12px rgba(70,50,35,0.10);
+    border-bottom: 1.5px solid var(--color-primary-hover);
+    box-shadow: 0 4px 12px rgba(70,50,35,0.18);
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -72,12 +72,12 @@ header {
 
 .header-right a {
     text-decoration: none;
-    color: var(--color-primary);
+    color: var(--color-white);
     font-weight: 500;
 }
 
 .header-right a:hover {
-    color: var(--color-primary-hover);
+    opacity: 0.8;
 }
 
 /* Dropdown menü */
@@ -101,7 +101,9 @@ header {
 
 .dropdown-arrow {
     font-size: 0.9rem;
-    color: var(--color-text);
+    color: var(--color-white);
+    display: inline-block;
+    transform: scale(2.2);
 }
 
 .dropdown-menu {
@@ -143,6 +145,7 @@ header {
     display: none;
     font-size: 1.5rem;
     cursor: pointer;
+    color: var(--color-white);
 }
 
 /* Fő tartalom */
@@ -179,7 +182,7 @@ button {
     border-radius: 4px;
     padding: 20px;
     width: 350px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -200,8 +203,8 @@ button {
     height: 200px;
     object-fit: cover;
     border-radius: 4px;
-    border: 1px solid #ccc;
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.35);
+    border: 1.5px solid #ccc;
+    box-shadow: inset 0 0 12px rgba(0,0,0,0.5), inset 0 0 30px rgba(0,0,0,0.25);
 }
 
 .recipe-detail-image {
@@ -210,8 +213,8 @@ button {
     object-fit: cover;
     border-radius: 4px;
     margin-bottom: 1rem;
-    border: 1px solid #ccc;
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.35);
+    border: 1.5px solid #ccc;
+    box-shadow: inset 0 0 12px rgba(0,0,0,0.5), inset 0 0 30px rgba(0,0,0,0.25);
 }
 
 .recipe-author {
@@ -224,18 +227,57 @@ button {
     margin: 10px 0;
 }
 
+/* Kártya alsó gombsor: Részletek + fakanál egymás mellett */
+.card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+}
+
 .btn-view {
     display: block;
-    padding: 12px 24px;
-    background: var(--color-primary);
-    color: var(--color-white);
+    padding: 8px 24px;
+    background: var(--color-white);
+    color: var(--color-primary);
     font-weight: 600;
     text-decoration: none;
-    border: 2px solid var(--color-search-border);
+    border: 2px solid var(--color-primary);
     border-radius: 4px;
     text-align: center;
     margin-top: auto;
     transition: all 0.3s ease;
+}
+
+.card-actions .btn-view {
+    flex: 1;
+    margin-top: 0;
+}
+
+.btn-spoon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    padding: 8px 16px;
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--color-white);
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-spoon:hover {
+    background: var(--color-primary-hover);
+    color: var(--color-white);
+}
+
+.btn-spoon svg {
+    width: 20px;
+    height: 20px;
 }
 
 .btn-view:hover {
@@ -559,8 +601,8 @@ html {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border: 1px solid #ccc;
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.35);
+    border: 1.5px solid #ccc;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5), inset 0 0 50px rgba(0,0,0,0.25);
 }
 
 .banner-overlay {
@@ -596,6 +638,7 @@ html {
     gap: 2rem;
     margin-bottom: 1rem;
     flex-wrap: wrap;
+    padding-left: 0.4rem;
 }
 
 .meta-author {
@@ -628,6 +671,7 @@ html {
     font-size: 1.1rem;
     line-height: 1.8;
     color: var(--color-text);
+    padding-left: 0.4rem;
 }
 
 /* Felső szekció: kép balra, hozzávalók jobbra */
@@ -818,6 +862,7 @@ html {
 .header-search {
     display: none;
     flex: 1;
+    min-width: 0;
     max-width: 500px;
     gap: 0.5rem;
     margin: 0 1rem;
@@ -841,6 +886,19 @@ header.scrolled ~ main .recipes-section .search-bar {
     padding: 0.4rem 0.75rem;
     font-size: 1rem;
     border: 2px solid transparent;
+}
+
+.header-search .btn-search {
+    background: var(--color-white);
+    color: var(--color-primary);
+    border-color: var(--color-white);
+    box-shadow: none;
+}
+
+.header-search .btn-search:hover {
+    background: var(--color-bg-hover);
+    box-shadow: none;
+    transform: none;
 }
 
 .search-row {
@@ -1125,13 +1183,12 @@ header.scrolled ~ main .recipes-section .search-bar {
     background: var(--color-white);
     color: var(--color-primary);
     border: 2px solid var(--color-search-border);
-    box-shadow: 0 4px 6px rgba(230, 126, 34, 0.3);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.08), 0 10px 20px rgba(0,0,0,0.12);
     transition: all 0.3s ease;
 }
 
 .btn-load-more:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(230, 126, 34, 0.4);
 }
 
 .btn-load-more:disabled {
@@ -1145,7 +1202,7 @@ header.scrolled ~ main .recipes-section .search-bar {
     color: #fff;
     padding: 1.5rem 2rem 0.5rem;
     margin-top: 2rem;
-    box-shadow: 0 -4px 12px rgba(70,50,35,0.10);
+    box-shadow: 0 -4px 12px rgba(70,50,35,0.18);
 }
 
 .footer-container {
@@ -1259,6 +1316,14 @@ header.scrolled ~ main .recipes-section .search-bar {
     align-items: center;
     gap: 10px;
     margin: 10px 0 6px 0;
+    padding-left: 0.4rem;
+    text-decoration: none;
+    cursor: pointer;
+    width: fit-content;
+}
+
+#reviews {
+    scroll-margin-top: 100px;
 }
 
 .star-rating-section .stars {
@@ -1584,7 +1649,7 @@ header.scrolled ~ main .recipes-section .search-bar {
         border: none;
         padding: 0.5rem;
         cursor: pointer;
-        color: var(--color-primary);
+        color: var(--color-white);
     }
 
     .mobile-menu-btn svg {
@@ -1973,17 +2038,6 @@ header.scrolled ~ main .recipes-section .search-bar {
 .btn-home svg {
     width: 1.15em;
     height: 1.15em;
-}
-
-.error-redirect {
-    margin: 1rem 0 0;
-    font-size: 0.95rem;
-    color: var(--color-text-light);
-}
-
-.error-redirect #error-countdown {
-    font-weight: 700;
-    color: #CD7230;
 }
 
 @media (max-width: 480px) {

@@ -36,11 +36,11 @@
                 </div>
 
                 {{-- ⭐ Csillagos értékelés szekció --}}
-                <div class="star-rating-section">
+                <a href="#reviews" class="star-rating-section">
                     <span class="stars">{{ str_repeat('★', round($averageScore ?? 0)) }}{{ str_repeat('☆', 5 - round($averageScore ?? 0)) }}</span>
                     <span class="rating-number">{{ number_format($averageScore ?? 0, 1) }}</span>
                     <span class="review-count">({{ $scoreCount }} értékelés)</span>
-                </div>
+                </a>
 
                 <p class="recipe-description">{{ $recipe->description }}</p>
             </div>
@@ -80,7 +80,7 @@
     </section>
 
     <!-- Értékelések szekció -->
-    <section class="content-card reviews-card">
+    <section class="content-card reviews-card" id="reviews">
         <h2 class="content-title">
             Értékelések
         </h2>
