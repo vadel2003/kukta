@@ -33,6 +33,7 @@ Route::get('/kedvenc-receptek', [RecipeController::class, 'favorites'])->name('r
 Route::post('/recept/{id}/favorite', [RecipeController::class, 'toggleFavorite'])->name('recipes.favorite');
 Route::post('/recept/{id}/score', [RecipeController::class, 'storeScore'])->name('recipes.score');
 Route::get('/recept/{id}', [RecipeController::class, 'show'])->name('recipes.show');
+Route::get('/recept/{id}/asszisztens', [RecipeController::class, 'assistant'])->name('recipes.assistant');
 Route::get('/recept/{id}/szerkesztes', [RecipeController::class, 'edit'])->name('recipes.edit');
 Route::put('/recept/{id}', [RecipeController::class, 'update'])->name('recipes.update');
 Route::delete('/recept/{id}', [RecipeController::class, 'destroy'])->name('recipes.destroy');

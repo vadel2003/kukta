@@ -28,12 +28,12 @@
         <p class="recipe-description">{{ Str::limit($recipe->description, 100) }}</p>
         <div class="card-actions">
             <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-view">Részletek</a>
-            <button type="button" class="btn-spoon" title="Fakanál" aria-label="Fakanál">
+            <a href="{{ route('recipes.assistant', $recipe->id) }}" class="btn-spoon" title="Kukta asszisztens" aria-label="Kukta asszisztens">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <ellipse cx="8" cy="6.5" rx="4" ry="4.5"></ellipse>
                     <path d="M11.5 9.5 20 18"></path>
                 </svg>
-            </button>
+            </a>
         </div>
 
         {{-- Hover tooltip: a recept teljes leírása --}}

@@ -218,6 +218,21 @@ class RecipeController extends Controller
         return view('recipes.show', compact('recipe', 'isFavorited', 'favoriteCount', 'averageScore', 'scoreCount', 'userScore', 'distributionPercentages'));
     }
 
+    public function assistant($id)
+    {
+        $recipe = Recipe::with([
+            'steps' => fn ($q) => $q->orderBy('order'),
+            'ingredients',
+        ])->findOrFail($id);
+
+        $averageScore = round($recipe->averageScore() ?? 0, 1);
+        $userScore = Auth::check()
+            ? $recipe->scores()->where('user_id', Auth::id())->first()
+            : null;
+
+        return view('recipes.assistant', compact('recipe', 'averageScore', 'userScore'));
+    }
+
     public function storeScore(Request $request, $id)
     {
         $request->validate([

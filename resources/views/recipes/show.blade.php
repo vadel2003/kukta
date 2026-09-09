@@ -43,6 +43,7 @@
                 </a>
 
                 <p class="recipe-description">{{ $recipe->description }}</p>
+                <a href="{{ route('recipes.assistant', $recipe->id) }}" class="btn-cook">🍳 Elkészítem</a>
             </div>
         </div>
 
