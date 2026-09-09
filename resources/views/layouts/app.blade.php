@@ -7,7 +7,7 @@
     <title>Kukta - @yield('title', 'Főoldal')</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}?v={{ filemtime(public_path('images/favicon.svg')) }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="{{ asset('js/lucide.min.js') }}?v={{ filemtime(public_path('js/lucide.min.js')) }}"></script>
 </head>
 <body>
     <header>
@@ -112,7 +112,11 @@
 
         // Scroll figyelés - kereső sáv megjelenítése header-ben
         // Egyszer, betöltéskor mérjük le a search-bar pozícióját
-        const searchBar = document.querySelector('.recipes-section .search-bar');
+        // (mobilon a hero-ban lévő, desktopon a recipes-section-beli keresősáv a viszonyítási pont,
+        // attól függően, hogy éppen melyik látszik)
+        const desktopSearchBar = document.querySelector('.recipes-section .search-bar');
+        const mobileSearchBar = document.querySelector('.mobile-search-sticky .search-bar');
+        const searchBar = (mobileSearchBar && mobileSearchBar.offsetHeight > 0) ? mobileSearchBar : desktopSearchBar;
         const header = document.querySelector('header');
         if (searchBar && header) {
             const searchBarOffset = searchBar.getBoundingClientRect().top + window.scrollY;
@@ -305,7 +309,7 @@
                 btn.classList.toggle('favorited', data.isFavorited);
                 if (badge) badge.textContent = data.favoriteCount;
                 btn.title = data.isFavorited ? 'Kedvenc törlése' : 'Kedvencnek jelölöm';
-                lucide.createIcons();
+                if (window.lucide) lucide.createIcons();
             })
             .catch(error => console.error('Hiba:', error));
         });
@@ -344,7 +348,7 @@
         }
 
         // Lucide ikonok inicializálása
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
     </script>
 </body>
 </html>

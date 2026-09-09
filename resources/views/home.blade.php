@@ -9,7 +9,6 @@
             <div class="hero-text">
                 <h1 class="hero-title">Tapasztald meg<br>az <span class="hero-highlight">ételkészítés</span> új élményét!</h1>
                 <p class="hero-subtitle">Fedezd fel receptjeinket és főzz otthon, mint egy profi!</p>
-                <a href="#recipes" class="btn-hero-mobile">Receptek</a>
             </div>
             <div class="hero-image">
                 <img src="{{ asset('images/hero-food-javitott.png') }}" alt="Ételkép">
