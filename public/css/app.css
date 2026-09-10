@@ -48,7 +48,7 @@ body {
 header {
     background-color: var(--color-primary);
     padding: 0.5rem 2rem;
-    border-bottom: 1.5px solid rgba(0, 0, 0, 0.12);
+    border-bottom: 2px solid #c46b1d;
     box-shadow: 0 4px 12px rgba(70,50,35,0.18);
     display: flex;
     flex-wrap: wrap;
@@ -934,17 +934,19 @@ header.scrolled ~ main .recipes-section .search-bar {
 }
 
 .header-search .btn-search {
-    background: var(--color-white);
-    color: var(--color-primary);
-    border-color: var(--color-white);
-    box-shadow: none;
+    background: #6b3e1a;
+    color: var(--color-white);
+    border-color: #6b3e1a;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
 
 .header-search .btn-search:hover {
-    background: var(--color-bg-hover);
-    box-shadow: none;
+    background: #55300f;
+    border-color: #55300f;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
     transform: none;
 }
+
 
 /* Keskenyebb asztali/tablet nézetben (pl. kisebb laptop) a feliratok eltűnnek,
    csak az ikonok maradnak, hogy a keresősáv ne csorduljon túl a headeren */
@@ -1257,7 +1259,7 @@ header.scrolled ~ main .recipes-section .search-bar {
     background: var(--color-white);
     color: var(--color-primary);
     border: 2px solid var(--color-search-border);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.08), 0 10px 20px rgba(0,0,0,0.12);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
     transition: all 0.3s ease;
 }
 
