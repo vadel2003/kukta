@@ -10,7 +10,10 @@
         $stepValues = [];
         if ($isEdit) {
             foreach ($recipe->steps->sortBy('order') as $step) {
-                $stepValues[] = $step->description;
+                $stepValues[] = [
+                    'description' => $step->description,
+                    'step_category_id' => $step->step_category_id,
+                ];
             }
         }
 
@@ -102,8 +105,14 @@
                 @for ($i = 0; $i < $stepCount; $i++)
                     <div class="step-item">
                         <label>{{ $i + 1 }}. lépés</label>
-                        <input type="text" name="steps[]" value="{{ old('steps.' . $i, $stepValues[$i] ?? '') }}" placeholder="Add meg a(z) {{ $i + 1 }}. lépést">
-                        @error('steps.' . $i)
+                        <input type="text" name="steps[{{ $i }}][description]" value="{{ old('steps.' . $i . '.description', $stepValues[$i]['description'] ?? '') }}" placeholder="Add meg a(z) {{ $i + 1 }}. lépést">
+                        <select name="steps[{{ $i }}][step_category_id]">
+                            <option value="">-- Kategória --</option>
+                            @foreach ($stepCategories as $category)
+                                <option value="{{ $category->id }}" {{ old('steps.' . $i . '.step_category_id', $stepValues[$i]['step_category_id'] ?? '') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('steps.' . $i . '.description')
                             <span style="color: red;">{{ $message }}</span>
                         @enderror
                         <button type="button" class="remove-step" title="Lépés eltávolítása">×</button>
@@ -251,15 +260,14 @@
             const lastStep = steps[steps.length - 1];
             const newStep = lastStep.cloneNode(true);
 
-            // Input érték törlése
+            // Input és select érték törlése
             const input = newStep.querySelector('input');
             input.value = '';
+            const select = newStep.querySelector('select');
+            if (select) select.value = '';
 
             // Hibaüzenet törlése (ha volt előzőleg)
-            const errorSpan = newStep.querySelector('span');
-            if (errorSpan) {
-                errorSpan.remove();
-            }
+            newStep.querySelectorAll('span').forEach(s => s.remove());
 
             container.appendChild(newStep);
             relabelSteps();
@@ -275,11 +283,15 @@
             relabelSteps();
         });
 
-        // Lépések címkéinek és placeholderjeinek újraszámozása
+        // Lépések címkéinek és neveinek újraszámozása
         function relabelSteps() {
             document.querySelectorAll('#steps-container .step-item').forEach((row, index) => {
                 row.querySelector('label').textContent = (index + 1) + '. lépés';
-                row.querySelector('input').placeholder = 'Add meg a(z) ' + (index + 1) + '. lépést';
+                const input = row.querySelector('input');
+                input.name = 'steps[' + index + '][description]';
+                input.placeholder = 'Add meg a(z) ' + (index + 1) + '. lépést';
+                const select = row.querySelector('select');
+                if (select) select.name = 'steps[' + index + '][step_category_id]';
             });
         }
 

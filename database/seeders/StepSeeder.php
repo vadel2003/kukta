@@ -123,6 +123,7 @@ class StepSeeder extends Seeder
                 $records[] = [
                     'description' => $description,
                     'recipe_id' => $recipeId,
+                    'step_category_id' => $this->guessCategoryId($description),
                     'order' => $order + 1,
                 ];
             }
@@ -131,5 +132,26 @@ class StepSeeder extends Seeder
         foreach (array_chunk($records, 100) as $chunk) {
             DB::table('step')->insert($chunk);
         }
+    }
+
+    private function guessCategoryId(string $description): ?int
+    {
+        $categories = DB::table('step_category')->pluck('id', 'name');
+        $d = mb_strtolower($description, 'UTF-8');
+
+        if (preg_match('/tálal|tányér|köret|kenyérrel|nokedli|tarhonya/u', $d)) {
+            return $categories['Tálalás'] ?? null;
+        }
+        if (preg_match('/sütő|tepsi|°C/u', $d)) {
+            return $categories['Sütés'] ?? null;
+        }
+        if (preg_match('/főz|forral|párol|pirít|dinsztel|lassú tűz|felöntjük|habará|serpenyő|sütjük/u', $d)) {
+            return $categories['Főzés'] ?? null;
+        }
+        if (preg_match('/megmossuk|vágjuk|apró|kocká|hámoz|tisztít|szeletel|darabol|aprít|felfuttat|szitál|dagaszt|keleszt|nyújt|felver/u', $d)) {
+            return $categories['Előkészítés'] ?? null;
+        }
+
+        return $categories['Elkészítés'] ?? null;
     }
 }

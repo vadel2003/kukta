@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Ingredient;
 use App\Models\Recipe;
 use App\Models\Step;
+use App\Models\StepCategory;
 use App\Models\MealTime;
 use App\Models\FoodType;
 use App\Models\Diet;
@@ -25,7 +26,8 @@ class RecipeController extends Controller
         $diets = Diet::orderBy('id')->get();
         $allergens = Allergen::orderBy('id')->get();
         $cuisines = Cuisine::orderBy('id')->get();
-        return view('recipes.create', compact('ingredients', 'mealTimes', 'foodTypes', 'diets', 'allergens', 'cuisines'));
+        $stepCategories = StepCategory::orderBy('id')->get();
+        return view('recipes.create', compact('ingredients', 'mealTimes', 'foodTypes', 'diets', 'allergens', 'cuisines', 'stepCategories'));
     }
 
     public function store(Request $request)
@@ -34,7 +36,8 @@ class RecipeController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'steps' => ['nullable', 'array'],
-            'steps.*' => ['nullable', 'string', 'max:255'],
+            'steps.*.description' => ['nullable', 'string', 'max:255'],
+            'steps.*.step_category_id' => ['nullable', 'integer', 'exists:step_category,id'],
             'ingredients' => ['required', 'array', 'min:1'],
             'ingredients.*.name' => ['required', 'string', 'max:255'],
             'ingredients.*.quantity' => ['required', 'numeric', 'min:0'],
@@ -81,15 +84,18 @@ class RecipeController extends Controller
         // 2. Lépések feldolgozása (csak a nem üreseket menti)
         if (!empty($validated['steps'])) {
             $stepNumber = 1;
-            foreach ($validated['steps'] as $stepDescription) {
-                if (!empty($stepDescription)) {
-                    Step::create([
-                        'description' => $stepDescription,
-                        'recipe_id' => $recipe->id,
-                        'order' => $stepNumber,
-                    ]);
-                    $stepNumber++;
+            foreach ($validated['steps'] as $stepData) {
+                $description = trim($stepData['description'] ?? '');
+                if ($description === '') {
+                    continue;
                 }
+                Step::create([
+                    'description' => $description,
+                    'step_category_id' => $stepData['step_category_id'] ?? null,
+                    'recipe_id' => $recipe->id,
+                    'order' => $stepNumber,
+                ]);
+                $stepNumber++;
             }
         }
 
@@ -295,8 +301,9 @@ class RecipeController extends Controller
         $diets = Diet::orderBy('id')->get();
         $allergens = Allergen::orderBy('id')->get();
         $cuisines = Cuisine::orderBy('id')->get();
+        $stepCategories = StepCategory::orderBy('id')->get();
 
-        return view('recipes.create', compact('recipe', 'ingredients', 'mealTimes', 'foodTypes', 'diets', 'allergens', 'cuisines'));
+        return view('recipes.create', compact('recipe', 'ingredients', 'mealTimes', 'foodTypes', 'diets', 'allergens', 'cuisines', 'stepCategories'));
     }
 
     public function update(Request $request, $id)
@@ -307,7 +314,8 @@ class RecipeController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'steps' => ['nullable', 'array'],
-            'steps.*' => ['nullable', 'string', 'max:255'],
+            'steps.*.description' => ['nullable', 'string', 'max:255'],
+            'steps.*.step_category_id' => ['nullable', 'integer', 'exists:step_category,id'],
             'ingredients' => ['required', 'array', 'min:1'],
             'ingredients.*.name' => ['required', 'string', 'max:255'],
             'ingredients.*.quantity' => ['required', 'numeric', 'min:0'],
@@ -352,15 +360,18 @@ class RecipeController extends Controller
 
         if (!empty($validated['steps'])) {
             $stepNumber = 1;
-            foreach ($validated['steps'] as $stepDescription) {
-                if (!empty($stepDescription)) {
-                    Step::create([
-                        'description' => $stepDescription,
-                        'recipe_id' => $recipe->id,
-                        'order' => $stepNumber,
-                    ]);
-                    $stepNumber++;
+            foreach ($validated['steps'] as $stepData) {
+                $description = trim($stepData['description'] ?? '');
+                if ($description === '') {
+                    continue;
                 }
+                Step::create([
+                    'description' => $description,
+                    'step_category_id' => $stepData['step_category_id'] ?? null,
+                    'recipe_id' => $recipe->id,
+                    'order' => $stepNumber,
+                ]);
+                $stepNumber++;
             }
         }
 

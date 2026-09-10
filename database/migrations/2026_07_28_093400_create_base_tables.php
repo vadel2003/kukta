@@ -113,14 +113,23 @@ return new class extends Migration
             $table->float('fat');
         });
 
+        // Step category table
+        Schema::create('step_category', function (Blueprint $table) {
+            $table->id()->autoIncrement()->primary();
+            $table->string('name', 50);
+            $table->string('gif_filename', 255)->nullable();
+        });
+
         // Step table
         Schema::create('step', function (Blueprint $table) {
             $table->id()->autoIncrement()->primary();
             $table->string('description', 1000);
             $table->unsignedBigInteger('recipe_id');
+            $table->unsignedBigInteger('step_category_id')->nullable();
             $table->integer('order');
 
             $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
+            $table->foreign('step_category_id')->references('id')->on('step_category')->onDelete('SET NULL')->onUpdate('RESTRICT');
         });
 
         // Unique constraint for step
@@ -276,6 +285,7 @@ return new class extends Migration
         Schema::dropIfExists('recipe');
         Schema::dropIfExists('ingredient');
         Schema::dropIfExists('step');
+        Schema::dropIfExists('step_category');
         Schema::dropIfExists('ingredient_recipe');
         Schema::dropIfExists('favorites');
         Schema::dropIfExists('score');

@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             AllergenSeeder::class,
             CuisineSeeder::class,
             RecipeSeeder::class,
+            StepCategorySeeder::class,
             StepSeeder::class,
             IngredientRecipeSeeder::class,
             FavoriteSeeder::class,
