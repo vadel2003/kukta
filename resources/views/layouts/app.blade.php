@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
     <script src="{{ asset('js/lucide.min.js') }}?v={{ filemtime(public_path('js/lucide.min.js')) }}"></script>
 </head>
-<body>
+<body class="@yield('bodyClass')">
     <header>
         <div class="header-left">
             <a href="{{ route('home') }}">
@@ -19,7 +19,9 @@
         </div>
 
         <form action="{{ route('home') }}" method="GET" class="header-search">
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Keresés..." class="search-input">
+            <div class="search-input-wrap">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Keresés..." class="search-input">
+            </div>
             <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
             <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők</button>
             <button type="button" class="btn-sort" onclick="openModal('sortModal')"><i data-lucide="arrow-up-down"></i> Rendezés</button>

@@ -22,8 +22,8 @@
         </div>
 
         <p class="error-code">404</p>
-        <h1 class="error-title">Hoppá! Ez a kukta elpárolgott.</h1>
-        <p class="error-text">Az oldal, amit keresel, nem található. Lehet, hogy kifutott, elpárolgott, vagy valaki levette a fedőt.</p>
+        <h1 class="error-title">Hoppá! Nincs ilyen oldal.</h1>
+        <p class="error-text">Lehet hogy kifutott, elpárolgott vagy odaégett.</p>
 
         <a href="{{ route('home') }}" class="btn-home">
             <i data-lucide="home"></i> Vissza a főoldalra

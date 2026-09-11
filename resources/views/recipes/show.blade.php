@@ -4,6 +4,10 @@
 
 @section('content')
 <div class="recipe-detail">
+    @if (session('success'))
+        <p class="alert-success">{{ session('success') }}</p>
+    @endif
+
     <!-- Felső szekció: kép balra, hozzávalók jobbra -->
     <section class="recipe-top">
         <!-- Bal oldal: kép + info -->
@@ -19,6 +23,9 @@
                         <span class="favorite-badge">{{ $favoriteCount }}</span>
                     </form>
                 @endauth
+                <div class="banner-cook-overlay">
+                    <a href="{{ route('recipes.assistant', $recipe->id) }}" class="btn-cook btn-cook-banner">🍳 Elkészítem</a>
+                </div>
             </div>
 
             <h1 class="recipe-title">{{ $recipe->title }}</h1>
@@ -43,7 +50,6 @@
                 </a>
 
                 <p class="recipe-description">{{ $recipe->description }}</p>
-                <a href="{{ route('recipes.assistant', $recipe->id) }}" class="btn-cook">🍳 Elkészítem</a>
             </div>
         </div>
 

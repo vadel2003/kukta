@@ -289,6 +289,31 @@ class RecipeController extends Controller
         return redirect()->route('recipes.show', $id)->with('success', 'Értékelés mentve!');
     }
 
+    // Nem bejelentkezett felhasználó csillagra kattintásából induló értékelés:
+    // ha még nincs bejelentkezve, elküldjük a login oldalra, onnan sikeres belépés
+    // után automatikusan visszatér ide és lementjük az értékelést.
+    public function rateViaLink(Request $request, $id)
+    {
+        $recipe = Recipe::findOrFail($id);
+        $score = (int) $request->query('score');
+
+        if ($score < 1 || $score > 5) {
+            return redirect()->route('recipes.assistant', $id);
+        }
+
+        if (!Auth::check()) {
+            return redirect()->guest(route('login'));
+        }
+
+        Score::updateOrCreate(
+            ['user_id' => Auth::id(), 'recipe_id' => $recipe->id],
+            ['score' => $score]
+        );
+
+        return redirect()->route('recipes.show', $id)
+            ->with('success', "Sikeresen értékelted {$score} csillagra a(z) \"{$recipe->title}\" receptet!");
+    }
+
     public function edit($id)
     {
         $recipe = Recipe::with(['steps', 'ingredients', 'mealTimes', 'foodTypes', 'diets', 'allergens', 'cuisines'])

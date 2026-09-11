@@ -63,7 +63,19 @@
             <label>Kép kiválasztása</label>
 
             <div>
-                <h3>Válassz előre definiált képet</h3>
+                <h3>Tölts fel saját képet</h3>
+                <label class="upload-box">
+                    <input type="file" name="thumbnail_image" accept="image/jpeg,image/png,image/gif,image/webp" class="upload-input">
+                    <img src="{{ asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="" class="upload-placeholder">
+                    <span class="upload-hint">+ Saját kép feltöltése</span>
+                </label>
+                @error('thumbnail_image')
+                    <span style="color: red;">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div>
+                <h3>Vagy válassz előre definiált képet</h3>
                 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                     @php
                         $defaultImages = glob(public_path('images/recipes/default/*.{jpg,jpeg,png,gif,webp}'), GLOB_BRACE);
@@ -82,14 +94,6 @@
                     @endforeach
                 </div>
                 @error('default_image')
-                    <span style="color: red;">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <div>
-                <h3>Vagy tölts fel saját képet</h3>
-                <input type="file" name="thumbnail_image" accept="image/jpeg,image/png,image/gif,image/webp">
-                @error('thumbnail_image')
                     <span style="color: red;">{{ $message }}</span>
                 @enderror
             </div>
@@ -254,6 +258,18 @@
     </form>
 
     <script>
+        // Saját kép előnézet
+        const thumbnailInput = document.querySelector('.upload-input');
+        const thumbnailPreview = document.querySelector('.upload-placeholder');
+        if (thumbnailInput) {
+            thumbnailInput.addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    thumbnailPreview.src = URL.createObjectURL(this.files[0]);
+                    thumbnailPreview.style.opacity = '1';
+                }
+            });
+        }
+
         document.getElementById('add-step').addEventListener('click', function() {
             const container = document.getElementById('steps-container');
             const steps = container.querySelectorAll('.step-item');
