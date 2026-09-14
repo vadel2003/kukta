@@ -8,7 +8,7 @@
         <div class="hero-container">
             <div class="hero-text">
                 <h1 class="hero-title">Tapasztald meg<br>az <span class="hero-highlight">ételkészítés</span> új élményét!</h1>
-                <p class="hero-subtitle">Fedezd fel receptjeinket és főzz otthon, mint egy profi!</p>
+                <p class="hero-subtitle">Próbáld ki receptjeinket a Kukta asszisztens <i data-lucide="bot" class="hero-subtitle-icon"></i> segítségével!</p>
             </div>
             <div class="hero-image">
                 <img src="{{ asset('images/hero-food-javitott.png') }}" alt="Ételkép">

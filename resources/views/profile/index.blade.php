@@ -56,7 +56,9 @@
 
         <div>
             <label for="new_password">Új jelszó (nem kötelező)</label>
-            <input type="password" name="new_password" id="new_password">
+            <input type="password" name="new_password" id="new_password" maxlength="50">
+            <small class="char-hint">max 50 karakter</small>
+            <small class="char-counter">0 / 50</small>
             @error('new_password')
                 <span style="color: red;">{{ $message }}</span>
             @enderror
@@ -64,7 +66,9 @@
 
         <div>
             <label for="new_password_confirmation">Új jelszó megerősítése</label>
-            <input type="password" name="new_password_confirmation" id="new_password_confirmation">
+            <input type="password" name="new_password_confirmation" id="new_password_confirmation" maxlength="50">
+            <small class="char-hint">max 50 karakter</small>
+            <small class="char-counter">0 / 50</small>
         </div>
 
         <button type="submit">Mentés</button>

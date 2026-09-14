@@ -20,7 +20,7 @@
 
         <form action="{{ route('home') }}" method="GET" class="header-search">
             <div class="search-input-wrap">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Keresés..." class="search-input">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Receptek keresése kulcsszó szerint..." class="search-input">
             </div>
             <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
             <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők</button>
@@ -164,7 +164,8 @@
                 .then(response => response.json())
                 .then(data => {
                     gallery.innerHTML = data.html;
-                    
+                    if (window.lucide) lucide.createIcons();
+
                     // "Load more" gomb frissítése
                     if (data.hasMore) {
                         if (loadMoreBtn) {
@@ -234,6 +235,7 @@
             .then(r => r.json())
             .then(data => {
                 gallery.insertAdjacentHTML('beforeend', data.html);
+                if (window.lucide) lucide.createIcons();
                 if (!data.hasMore) {
                     btn.remove();
                 } else {

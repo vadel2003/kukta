@@ -20,7 +20,7 @@ class ProfileController extends Controller
             'username' => ['required', 'string', 'max:30', 'unique:user,username,' . $user->id . ',id'],
             'email' => ['required', 'string', 'email', 'max:50', 'unique:user,email,' . $user->id . ',id'],
             'current_password' => ['required', 'current_password'],
-            'new_password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'new_password' => ['nullable', 'string', 'min:8', 'max:50', 'confirmed'],
             'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ]);
 

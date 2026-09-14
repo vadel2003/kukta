@@ -11,8 +11,6 @@
         <div>
             <label for="email">Email cím:</label>
             <input type="email" id="email" name="email" value="{{ old('email') }}" required maxlength="50">
-            <small class="char-hint">max 50 karakter</small>
-            <small class="char-counter">0 / 50</small>
             @error('email')
                 <span style="color: red;">{{ $message }}</span>
             @enderror
