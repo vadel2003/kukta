@@ -15,6 +15,9 @@ class Recipe extends Model
     protected $fillable = [
         'title',
         'description',
+        'prep_time',
+        'difficulty',
+        'servings',
         'thumbnail',
         'creation_date',
         'user_id',
@@ -25,6 +28,8 @@ class Recipe extends Model
         return [
             'creation_date' => 'date',
             'user_id' => 'integer',
+            'prep_time' => 'integer',
+            'servings' => 'integer',
         ];
     }
 

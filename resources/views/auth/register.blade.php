@@ -10,7 +10,9 @@
 
         <div>
             <label for="username">Felhasználónév</label>
-            <input type="text" name="username" id="username" value="{{ old('username') }}" required>
+            <input type="text" name="username" id="username" value="{{ old('username') }}" required maxlength="30">
+            <small class="char-hint">max 30 karakter</small>
+            <small class="char-counter">0 / 30</small>
             @error('nickname')
                 <span>{{ $message }}</span>
             @enderror
@@ -18,7 +20,9 @@
 
         <div>
             <label for="email">Email cím</label>
-            <input type="email" name="email" id="email" value="{{ old('email') }}" required>
+            <input type="email" name="email" id="email" value="{{ old('email') }}" required maxlength="50">
+            <small class="char-hint">max 50 karakter</small>
+            <small class="char-counter">0 / 50</small>
             @error('email')
                 <span>{{ $message }}</span>
             @enderror

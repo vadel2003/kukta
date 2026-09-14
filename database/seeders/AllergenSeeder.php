@@ -9,15 +9,39 @@ class AllergenSeeder extends Seeder
 {
     public function run(): void
     {
-        $allergens = [
-            ['name' => 'Gluténmentes',   'thumbnail' => null],
-            ['name' => 'Laktózmentes',   'thumbnail' => null],
-            ['name' => 'Cukormentes',    'thumbnail' => null],
-            ['name' => 'Tojásmentes',    'thumbnail' => null],
+        // A régi "-mentes" nevek átnevezése (id megtartásával, a recept-kapcsolatok nem sérülnek)
+        $renames = [
+            'Gluténmentes' => 'Glutén',
+            'Laktózmentes' => 'Laktóz',
+            'Cukormentes' => 'Cukor',
+            'Tojásmentes' => 'Tojás',
         ];
 
-        foreach ($allergens as $allergen) {
-            DB::table('allergen')->insert($allergen);
+        foreach ($renames as $old => $new) {
+            DB::table('allergen')->where('name', $old)->update(['name' => $new]);
+        }
+
+        // Érzékenységek idempotens biztosítása
+        $sensitivities = [
+            'Glutén',
+            'Laktóz',
+            'Cukor',
+            'Tojás',
+            'Szója',
+            'Diófélék',
+            'Földimogyoró',
+            'Hal',
+            'Rákfélék',
+            'Zeller',
+            'Mustár',
+            'Szezámmag',
+        ];
+
+        foreach ($sensitivities as $name) {
+            DB::table('allergen')->updateOrInsert(
+                ['name' => $name],
+                ['name' => $name, 'thumbnail' => null]
+            );
         }
     }
 }

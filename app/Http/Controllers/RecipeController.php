@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use App\Models\Ingredient;
 use App\Models\Recipe;
 use App\Models\Step;
@@ -33,15 +34,18 @@ class RecipeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
+            'title' => ['required', 'string', 'max:100'],
+            'description' => ['required', 'string', 'max:1000'],
+            'prep_time' => ['required', 'integer', 'min:1', 'max:1440'],
+            'difficulty' => ['required', 'string', Rule::in(['könnyű', 'közepes', 'nehéz'])],
+            'servings' => ['required', 'integer', 'min:1', 'max:50'],
             'steps' => ['nullable', 'array'],
-            'steps.*.description' => ['nullable', 'string', 'max:255'],
+            'steps.*.description' => ['nullable', 'string', 'max:1000'],
             'steps.*.step_category_id' => ['nullable', 'integer', 'exists:step_category,id'],
-            'ingredients' => ['required', 'array', 'min:1'],
-            'ingredients.*.name' => ['required', 'string', 'max:255'],
-            'ingredients.*.quantity' => ['required', 'numeric', 'min:0'],
-            'ingredients.*.unit' => ['required', 'string', 'max:50'],
+            'ingredients' => ['nullable', 'array'],
+            'ingredients.*.name' => ['nullable', 'string', 'max:50'],
+            'ingredients.*.quantity' => ['nullable', 'numeric', 'min:0.1'],
+            'ingredients.*.unit' => ['nullable', 'string', 'max:20'],
             'meal_times' => ['nullable', 'array'],
             'meal_times.*' => ['exists:meal_time,id'],
             'food_types' => ['required', 'array', 'min:1'],
@@ -56,7 +60,76 @@ class RecipeController extends Controller
         ], [
             'food_types.required' => 'Válassz legalább egy ételtípust!',
             'food_types.min' => 'Válassz legalább egy ételtípust!',
+            'ingredients.*.quantity.min' => 'A mennyiség legalább 0,1 legyen!',
         ]);
+
+        // Lépések előfeldolgozása: üres sor kihagyása + kategória kötelező
+        $stepsToSave = [];
+        if (!empty($validated['steps'])) {
+            foreach ($validated['steps'] as $stepData) {
+                $description = trim($stepData['description'] ?? '');
+                $categoryId = $stepData['step_category_id'] ?? null;
+
+                // Üres leírás -> nem mentünk felesleges üres adatot
+                if ($description === '') {
+                    continue;
+                }
+                // Van leírás, de nincs kategória -> hiba (még mentés előtt)
+                if (empty($categoryId)) {
+                    return back()
+                        ->withErrors(['steps' => 'Minden lépéshez válassz kategóriát!'])
+                        ->withInput();
+                }
+                $stepsToSave[] = [
+                    'description' => $description,
+                    'step_category_id' => $categoryId,
+                ];
+            }
+        }
+
+        // Alapanyagok előfeldolgozása (üres sor kihagyása, mennyiség + mértékegység kötelező)
+        $ingredientsToSave = [];
+        foreach ($validated['ingredients'] ?? [] as $ingredient) {
+            $name = trim($ingredient['name'] ?? '');
+            $quantity = $ingredient['quantity'] ?? null;
+            $unit = trim($ingredient['unit'] ?? '');
+
+            // Üres sor (nincs név) -> kihagyjuk, nem mentünk felesleges adatot
+            if ($name === '') {
+                continue;
+            }
+
+            // Van név, de nincs mennyiség -> hiba
+            if ($quantity === null || $quantity === '') {
+                return back()
+                    ->withErrors(['ingredients' => 'Minden alapanyaghoz adj meg mennyiséget!'])
+                    ->withInput();
+            }
+            // Van név, de nincs mértékegység -> hiba
+            if ($unit === '') {
+                return back()
+                    ->withErrors(['ingredients' => 'Minden alapanyaghoz válassz mértékegységet!'])
+                    ->withInput();
+            }
+
+            $ingredientsToSave[] = [
+                'name' => $name,
+                'quantity' => $quantity,
+                'unit' => $unit,
+            ];
+        }
+
+        // Kötelező minimumok ellenőrzése
+        if (count($stepsToSave) < 3) {
+            return back()
+                ->withErrors(['steps' => 'Adj meg legalább 3 lépést!'])
+                ->withInput();
+        }
+        if (count($ingredientsToSave) < 3) {
+            return back()
+                ->withErrors(['ingredients' => 'Adj meg legalább 3 alapanyagot!'])
+                ->withInput();
+        }
 
         // 1. Recept létrehozása
         $thumbnail = null;
@@ -76,36 +149,29 @@ class RecipeController extends Controller
         $recipe = Recipe::create([
             'title' => $validated['title'],
             'description' => $validated['description'],
+            'prep_time' => $validated['prep_time'],
+            'difficulty' => $validated['difficulty'],
+            'servings' => $validated['servings'],
             'thumbnail' => $thumbnail,
             'creation_date' => now(),
             'user_id' => Auth::id(),
         ]);
 
-        // 2. Lépések feldolgozása (csak a nem üreseket menti)
-        if (!empty($validated['steps'])) {
-            $stepNumber = 1;
-            foreach ($validated['steps'] as $stepData) {
-                $description = trim($stepData['description'] ?? '');
-                if ($description === '') {
-                    continue;
-                }
-                Step::create([
-                    'description' => $description,
-                    'step_category_id' => $stepData['step_category_id'] ?? null,
-                    'recipe_id' => $recipe->id,
-                    'order' => $stepNumber,
-                ]);
-                $stepNumber++;
-            }
+        // 2. Lépések mentése (csak a kitöltött, érvényes sorok)
+        $stepNumber = 1;
+        foreach ($stepsToSave as $stepData) {
+            Step::create([
+                'description' => $stepData['description'],
+                'step_category_id' => $stepData['step_category_id'],
+                'recipe_id' => $recipe->id,
+                'order' => $stepNumber,
+            ]);
+            $stepNumber++;
         }
 
-        // 3. Alapanyagok feldolgozása (új alapanyag automatikusan létrejön)
-        foreach ($validated['ingredients'] as $ingredient) {
-            $name = trim($ingredient['name'] ?? '');
-            if ($name === '') {
-                continue;
-            }
-            $ingredientModel = Ingredient::firstOrCreate(['name' => $name]);
+        // 3. Alapanyagok feldolgozása
+        foreach ($ingredientsToSave as $ingredient) {
+            $ingredientModel = Ingredient::firstOrCreate(['name' => $ingredient['name']]);
             $recipe->ingredients()->attach($ingredientModel->id, [
                 'quantity' => $ingredient['quantity'],
                 'unit' => $ingredient['unit'],
@@ -336,15 +402,18 @@ class RecipeController extends Controller
         $recipe = Recipe::where('user_id', Auth::id())->findOrFail($id);
 
         $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
+            'title' => ['required', 'string', 'max:100'],
+            'description' => ['required', 'string', 'max:1000'],
+            'prep_time' => ['required', 'integer', 'min:1', 'max:1440'],
+            'difficulty' => ['required', 'string', Rule::in(['könnyű', 'közepes', 'nehéz'])],
+            'servings' => ['required', 'integer', 'min:1', 'max:50'],
             'steps' => ['nullable', 'array'],
-            'steps.*.description' => ['nullable', 'string', 'max:255'],
+            'steps.*.description' => ['nullable', 'string', 'max:1000'],
             'steps.*.step_category_id' => ['nullable', 'integer', 'exists:step_category,id'],
-            'ingredients' => ['required', 'array', 'min:1'],
-            'ingredients.*.name' => ['required', 'string', 'max:255'],
-            'ingredients.*.quantity' => ['required', 'numeric', 'min:0'],
-            'ingredients.*.unit' => ['required', 'string', 'max:50'],
+            'ingredients' => ['nullable', 'array'],
+            'ingredients.*.name' => ['nullable', 'string', 'max:50'],
+            'ingredients.*.quantity' => ['nullable', 'numeric', 'min:0.1'],
+            'ingredients.*.unit' => ['nullable', 'string', 'max:20'],
             'meal_times' => ['nullable', 'array'],
             'meal_times.*' => ['exists:meal_time,id'],
             'food_types' => ['required', 'array', 'min:1'],
@@ -359,7 +428,74 @@ class RecipeController extends Controller
         ], [
             'food_types.required' => 'Válassz legalább egy ételtípust!',
             'food_types.min' => 'Válassz legalább egy ételtípust!',
+            'ingredients.*.quantity.min' => 'A mennyiség legalább 0,1 legyen!',
         ]);
+
+        // Lépések előfeldolgozása: üres sor kihagyása + kategória kötelező
+        $stepsToSave = [];
+        if (!empty($validated['steps'])) {
+            foreach ($validated['steps'] as $stepData) {
+                $description = trim($stepData['description'] ?? '');
+                $categoryId = $stepData['step_category_id'] ?? null;
+
+                if ($description === '') {
+                    continue;
+                }
+                if (empty($categoryId)) {
+                    return back()
+                        ->withErrors(['steps' => 'Minden lépéshez válassz kategóriát!'])
+                        ->withInput();
+                }
+                $stepsToSave[] = [
+                    'description' => $description,
+                    'step_category_id' => $categoryId,
+                ];
+            }
+        }
+
+        // Alapanyagok előfeldolgozása (üres sor kihagyása, mennyiség + mértékegység kötelező)
+        $ingredientsToSave = [];
+        foreach ($validated['ingredients'] ?? [] as $ingredient) {
+            $name = trim($ingredient['name'] ?? '');
+            $quantity = $ingredient['quantity'] ?? null;
+            $unit = trim($ingredient['unit'] ?? '');
+
+            // Üres sor (nincs név) -> kihagyjuk, nem mentünk felesleges adatot
+            if ($name === '') {
+                continue;
+            }
+
+            // Van név, de nincs mennyiség -> hiba
+            if ($quantity === null || $quantity === '') {
+                return back()
+                    ->withErrors(['ingredients' => 'Minden alapanyaghoz adj meg mennyiséget!'])
+                    ->withInput();
+            }
+            // Van név, de nincs mértékegység -> hiba
+            if ($unit === '') {
+                return back()
+                    ->withErrors(['ingredients' => 'Minden alapanyaghoz válassz mértékegységet!'])
+                    ->withInput();
+            }
+
+            $ingredientsToSave[] = [
+                'name' => $name,
+                'quantity' => $quantity,
+                'unit' => $unit,
+            ];
+        }
+
+        // Kötelező minimumok ellenőrzése
+        if (count($stepsToSave) < 3) {
+            return back()
+                ->withErrors(['steps' => 'Adj meg legalább 3 lépést!'])
+                ->withInput();
+        }
+        if (count($ingredientsToSave) < 3) {
+            return back()
+                ->withErrors(['ingredients' => 'Adj meg legalább 3 alapanyagot!'])
+                ->withInput();
+        }
 
         // 1. Kép frissítése
         $thumbnail = $recipe->thumbnail;
@@ -377,37 +513,30 @@ class RecipeController extends Controller
         $recipe->update([
             'title' => $validated['title'],
             'description' => $validated['description'],
+            'prep_time' => $validated['prep_time'],
+            'difficulty' => $validated['difficulty'],
+            'servings' => $validated['servings'],
             'thumbnail' => $thumbnail,
         ]);
 
         // 3. Lépések frissítése (régi törlése, új beszúrása)
         $recipe->steps()->delete();
 
-        if (!empty($validated['steps'])) {
-            $stepNumber = 1;
-            foreach ($validated['steps'] as $stepData) {
-                $description = trim($stepData['description'] ?? '');
-                if ($description === '') {
-                    continue;
-                }
-                Step::create([
-                    'description' => $description,
-                    'step_category_id' => $stepData['step_category_id'] ?? null,
-                    'recipe_id' => $recipe->id,
-                    'order' => $stepNumber,
-                ]);
-                $stepNumber++;
-            }
+        $stepNumber = 1;
+        foreach ($stepsToSave as $stepData) {
+            Step::create([
+                'description' => $stepData['description'],
+                'step_category_id' => $stepData['step_category_id'],
+                'recipe_id' => $recipe->id,
+                'order' => $stepNumber,
+            ]);
+            $stepNumber++;
         }
 
         // 4. Alapanyagok frissítése (sync törli a régieket és beszúrja az újakat)
         $ingredientData = [];
-        foreach ($validated['ingredients'] as $ingredient) {
-            $name = trim($ingredient['name'] ?? '');
-            if ($name === '') {
-                continue;
-            }
-            $ingredientModel = Ingredient::firstOrCreate(['name' => $name]);
+        foreach ($ingredientsToSave as $ingredient) {
+            $ingredientModel = Ingredient::firstOrCreate(['name' => $ingredient['name']]);
             $ingredientData[$ingredientModel->id] = [
                 'quantity' => $ingredient['quantity'],
                 'unit' => $ingredient['unit'],

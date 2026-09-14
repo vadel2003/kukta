@@ -91,6 +91,9 @@ return new class extends Migration
             $table->id()->autoIncrement()->primary();
             $table->string('title', 100);
             $table->string('description', 1000);
+            $table->unsignedSmallInteger('prep_time')->nullable(); // elkészítési idő percben
+            $table->string('difficulty', 20)->nullable(); // könnyű / közepes / nehéz
+            $table->unsignedSmallInteger('servings')->nullable(); // adag
             $table->string('thumbnail', 255)->nullable();
             $table->date('creation_date')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();

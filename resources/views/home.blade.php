@@ -86,9 +86,9 @@
                                 @endforeach
                             </div>
 
-                            <!-- Allergén -->
+                            <!-- Érzékenység -->
                             <div class="filter-group">
-                                <h4>Allergén</h4>
+                                <h4>Érzékenység</h4>
                                 @foreach ($allergens as $allergen)
                                     <label class="checkbox-label">
                                         <input type="checkbox" name="allergen[]" value="{{ $allergen->id }}" {{ in_array($allergen->id, (array)request('allergen')) ? 'checked' : '' }}>

@@ -44,17 +44,50 @@
         @endif
 
         <div>
-            <label for="title">Recept címe</label>
-            <input type="text" name="title" id="title" value="{{ old('title', $recipe->title ?? '') }}" required>
+            <label for="title">Recept címe <span style="color: red;">*</span></label>
+            <input type="text" name="title" id="title" value="{{ old('title', $recipe->title ?? '') }}" required maxlength="100" autofocus>
+            <small class="char-hint">max 100 karakter</small>
+            <small class="char-counter">0 / 100</small>
             @error('title')
                 <span style="color: red;">{{ $message }}</span>
             @enderror
         </div>
 
         <div>
-            <label for="description">Leírás</label>
-            <textarea name="description" id="description" rows="4" required>{{ old('description', $recipe->description ?? '') }}</textarea>
+            <label for="description">Leírás <span style="color: red;">*</span></label>
+            <textarea name="description" id="description" rows="4" required maxlength="1000">{{ old('description', $recipe->description ?? '') }}</textarea>
+            <small class="char-hint">max 1000 karakter</small>
+            <small class="char-counter">0 / 1000</small>
             @error('description')
+                <span style="color: red;">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <div>
+            <label for="prep_time">Elkészítési idő (perc) <span style="color: red;">*</span></label>
+            <input type="number" name="prep_time" id="prep_time" value="{{ old('prep_time', $recipe->prep_time ?? '') }}" required min="1" max="1440">
+            @error('prep_time')
+                <span style="color: red;">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <div>
+            <label for="difficulty">Nehézség <span style="color: red;">*</span></label>
+            <select name="difficulty" id="difficulty" required>
+                <option value="">-- Válassz --</option>
+                @foreach (['könnyű', 'közepes', 'nehéz'] as $level)
+                    <option value="{{ $level }}" {{ old('difficulty', $recipe->difficulty ?? '') == $level ? 'selected' : '' }}>{{ ucfirst($level) }}</option>
+                @endforeach
+            </select>
+            @error('difficulty')
+                <span style="color: red;">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <div>
+            <label for="servings">Adag <span style="color: red;">*</span></label>
+            <input type="number" name="servings" id="servings" value="{{ old('servings', $recipe->servings ?? '') }}" required min="1" max="50">
+            @error('servings')
                 <span style="color: red;">{{ $message }}</span>
             @enderror
         </div>
@@ -100,16 +133,18 @@
         </div>
 
         <div>
-            <label>Elkészítés lépései</label>
+            <label>Elkészítés lépései <span style="color: red;">*</span></label>
             <div id="steps-container">
                 @php
-                    // Ha szerkesztés van, a meglévő lépések; ha nincs, 5 üres mező
-                    $stepCount = $isEdit && count($stepValues) > 0 ? count($stepValues) : 5;
+                    // Ha szerkesztés van, a meglévő lépések; ha nincs, 3 üres mező
+                    $stepCount = $isEdit && count($stepValues) > 0 ? count($stepValues) : 3;
                 @endphp
                 @for ($i = 0; $i < $stepCount; $i++)
                     <div class="step-item">
                         <label>{{ $i + 1 }}. lépés</label>
-                        <input type="text" name="steps[{{ $i }}][description]" value="{{ old('steps.' . $i . '.description', $stepValues[$i]['description'] ?? '') }}" placeholder="Add meg a(z) {{ $i + 1 }}. lépést">
+                        <input type="text" name="steps[{{ $i }}][description]" value="{{ old('steps.' . $i . '.description', $stepValues[$i]['description'] ?? '') }}" placeholder="Add meg a(z) {{ $i + 1 }}. lépést" maxlength="1000">
+                        <small class="char-hint">max 1000 karakter</small>
+                        <small class="char-counter">0 / 1000</small>
                         <select name="steps[{{ $i }}][step_category_id]">
                             <option value="">-- Kategória --</option>
                             @foreach ($stepCategories as $category)
@@ -130,13 +165,19 @@
         </div>
 
         <div>
-            <label>Alapanyagok</label>
+            <label>Alapanyagok <span style="color: red;">*</span></label>
             <div id="ingredients">
-                @for ($i = 0; $i < 5; $i++)
+                @php
+                    // Ha szerkesztés van, a meglévő alapanyagok; ha nincs, 3 üres mező
+                    $ingredientCount = $isEdit && count($ingredientValues) > 0 ? count($ingredientValues) : 3;
+                @endphp
+                @for ($i = 0; $i < $ingredientCount; $i++)
                     <div class="ingredient-item">
-                        <input type="text" name="ingredients[{{ $i }}][name]" list="ingredient-options" value="{{ old('ingredients.' . $i . '.name', $ingredientValues[$i]['name'] ?? '') }}" placeholder="Alapanyag neve">
+                        <input type="text" name="ingredients[{{ $i }}][name]" list="ingredient-options" value="{{ old('ingredients.' . $i . '.name', $ingredientValues[$i]['name'] ?? '') }}" placeholder="Alapanyag neve" maxlength="50">
+                        <small class="char-hint">max 50 karakter</small>
+                        <small class="char-counter">0 / 50</small>
 
-                        <input type="number" name="ingredients[{{ $i }}][quantity]" step="0.1" min="0" placeholder="Mennyiség" value="{{ old('ingredients.' . $i . '.quantity', $ingredientValues[$i]['quantity'] ?? '') }}">
+                        <input type="number" name="ingredients[{{ $i }}][quantity]" step="0.1" min="0.1" placeholder="Mennyiség" value="{{ old('ingredients.' . $i . '.quantity', $ingredientValues[$i]['quantity'] ?? '') }}">
 
                         <select name="ingredients[{{ $i }}][unit]">
                             <option value="">-- Mértékegység --</option>
@@ -226,7 +267,7 @@
             </div>
 
             <div>
-                <h3>Allergén</h3>
+                <h3>Érzékenység</h3>
                 @foreach ($allergens as $allergen)
                     <label>
                         <input type="checkbox" name="allergens[]" value="{{ $allergen->id }}"
@@ -285,8 +326,13 @@
             // Hibaüzenet törlése (ha volt előzőleg)
             newStep.querySelectorAll('span').forEach(s => s.remove());
 
+            // Karakterszámláló visszaállítása
+            const stepCounter = newStep.querySelector('.char-counter');
+            if (stepCounter) stepCounter.textContent = '0 / ' + input.maxLength;
+
             container.appendChild(newStep);
             relabelSteps();
+            updateStepRemoveButtons();
         });
 
         // Lépés sor eltávolítása
@@ -294,9 +340,10 @@
             const btn = e.target.closest('.remove-step');
             if (!btn) return;
             const rows = this.querySelectorAll('.step-item');
-            if (rows.length <= 1) return;
+            if (rows.length <= 3) return;
             btn.closest('.step-item').remove();
             relabelSteps();
+            updateStepRemoveButtons();
         });
 
         // Lépések címkéinek és neveinek újraszámozása
@@ -308,6 +355,16 @@
                 input.placeholder = 'Add meg a(z) ' + (index + 1) + '. lépést';
                 const select = row.querySelector('select');
                 if (select) select.name = 'steps[' + index + '][step_category_id]';
+            });
+        }
+
+        // × gombok elrejtése, ha csak 3 lépés van
+        function updateStepRemoveButtons() {
+            const rows = document.querySelectorAll('#steps-container .step-item');
+            const canRemove = rows.length > 3;
+            rows.forEach(function(row) {
+                const btn = row.querySelector('.remove-step');
+                if (btn) btn.style.display = canRemove ? '' : 'none';
             });
         }
 
@@ -324,8 +381,13 @@
 
             newRow.querySelectorAll('span').forEach(s => s.remove());
 
+            // Karakterszámláló visszaállítása
+            const ingCounter = newRow.querySelector('.char-counter');
+            if (ingCounter) ingCounter.textContent = '0 / ' + newRow.querySelector('input[name*="[name]"]').maxLength;
+
             container.appendChild(newRow);
             reindexIngredients();
+            updateIngredientRemoveButtons();
         });
 
         // Alapanyag sor eltávolítása
@@ -333,9 +395,10 @@
             const btn = e.target.closest('.remove-ingredient');
             if (!btn) return;
             const rows = this.querySelectorAll('.ingredient-item');
-            if (rows.length <= 1) return;
+            if (rows.length <= 3) return;
             btn.closest('.ingredient-item').remove();
             reindexIngredients();
+            updateIngredientRemoveButtons();
         });
 
         // Alapanyag sorok újraindexelése
@@ -347,5 +410,19 @@
                 row.querySelector('select[name*="[unit]"]').name = 'ingredients[' + index + '][unit]';
             });
         }
+
+        // × gombok elrejtése, ha csak 3 alapanyag van
+        function updateIngredientRemoveButtons() {
+            const rows = document.querySelectorAll('#ingredients .ingredient-item');
+            const canRemove = rows.length > 3;
+            rows.forEach(function(row) {
+                const btn = row.querySelector('.remove-ingredient');
+                if (btn) btn.style.display = canRemove ? '' : 'none';
+            });
+        }
+
+        // Induláskor elrejtjük a felesleges × gombokat
+        updateStepRemoveButtons();
+        updateIngredientRemoveButtons();
     </script>
 @endsection

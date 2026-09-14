@@ -28,7 +28,9 @@
 
         <div>
             <label for="username">Felhasználónév</label>
-            <input type="text" name="username" id="username" value="{{ old('username', Auth::user()->username) }}" required>
+            <input type="text" name="username" id="username" value="{{ old('username', Auth::user()->username) }}" required maxlength="30">
+            <small class="char-hint">max 30 karakter</small>
+            <small class="char-counter">0 / 30</small>
             @error('username')
                 <span style="color: red;">{{ $message }}</span>
             @enderror
@@ -36,7 +38,9 @@
 
         <div>
             <label for="email">Email cím</label>
-            <input type="email" name="email" id="email" value="{{ old('email', Auth::user()->email) }}" required>
+            <input type="email" name="email" id="email" value="{{ old('email', Auth::user()->email) }}" required maxlength="50">
+            <small class="char-hint">max 50 karakter</small>
+            <small class="char-counter">0 / 50</small>
             @error('email')
                 <span style="color: red;">{{ $message }}</span>
             @enderror

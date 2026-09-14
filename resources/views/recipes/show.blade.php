@@ -32,12 +32,24 @@
 
             <div class="recipe-info">
                 <div class="recipe-meta">
+                    <div class="meta-date">
+                        <span class="meta-icon"><i data-lucide="clock"></i></span>
+                        <span>{{ $recipe->prep_time }} perc</span>
+                    </div>
+                    <div class="meta-date">
+                        <span class="meta-icon"><i data-lucide="gauge"></i></span>
+                        <span>{{ ucfirst($recipe->difficulty) }}</span>
+                    </div>
+                    <div class="meta-date">
+                        <span class="meta-icon"><i data-lucide="utensils"></i></span>
+                        <span>{{ $recipe->servings }} adag</span>
+                    </div>
                     <div class="meta-author">
                         <img src="{{ $recipe->user->avatar ? asset($recipe->user->avatar) : asset('images/default_avatar.svg') }}" alt="Profilkép" class="author-avatar">
                         <span>{{ $recipe->user->name }}</span>
                     </div>
                     <div class="meta-date">
-                        <span class="meta-icon">📅</span>
+                        <span class="meta-icon"><i data-lucide="calendar"></i></span>
                         <span>{{ $recipe->creation_date->format('Y. m. d.') }}</span>
                     </div>
                 </div>

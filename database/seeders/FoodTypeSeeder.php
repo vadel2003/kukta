@@ -10,16 +10,20 @@ class FoodTypeSeeder extends Seeder
     public function run(): void
     {
         $foodTypes = [
-            ['name' => 'Leves',      'thumbnail' => null],
-            ['name' => 'Főétel',     'thumbnail' => null],
-            ['name' => 'Desszert',   'thumbnail' => null],
-            ['name' => 'Előétel',    'thumbnail' => null],
-            ['name' => 'Köret',      'thumbnail' => null],
-            ['name' => 'Saláta',     'thumbnail' => null],
+            'Leves',
+            'Főétel',
+            'Desszert',
+            'Előétel',
+            'Köret',
+            'Saláta',
+            'Nasi',
         ];
 
-        foreach ($foodTypes as $foodType) {
-            DB::table('food_type')->insert($foodType);
+        foreach ($foodTypes as $name) {
+            DB::table('food_type')->updateOrInsert(
+                ['name' => $name],
+                ['name' => $name, 'thumbnail' => null]
+            );
         }
     }
 }

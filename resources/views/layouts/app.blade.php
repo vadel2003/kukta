@@ -349,6 +349,16 @@
             });
         }
 
+        // Karakterszámláló (maxlength-es mezők)
+        function updateCounter(el) {
+            const counter = el.parentElement.querySelector('.char-counter');
+            if (counter) counter.textContent = el.value.length + ' / ' + el.maxLength;
+        }
+        document.querySelectorAll('input[maxlength], textarea[maxlength]').forEach(updateCounter);
+        document.addEventListener('input', function (e) {
+            if (e.target.matches('input[maxlength], textarea[maxlength]')) updateCounter(e.target);
+        });
+
         // Lucide ikonok inicializálása
         if (window.lucide) lucide.createIcons();
     </script>

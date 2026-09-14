@@ -9,14 +9,24 @@ class DietSeeder extends Seeder
 {
     public function run(): void
     {
+        // A "Normál" átnevezése "Mindenevő"-re (id megtartásával, a recept-kapcsolatok nem sérülnek)
+        DB::table('diet')->where('name', 'Normál')->update(['name' => 'Mindenevő']);
+
         $diets = [
-            ['name' => 'Normál',         'thumbnail' => null],
-            ['name' => 'Vegetáriánus',   'thumbnail' => null],
-            ['name' => 'Vegán',          'thumbnail' => null],
+            'Mindenevő',
+            'Vegetáriánus',
+            'Vegán',
+            'Pescetáriánus',
+            'Flexitáriánus',
+            'Keto',
+            'Low-carb',
         ];
 
-        foreach ($diets as $diet) {
-            DB::table('diet')->insert($diet);
+        foreach ($diets as $name) {
+            DB::table('diet')->updateOrInsert(
+                ['name' => $name],
+                ['name' => $name, 'thumbnail' => null]
+            );
         }
     }
 }
