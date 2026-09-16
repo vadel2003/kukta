@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\AdminController;
 
 // Főoldal
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -38,6 +39,13 @@ Route::get('/recept/{id}/asszisztens', [RecipeController::class, 'assistant'])->
 Route::get('/recept/{id}/szerkesztes', [RecipeController::class, 'edit'])->name('recipes.edit');
 Route::put('/recept/{id}', [RecipeController::class, 'update'])->name('recipes.update');
 Route::delete('/recept/{id}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
+
+// Admin
+Route::get('/admin/alapanyagok', [AdminController::class, 'ingredients'])->name('admin.ingredients');
+Route::delete('/admin/alapanyagok/{id}', [AdminController::class, 'destroyIngredient'])->name('admin.ingredients.destroy');
+Route::get('/admin/receptek', [AdminController::class, 'recipes'])->name('admin.recipes');
+Route::get('/admin/felhasznalok', [AdminController::class, 'users'])->name('admin.users');
+Route::delete('/admin/felhasznalok/{id}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
 
 // Statikus oldalak
 Route::get('/adatkezelesi-tajekoztato', [PageController::class, 'privacy'])->name('page.privacy');

@@ -2,7 +2,7 @@
     <div class="footer-container">
         <div class="footer-section">
             <h4>Elérhetőség</h4>
-            <p>📧 info@kukta.hu</p>
+            <p><i data-lucide="mail" class="footer-icon"></i> info@kukta.hu</p>
         </div>
         <div class="footer-section">
             <h4>Információk</h4>

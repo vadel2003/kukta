@@ -50,4 +50,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Score::class);
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 1;
+    }
 }

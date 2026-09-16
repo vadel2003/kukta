@@ -19,15 +19,20 @@
         </div>
 
         <form action="{{ route('home') }}" method="GET" class="header-search">
-            <div class="search-input-wrap">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Receptek keresése kulcsszó szerint..." class="search-input">
+            <div class="search-row">
+                <div class="search-input-group">
+                    <i data-lucide="search" class="search-input-icon"></i>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Receptek keresése kulcsszó szerint..." class="search-input">
+                </div>
+                <span class="search-divider"></span>
+                <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők</button>
+                <span class="search-divider"></span>
+                <button type="button" class="btn-sort" onclick="openModal('sortModal')"><i data-lucide="arrow-up-down"></i> Rendezés</button>
+                <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
             </div>
-            <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
-            <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők</button>
-            <button type="button" class="btn-sort" onclick="openModal('sortModal')"><i data-lucide="arrow-up-down"></i> Rendezés</button>
         </form>
 
-        <span class="hamburger">☰</span>
+        <span class="hamburger"><i data-lucide="menu"></i></span>
 
         <div class="header-right">
             @auth
@@ -41,6 +46,11 @@
                         <a href="{{ route('recipes.create') }}">Új recept</a>
                         <a href="{{ route('recipes.my') }}">Saját receptek</a>
                         <a href="{{ route('recipes.favorites') }}">Kedvenc receptek</a>
+                        @if (Auth::user()->isAdmin())
+                            <a href="{{ route('admin.ingredients') }}">Alapanyagok</a>
+                            <a href="{{ route('admin.recipes') }}">Receptek</a>
+                            <a href="{{ route('admin.users') }}">Felhasználók</a>
+                        @endif
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit">Kijelentkezés</button>
@@ -74,6 +84,11 @@
                 <a href="{{ route('recipes.create') }}">Új recept</a>
                 <a href="{{ route('recipes.my') }}">Saját receptek</a>
                 <a href="{{ route('recipes.favorites') }}">Kedvenc receptek</a>
+                @if (Auth::user()->isAdmin())
+                    <a href="{{ route('admin.ingredients') }}">Alapanyagok</a>
+                    <a href="{{ route('admin.recipes') }}">Receptek</a>
+                    <a href="{{ route('admin.users') }}">Felhasználók</a>
+                @endif
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit">Kijelentkezés</button>

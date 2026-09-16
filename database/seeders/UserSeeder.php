@@ -13,7 +13,7 @@ class UserSeeder extends Seeder
         $password = Hash::make('jelszo123');
 
         $users = [
-            ['email' => 'admin@kukta.hu',          'name' => 'admin',          'password' => $password, 'role' => 1],
+            ['email' => 'admin@kukta.hu',          'name' => 'kukta',          'password' => $password, 'role' => 1],
             ['email' => 'nagy.anna@gmail.com',      'name' => 'nagyanna',      'password' => $password, 'role' => 0],
             ['email' => 'kovacs.bela@gmail.com',    'name' => 'kovacsbela',    'password' => $password, 'role' => 0],
             ['email' => 'szabo.csilla@gmail.com',   'name' => 'szabocsilla',   'password' => $password, 'role' => 0],

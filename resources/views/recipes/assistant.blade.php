@@ -4,21 +4,23 @@
 @section('bodyClass', 'assistant-page')
 
 @section('content')
-<div class="assistant">
+<div class="assistant" style="--assistant-bg-image: url('{{ $recipe->thumbnail ? asset($recipe->thumbnail) : asset('images/recipes/default/recipe_placeholder.jpg') }}');">
 
-    <a href="{{ route('recipes.show', $recipe->id) }}" class="assistant-close" aria-label="Kilépés az asszisztensből">✕</a>
+    <a href="{{ route('recipes.show', $recipe->id) }}" class="assistant-close" aria-label="Kilépés az asszisztensből"><i data-lucide="x"></i></a>
 
     {{-- -1. lépés: leírás + háttérkép --}}
     <section class="assistant-screen is-active">
         <div class="assistant-intro" style="background-image: url('{{ $recipe->thumbnail ? asset($recipe->thumbnail) : asset('images/recipes/default/recipe_placeholder.jpg') }}');">
-            <div class="assistant-greeting">
-                {{-- Ide kerül majd egy gif a kabalafiguráról --}}
-                <div class="assistant-mascot"><i data-lucide="chef-hat"></i></div>
-                <p class="assistant-greeting-text">Szia! Én vagyok a Kukta asszisztensed, lépésről lépésre végigvezetlek a recepten.</p>
-            </div>
-            <div class="assistant-intro-overlay">
-                <h1>{{ $recipe->title }}</h1>
-                <p>{{ $recipe->description }}</p>
+            <div class="assistant-intro-content">
+                <div class="assistant-intro-card assistant-greeting-card">
+                    {{-- Ide kerül majd egy gif a kabalafiguráról --}}
+                    <div class="assistant-mascot"><i data-lucide="chef-hat"></i></div>
+                    <p class="assistant-greeting-text">Szia! Én vagyok a Kukta asszisztensed, lépésről lépésre végigvezetlek a recepten.</p>
+                </div>
+                <div class="assistant-intro-card assistant-intro-overlay">
+                    <h1>{{ $recipe->title }}</h1>
+                    <p>{{ $recipe->description }}</p>
+                </div>
             </div>
         </div>
     </section>
@@ -34,8 +36,10 @@
     @foreach ($recipe->steps as $step)
         <section class="assistant-screen">
             <div class="assistant-step">
-                <div class="assistant-step-number">{{ $loop->iteration }}</div>
-                <p class="assistant-step-text">{{ $step->description }}</p>
+                <div class="content-card assistant-step-card">
+                    <div class="assistant-step-number">{{ $loop->iteration }}</div>
+                    <p class="assistant-step-text">{{ $step->description }}</p>
+                </div>
             </div>
         </section>
     @endforeach
@@ -43,33 +47,40 @@
     {{-- Befejezés: gratuláció + értékelés --}}
     <section class="assistant-screen">
         <div class="assistant-finish">
-            <div class="finish-emoji">🎉</div>
-            <h2 class="assistant-heading">Gratulálunk!</h2>
-            <p>Sikeresen elkészítetted a(z) <strong>{{ $recipe->title }}</strong> receptet!</p>
+            <div class="content-card assistant-finish-card">
+                <div class="finish-emoji"><i data-lucide="party-popper"></i></div>
+                <h2 class="assistant-heading">Gratulálunk!</h2>
+                <p>Sikeresen elkészítetted a(z) <strong>{{ $recipe->title }}</strong> receptet!</p>
+                <h2 class="assistant-heading assistant-heading-spaced">Jó étvágyat!</h2>
 
-            <form id="assistantRatingForm" data-authenticated="{{ auth()->check() ? '1' : '0' }}" data-rate-link="{{ route('recipes.rate.link', $recipe->id) }}" action="{{ route('recipes.score', $recipe->id) }}" method="POST" class="assistant-rating">
-                @csrf
-                <div class="assistant-stars">
-                    @for ($i = 1; $i <= 5; $i++)
-                        <label class="assistant-star">
-                            <input type="radio" name="score" value="{{ $i }}" {{ $userScore && $userScore->score == $i ? 'checked' : '' }}>
-                            <span class="assistant-star-icon {{ $userScore && $i <= $userScore->score ? 'filled' : '' }}">★</span>
-                        </label>
-                    @endfor
-                </div>
-                <p class="assistant-rating-status" id="assistantRatingStatus">
-                    {{ $userScore ? 'A te értékelésed: ' . $userScore->score . ' csillag' : 'Értékeld a receptet!' }}
-                </p>
-            </form>
+                <form id="assistantRatingForm" data-authenticated="{{ auth()->check() ? '1' : '0' }}" data-rate-link="{{ route('recipes.rate.link', $recipe->id) }}" action="{{ route('recipes.score', $recipe->id) }}" method="POST" class="assistant-rating">
+                    @csrf
+                    <div class="assistant-stars">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <label class="assistant-star">
+                                <input type="radio" name="score" value="{{ $i }}" {{ $userScore && $userScore->score == $i ? 'checked' : '' }}>
+                                <span class="assistant-star-icon {{ $userScore && $i <= $userScore->score ? 'filled' : '' }}">★</span>
+                            </label>
+                        @endfor
+                    </div>
+                    <p class="assistant-rating-status" id="assistantRatingStatus">
+                        {{ $userScore ? 'A te értékelésed: ' . $userScore->score . ' csillag' : 'Értékeld a receptet!' }}
+                    </p>
+                </form>
 
-            <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-cook">Vissza a recepthez</a>
+                <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-cook">Vissza a recepthez</a>
+            </div>
         </div>
     </section>
 
-    {{-- Navigáció: nagy, oldalra rögzített nyilak --}}
+    {{-- Navigáció: nagy, oldalra rögzített nyilak, teljes magasságú hover-zónával --}}
     <nav class="assistant-nav">
-        <button type="button" id="assistantPrev" class="btn-assistant-nav btn-assistant-prev" aria-label="Vissza">‹</button>
-        <button type="button" id="assistantNext" class="btn-assistant-nav btn-assistant-next" aria-label="Tovább">›</button>
+        <div class="assistant-nav-zone assistant-nav-zone-prev">
+            <button type="button" id="assistantPrev" class="btn-assistant-nav btn-assistant-prev" aria-label="Vissza"><i data-lucide="chevron-left"></i></button>
+        </div>
+        <div class="assistant-nav-zone assistant-nav-zone-next">
+            <button type="button" id="assistantNext" class="btn-assistant-nav btn-assistant-next" aria-label="Tovább"><i data-lucide="chevron-right"></i></button>
+        </div>
     </nav>
     <span class="assistant-progress" id="assistantProgress"></span>
 
@@ -151,10 +162,18 @@ document.addEventListener('DOMContentLoaded', function () {
         return parts;
     }
 
+    // Esc gombra kilépés az asszisztensből, ugyanoda, ahova a bezárás (X) gomb vezet
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            document.querySelector('.assistant-close').click();
+        }
+    });
+
     // ===== 1. Képernyők közötti navigáció =====
     const screens = Array.from(document.querySelectorAll('.assistant-screen'));
     const prevBtn = document.getElementById('assistantPrev');
     const nextBtn = document.getElementById('assistantNext');
+    const nextZone = nextBtn.closest('.assistant-nav-zone');
     const progress = document.getElementById('assistantProgress');
     let current = 0;
 
@@ -163,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
         screens.forEach((s, i) => s.classList.toggle('is-active', i === index));
         prevBtn.disabled = (current === 0);
         const isLast = current === screens.length - 1;
-        nextBtn.style.visibility = isLast ? 'hidden' : 'visible';
+        nextZone.style.visibility = isLast ? 'hidden' : 'visible';
         progress.textContent = (current + 1) + ' / ' + screens.length;
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -191,6 +210,19 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
         if (current < screens.length - 1) showScreen(current + 1);
+    });
+
+    // Bal/jobb nyíl gombokkal is ugyanaz, mint a prev/next gombra kattintva
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft') prevBtn.click();
+        if (e.key === 'ArrowRight') nextBtn.click();
+    });
+
+    // A gomb körüli teljes hover-zóna is kattintható, nem csak a kör maga
+    document.querySelectorAll('.assistant-nav-zone').forEach(function (zone) {
+        zone.addEventListener('click', function (e) {
+            if (e.target === zone) zone.querySelector('button').click();
+        });
     });
 
     // ===== 2. Hozzávalók lapozása (dinamikus, a tényleges helyhez igazítva) =====

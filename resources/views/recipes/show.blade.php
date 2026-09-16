@@ -24,13 +24,13 @@
                     </form>
                 @endauth
                 <div class="banner-cook-overlay">
-                    <a href="{{ route('recipes.assistant', $recipe->id) }}" class="btn-cook btn-cook-banner">🍳 Elkészítem</a>
+                    <a href="{{ route('recipes.assistant', $recipe->id) }}" class="btn-cook btn-cook-banner"><i data-lucide="bot"></i> Elkészítem</a>
                 </div>
             </div>
 
-            <h1 class="recipe-title">{{ $recipe->title }}</h1>
+            <div class="content-card intro-card">
+                <h1 class="recipe-title">{{ $recipe->title }}</h1>
 
-            <div class="recipe-info">
                 <div class="recipe-meta">
                     <div class="meta-date">
                         <span class="meta-icon"><i data-lucide="clock"></i></span>
@@ -60,7 +60,13 @@
                     <span class="rating-number">{{ number_format($averageScore ?? 0, 1) }}</span>
                     <span class="review-count">({{ $scoreCount }} értékelés)</span>
                 </a>
+            </div>
 
+            <div class="content-card description-card">
+                <h2 class="content-title">
+                    <span class="title-icon"><i data-lucide="align-left"></i></span>
+                    Leírás
+                </h2>
                 <p class="recipe-description">{{ $recipe->description }}</p>
             </div>
         </div>
@@ -68,7 +74,7 @@
         <!-- Jobb oldal: hozzávalók -->
         <div class="content-card ingredients-card">
             <h2 class="content-title">
-                <span class="title-icon">🥘</span>
+                <span class="title-icon"><i data-lucide="cooking-pot"></i></span>
                 Hozzávalók
             </h2>
             <ul class="ingredients-list">
@@ -85,7 +91,7 @@
     <!-- Alsó szekció: elkészítés -->
     <section class="content-card steps-card">
         <h2 class="content-title">
-            <span class="title-icon">👨‍🍳</span>
+            <span class="title-icon"><i data-lucide="chef-hat"></i></span>
             Elkészítés
         </h2>
         <ol class="steps-list">

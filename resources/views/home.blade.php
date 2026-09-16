@@ -8,24 +8,28 @@
         <div class="hero-container">
             <div class="hero-text">
                 <h1 class="hero-title">Tapasztald meg<br>az <span class="hero-highlight">ételkészítés</span> új élményét!</h1>
-                <p class="hero-subtitle">Próbáld ki receptjeinket a Kukta asszisztens <i data-lucide="bot" class="hero-subtitle-icon"></i> segítségével!</p>
+                <p class="hero-subtitle">Próbáld ki receptjeinket a <span class="hero-assistant-badge">Kukta asszisztens <i data-lucide="bot" class="hero-subtitle-icon"></i></span> segítségével!</p>
+
+                <div class="mobile-search-sticky">
+                    <div class="search-bar">
+                        <form action="{{ route('home') }}" method="GET">
+                            <div class="search-row">
+                                <div class="search-input-group">
+                                    <i data-lucide="search" class="search-input-icon"></i>
+                                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Keresés..." class="search-input">
+                                </div>
+                                <span class="search-divider"></span>
+                                <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők</button>
+                                <span class="search-divider"></span>
+                                <button type="button" class="btn-sort" onclick="openModal('sortModal')"><i data-lucide="arrow-up-down"></i> Rendezés</button>
+                                <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
             <div class="hero-image">
                 <img src="{{ asset('images/hero-food-javitott.png') }}" alt="Ételkép">
-            </div>
-        </div>
-
-        {{-- Mobil kereső sáv (desktopon rejtett, mobilon a hero-ban) --}}
-        <div class="mobile-search-sticky">
-            <div class="search-bar">
-                <form action="{{ route('home') }}" method="GET">
-                    <div class="search-row">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Keresés..." class="search-input">
-                        <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
-                        <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők</button>
-                        <button type="button" class="btn-sort" onclick="openModal('sortModal')"><i data-lucide="arrow-up-down"></i> Rendezés</button>
-                    </div>
-                </form>
             </div>
         </div>
     </section>
@@ -37,10 +41,15 @@
         <div class="search-bar">
             <form action="{{ route('home') }}" method="GET" id="searchForm">
                 <div class="search-row">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Receptek keresése kulcsszó szerint..." class="search-input" autofocus>
-                    <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
+                    <div class="search-input-group">
+                        <i data-lucide="search" class="search-input-icon"></i>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Receptek keresése kulcsszó szerint..." class="search-input" autofocus>
+                    </div>
+                    <span class="search-divider"></span>
                     <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők</button>
+                    <span class="search-divider"></span>
                     <button type="button" class="btn-sort" onclick="openModal('sortModal')"><i data-lucide="arrow-up-down"></i> Rendezés</button>
+                    <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
                 </div>
             </form>
         </div>

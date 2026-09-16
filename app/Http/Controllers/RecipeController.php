@@ -556,10 +556,15 @@ class RecipeController extends Controller
 
     public function destroy($id)
     {
-        $recipe = Recipe::where('user_id', Auth::id())->findOrFail($id);
+        $recipe = Recipe::findOrFail($id);
+
+        if ($recipe->user_id !== Auth::id() && !Auth::user()?->isAdmin()) {
+            abort(403);
+        }
+
         $recipe->delete();
 
-        return redirect()->route('recipes.my')->with('success', 'Recept sikeresen törölve!');
+        return redirect()->back()->with('success', 'Recept sikeresen törölve!');
     }
 }
 
