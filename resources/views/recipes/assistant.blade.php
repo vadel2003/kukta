@@ -27,9 +27,13 @@
 
     {{-- 0. lépés: hozzávalók --}}
     <section class="assistant-screen">
-        <h2 class="assistant-heading">Hozzávalók <span class="ingredient-page-label" id="ingredientPageLabel"></span></h2>
-        <div class="ingredient-pages" id="ingredientPages"></div>
-        <div class="page-dots" id="ingredientDots"></div>
+        <div class="assistant-ingredients">
+            <div class="content-card assistant-ingredients-card">
+                <h2 class="assistant-heading">Hozzávalók <span class="ingredient-page-label" id="ingredientPageLabel"></span></h2>
+                <div class="ingredient-pages" id="ingredientPages"></div>
+                <div class="page-dots" id="ingredientDots"></div>
+            </div>
+        </div>
     </section>
 
     {{-- 1..n. lépések --}}
