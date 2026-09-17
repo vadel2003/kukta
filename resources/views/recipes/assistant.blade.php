@@ -3,6 +3,10 @@
 @section('title', 'Kukta asszisztens – ' . $recipe->title)
 @section('bodyClass', 'assistant-page')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/assistant/assistant.css') }}?v={{ filemtime(public_path('css/assistant/assistant.css')) }}">
+@endpush
+
 @section('content')
 <div class="assistant" style="--assistant-bg-image: url('{{ $recipe->thumbnail ? asset($recipe->thumbnail) : asset('images/recipes/default/recipe_placeholder.jpg') }}');">
 

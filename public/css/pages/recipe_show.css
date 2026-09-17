@@ -1,0 +1,456 @@
+.alert-success {
+    margin-top: 1.5rem;
+    padding: 0.9rem 1.2rem;
+    background: rgba(40, 167, 69, 0.12);
+    border: 1px solid var(--color-success);
+    border-radius: 4px;
+    color: var(--color-success);
+    font-weight: 600;
+}
+
+/* Banner szekció */
+.recipe-banner {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+.banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 1.5px solid #ccc;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5), inset 0 0 50px rgba(0,0,0,0.25);
+}
+
+.banner-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+}
+
+.banner-title {
+    color: var(--color-white);
+    font-size: 2.5rem;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.recipe-title {
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--color-text);
+}
+
+.recipe-left {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.recipe-meta {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.meta-author {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.author-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.35);
+}
+
+.meta-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text-light);
+}
+
+.meta-icon {
+    display: inline-flex;
+}
+
+.meta-icon svg {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+/* A recept részletező oldal saját leírás-mérete (a kártyás .recipe-description alapstílusa az app.css-ben van) */
+.recipe-description {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--color-text);
+}
+
+/* Felső szekció: kép balra, hozzávalók jobbra */
+.recipe-top {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+}
+
+/* Alsó szekció */
+.steps-card {
+    margin-bottom: 2rem;
+}
+
+/* Hozzávalók listája */
+.ingredients-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ingredient-quantity {
+    font-weight: 600;
+    color: var(--color-primary);
+    min-width: 100px;
+}
+
+.ingredient-name {
+    color: var(--color-text);
+}
+
+/* Lépések listája */
+.steps-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: step-counter;
+}
+
+.step-number {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    background: var(--color-primary);
+    color: var(--color-white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.step-text {
+    margin: 0;
+    line-height: 1.6;
+    padding-top: 0.4rem;
+}
+
+/* Kedvenc gomb a banner jobb felső sarkában */
+.banner-favorite-form {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #fff;
+    padding: 0.5rem 0.9rem;
+    border-radius: 24px;
+}
+
+.recipe-banner::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 420px;
+    height: 420px;
+    background: radial-gradient(circle 320px at bottom right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.banner-cook-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+    z-index: 2;
+}
+
+.btn-cook-banner {
+    margin-top: 0;
+    font-size: 1.15rem;
+    padding: 1rem 2.2rem;
+    border: 2px solid transparent;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+}
+
+.btn-favorite-banner {
+    background: #fff;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: transform 0.2s;
+    color: var(--color-favorite);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-favorite-banner:hover {
+    transform: scale(1.2);
+}
+
+.btn-favorite-banner.favorited {
+    background: #fff;
+    color: var(--color-favorite);
+}
+
+/* Kedvenc szív kitöltése a banneren */
+.btn-favorite-banner:not(.favorited) .lucide path {
+    fill: none;
+}
+
+.btn-favorite-banner.favorited .lucide path {
+    fill: currentColor;
+}
+
+/* ===== CSILLAGOS ÉRTÉKELÉS (részletes oldal, nagyobb, hangsúlyosabb megjelenés) ===== */
+.star-rating-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0 6px 0;
+    text-decoration: none;
+    cursor: pointer;
+    width: fit-content;
+}
+
+#reviews {
+    scroll-margin-top: 100px;
+}
+
+.star-rating-section .stars {
+    font-size: 1.3rem;
+    color: #f5a623;
+    letter-spacing: 2px;
+}
+
+.star-rating-section .rating-number {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.star-rating-section .review-count {
+    font-size: 0.9rem;
+    color: #888;
+}
+
+/* ===== ÉRTÉKELÉSI KÁRTYA ===== */
+.rating-summary {
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+}
+
+.rating-summary-left {
+    text-align: center;
+    min-width: 150px;
+}
+
+.rating-average {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    line-height: 1;
+}
+
+.rating-stars-display {
+    margin: 0.5rem 0;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+}
+
+.rating-stars-display .star {
+    color: #DBD3C8;
+}
+
+.rating-stars-display .star.filled {
+    color: var(--color-primary);
+}
+
+.rating-count {
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+}
+
+.rating-summary-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.rating-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.rating-bar-label {
+    min-width: 30px;
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: 0.9rem;
+}
+
+.rating-bar-track {
+    flex: 1;
+    height: 8px;
+    background: #F1EBE2;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.rating-bar-fill {
+    height: 100%;
+    background: var(--color-primary);
+    transition: width 0.3s ease;
+}
+
+.rating-bar-count {
+    min-width: 30px;
+    text-align: right;
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+}
+
+.rating-divider {
+    border-top: 1px solid var(--color-border);
+    margin: 1.5rem 0;
+}
+
+.rating-personal {
+    text-align: center;
+}
+
+.rating-personal-title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: var(--color-text);
+}
+
+.rating-stars-interactive {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.star-label {
+    cursor: pointer;
+    position: relative;
+}
+
+.star-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.star-icon {
+    font-size: 2.5rem;
+    color: #D3C9BC;
+    transition: color 0.15s ease, transform 0.15s ease;
+    display: inline-block;
+}
+
+.star-icon.filled {
+    color: var(--color-primary);
+}
+
+.star-label:hover .star-icon {
+    color: var(--color-primary);
+    transform: scale(1.15);
+}
+
+.star-input:checked ~ .star-icon {
+    color: var(--color-primary);
+}
+
+.rating-personal-status {
+    color: var(--color-text-light);
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.rating-login-prompt {
+    font-size: 1.1rem;
+    color: var(--color-text-light);
+}
+
+.rating-login-prompt a {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+/* Reszponzív: mobilon függőleges elrendezés */
+@media (max-width: 768px) {
+    .recipe-banner {
+        height: 250px;
+    }
+
+    .banner-title {
+        font-size: 1.5rem;
+    }
+
+    .recipe-top {
+        grid-template-columns: 1fr;
+    }
+
+    .recipe-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .rating-summary {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .rating-summary-left {
+        min-width: auto;
+    }
+
+    .rating-average {
+        font-size: 2.5rem;
+    }
+
+    .star-icon {
+        font-size: 2rem;
+    }
+}

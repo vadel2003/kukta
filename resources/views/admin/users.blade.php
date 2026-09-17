@@ -2,6 +2,10 @@
 
 @section('title', 'Felhasználók (admin)')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}?v={{ filemtime(public_path('css/admin/admin.css')) }}">
+@endpush
+
 @section('content')
     <h1>Felhasználók kezelése</h1>
 

@@ -2,6 +2,10 @@
 
 @section('title', '404 - Az oldal nem található')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/pages/404.css') }}?v={{ filemtime(public_path('css/pages/404.css')) }}">
+@endpush
+
 @section('content')
     <div class="error-page">
         <div class="kukta" aria-hidden="true">

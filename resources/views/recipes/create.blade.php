@@ -2,6 +2,10 @@
 
 @section('title', isset($recipe) ? 'Recept szerkesztése' : 'Új recept')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}?v={{ filemtime(public_path('css/admin/admin.css')) }}">
+@endpush
+
 @section('content')
     @php
         $isEdit = isset($recipe);
@@ -100,7 +104,7 @@
                 <label class="upload-box">
                     <input type="file" name="thumbnail_image" accept="image/jpeg,image/png,image/gif,image/webp" class="upload-input">
                     <img src="{{ asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="" class="upload-placeholder">
-                    <span class="upload-hint">+ Saját kép feltöltése</span>
+                    <span class="upload-hint">+</span>
                 </label>
                 @error('thumbnail_image')
                     <span style="color: red;">{{ $message }}</span>
@@ -358,13 +362,13 @@
             });
         }
 
-        // × gombok elrejtése, ha csak 3 lépés van
+        // × gombok letiltása, ha csak 3 lépés van (eltüntetés helyett, hogy mindig ott legyenek)
         function updateStepRemoveButtons() {
             const rows = document.querySelectorAll('#steps-container .step-item');
             const canRemove = rows.length > 3;
             rows.forEach(function(row) {
                 const btn = row.querySelector('.remove-step');
-                if (btn) btn.style.display = canRemove ? '' : 'none';
+                if (btn) btn.disabled = !canRemove;
             });
         }
 
@@ -411,13 +415,13 @@
             });
         }
 
-        // × gombok elrejtése, ha csak 3 alapanyag van
+        // × gombok letiltása, ha csak 3 alapanyag van (eltüntetés helyett, hogy mindig ott legyenek)
         function updateIngredientRemoveButtons() {
             const rows = document.querySelectorAll('#ingredients .ingredient-item');
             const canRemove = rows.length > 3;
             rows.forEach(function(row) {
                 const btn = row.querySelector('.remove-ingredient');
-                if (btn) btn.style.display = canRemove ? '' : 'none';
+                if (btn) btn.disabled = !canRemove;
             });
         }
 

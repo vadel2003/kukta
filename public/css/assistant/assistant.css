@@ -1,0 +1,489 @@
+/* ===== KUKTA ASSZISZTENS: teljes képernyős, fejléc/lábléc nélküli mód ===== */
+body.assistant-page header,
+body.assistant-page .site-footer,
+body.assistant-page .scroll-to-top {
+    display: none;
+}
+
+body.assistant-page main {
+    max-width: none;
+    width: 100%;
+    padding: 0;
+}
+
+/* Görgetés teljes letiltása: egyetlen képernyő tartalma se lehet magasabb a 100vh-nál */
+body.assistant-page {
+    overflow: hidden;
+    height: 100vh;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+body.assistant-page::-webkit-scrollbar {
+    display: none;
+}
+
+.assistant-close {
+    position: fixed;
+    top: 1.25rem;
+    left: 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    font-size: 1.3rem;
+    text-decoration: none;
+    z-index: 600;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.assistant-close svg {
+    width: 1.6rem;
+    height: 1.6rem;
+}
+
+.assistant-close:hover {
+    background: rgba(0, 0, 0, 0.75);
+    transform: scale(1.08);
+}
+
+.assistant {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    min-height: 100vh;
+    background-image: linear-gradient(rgba(250, 246, 240, 0.92), rgba(250, 246, 240, 0.92)), var(--assistant-bg-image);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.assistant-screen {
+    display: none;
+}
+
+.assistant-screen.is-active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    animation: assistantFade 0.3s ease;
+}
+
+@keyframes assistantFade {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* -1. lépés: háttérkép + leírás */
+.assistant-intro {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.assistant-intro::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.assistant-intro-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 640px;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+/* Ugyanaz a stílus, mint a recept kártyáké (.recipe-card), minimálisan áttetsző háttérrel */
+.assistant-intro-card {
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid #ECE3D8;
+    border-radius: 4px;
+    padding: 20px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.assistant-intro-overlay {
+    color: var(--color-text);
+    text-align: center;
+}
+
+.assistant-greeting-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.assistant-mascot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 88px;
+    height: 88px;
+    margin-bottom: 0.8rem;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.assistant-mascot svg {
+    width: 44px;
+    height: 44px;
+}
+
+.assistant-greeting-text {
+    margin: 0;
+    max-width: 420px;
+    font-weight: 600;
+    color: var(--color-heading);
+}
+
+.assistant-intro-overlay h1 {
+    margin: 0 0 0.8rem;
+    font-size: 2rem;
+    color: var(--color-heading);
+}
+
+.assistant-intro-overlay p {
+    margin: 0;
+    line-height: 1.7;
+    color: var(--color-text);
+}
+
+.assistant-heading {
+    width: 100%;
+    text-align: center;
+    margin: 0 0 1.5rem;
+    box-sizing: border-box;
+    font-size: 2rem;
+}
+
+.assistant-heading-spaced {
+    margin: 1.5rem 0 0.5rem;
+}
+
+.assistant-ingredients {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 1rem 6rem;
+    box-sizing: border-box;
+}
+
+.assistant-ingredients-card {
+    width: 100%;
+    max-width: 1200px;
+    text-align: center;
+}
+
+/* Hozzávalók: lapok + rács */
+.ingredient-pages {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.ingredient-grid {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 1rem;
+}
+
+.ai-ingredient {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    background: var(--color-white);
+    border: 1px solid #ECE3D8;
+    border-radius: 4px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    min-width: 0;
+}
+
+.ai-ingredient-qty {
+    font-weight: 700;
+    color: var(--color-primary);
+    white-space: nowrap;
+}
+
+.ai-ingredient-name {
+    text-align: right;
+    color: var(--color-text);
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ingredient-page-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3.4rem;
+    height: 2.4rem;
+    padding: 0 0.9rem;
+    border-radius: 24px;
+    background: var(--color-primary);
+    color: #fff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.page-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    margin-top: 0.5rem;
+}
+
+.page-dot {
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border-radius: 50%;
+    border: 2px solid var(--color-primary);
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.page-dot.is-active {
+    background: var(--color-primary);
+    transform: scale(1.25);
+}
+
+/* 1..n. lépések */
+.assistant-step {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 2rem 6rem;
+    box-sizing: border-box;
+}
+
+.assistant-step-card {
+    width: 100%;
+    max-width: 680px;
+    text-align: center;
+}
+
+.assistant-step-number {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: #fff;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.assistant-step-text {
+    font-size: 1.25rem;
+    line-height: 1.8;
+    max-width: 620px;
+    margin: 0 auto;
+    color: var(--color-text);
+}
+
+/* Befejezés + értékelés */
+.assistant-finish {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 2rem 6rem;
+    box-sizing: border-box;
+}
+
+.assistant-finish-card {
+    width: 100%;
+    max-width: 680px;
+    text-align: center;
+}
+
+.finish-emoji {
+    display: flex;
+    justify-content: center;
+    color: var(--color-cta);
+    margin-bottom: 0.5rem;
+}
+
+.finish-emoji svg {
+    width: 3rem;
+    height: 3rem;
+}
+
+.assistant-stars {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    font-size: 2.75rem;
+    margin: 0.5rem 0 0.4rem;
+}
+
+.assistant-star input {
+    display: none;
+}
+
+.assistant-star-icon {
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.assistant-star-icon.filled {
+    color: var(--color-primary);
+}
+
+.assistant-rating-status {
+    margin: 0.4rem 0 1rem;
+    color: var(--color-text-light);
+}
+
+/* Navigáció: nagy, feltűnő nyilak a képernyő két szélén */
+.assistant-nav-zone {
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    width: 132px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.25s ease;
+    z-index: 500;
+}
+
+.assistant-nav-zone:hover {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+.assistant-nav-zone-prev {
+    left: 0;
+}
+
+.assistant-nav-zone-next {
+    right: 0;
+}
+
+.btn-assistant-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 88px;
+    height: 88px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: #fff;
+    font-size: 2.6rem;
+    line-height: 1;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-assistant-nav svg {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.btn-assistant-nav:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+    transform: scale(1.08);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.35);
+}
+
+.btn-assistant-nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.assistant-progress {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.25rem;
+    pointer-events: none;
+    font-weight: 600;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.55);
+    padding: 0.35rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    z-index: 500;
+}
+
+@media (max-width: 640px) {
+    .assistant-ingredients,
+    .assistant-step,
+    .assistant-finish {
+        padding: 0 3.5rem;
+    }
+
+    .assistant-intro-content {
+        padding: 1rem;
+    }
+
+    .assistant-heading {
+        font-size: 1.4rem;
+    }
+
+    .ingredient-page-label {
+        min-width: 2.6rem;
+        height: 1.9rem;
+        padding: 0 0.6rem;
+        font-size: 0.95rem;
+    }
+
+    .assistant-nav-zone {
+        width: 90px;
+    }
+
+    .btn-assistant-nav {
+        width: 60px;
+        height: 60px;
+        font-size: 1.8rem;
+    }
+
+    .btn-assistant-nav svg {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+}

@@ -1,4 +1,4 @@
-﻿:root {
+:root {
     --color-bg: #FAF6F0;
     --color-text: #333;
     --color-text-light: #666;
@@ -38,6 +38,10 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: 'Instrument Sans', sans-serif;
     background-color: var(--color-bg);
@@ -48,6 +52,7 @@ body {
     min-height: 100vh;
 }
 
+/* ===== FEJLÉC / NAVIGÁCIÓ (minden oldalon megjelenik) ===== */
 header {
     background: var(--color-primary);
     padding: 0.5rem 2rem;
@@ -183,7 +188,230 @@ button {
     font-size: 1rem;
 }
 
-/* Recept galéria stílusok */
+/* ===== MODERN KERESŐ SÁV - komponens osztályok (fejléc + főoldal is használja) ===== */
+.search-row {
+    display: flex;
+    align-items: center;
+    background: var(--color-white);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.search-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+    padding: 0.75rem 1rem;
+}
+
+.search-input-icon {
+    flex-shrink: 0;
+    width: 1.1em;
+    height: 1.1em;
+    color: var(--color-text-light);
+}
+
+.search-input {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: none;
+    font-size: 1rem;
+    color: var(--color-text);
+    background: transparent;
+}
+
+.search-input:focus {
+    outline: none;
+}
+
+.search-divider {
+    flex-shrink: 0;
+    width: 1px;
+    height: 1.5rem;
+    background: var(--color-border);
+}
+
+.btn-search,
+.btn-filters,
+.btn-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-search svg,
+.btn-filters svg,
+.btn-sort svg {
+    width: 1em;
+    height: 1em;
+    margin-right: 0.3em;
+}
+
+.header-search .btn-search svg,
+.header-search .btn-filters svg,
+.header-search .btn-sort svg {
+    width: 1em;
+    height: 1em;
+    margin-right: 0.25em;
+}
+
+.btn-search {
+    background: var(--color-cta);
+    color: var(--color-white);
+    transition: all 0.3s ease;
+}
+
+.btn-search:hover {
+    background: var(--color-cta-hover);
+}
+
+.btn-filters,
+.btn-sort {
+    background: transparent;
+    color: var(--color-text-light);
+}
+
+.btn-filters:hover,
+.btn-sort:hover {
+    background-color: var(--color-bg-hover);
+    color: var(--color-text);
+}
+
+.btn-filters:active,
+.btn-sort:active {
+    transform: scale(0.98);
+}
+
+/* ===== Kereső a header-ben (görgetés után, animálva be- és kicsúszik) ===== */
+.header-search {
+    display: flex;
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 0;
+    padding: 0 0.35rem;
+    box-sizing: border-box;
+    opacity: 0;
+    overflow: hidden;
+    gap: 0.5rem;
+    margin: 0;
+    pointer-events: none;
+    transition: max-width 0.4s ease, opacity 0.3s ease, margin 0.4s ease;
+}
+
+header.scrolled .header-search {
+    flex: 1;
+    max-width: 760px;
+    opacity: 1;
+    margin: 0 1rem;
+    pointer-events: auto;
+}
+
+header.scrolled .header-search .search-row > * {
+    animation: headerSearchItemIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+header.scrolled .header-search .search-row > *:nth-child(1) { animation-delay: 0s; }
+header.scrolled .header-search .search-row > *:nth-child(2) { animation-delay: 0.05s; }
+header.scrolled .header-search .search-row > *:nth-child(3) { animation-delay: 0.1s; }
+header.scrolled .header-search .search-row > *:nth-child(4) { animation-delay: 0.15s; }
+header.scrolled .header-search .search-row > *:nth-child(5) { animation-delay: 0.2s; }
+header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0.25s; }
+
+@keyframes headerSearchItemIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.header-search .search-row {
+    flex: 1;
+    min-width: 0;
+    height: 38px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.header-search .search-input-group,
+.header-search .btn-search,
+.header-search .btn-filters,
+.header-search .btn-sort {
+    height: 100%;
+    padding: 0 0.75rem;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.header-search .btn-search:hover {
+    transform: none;
+}
+
+/* Keskenyebb asztali/tablet nézetben (pl. kisebb laptop) a feliratok eltűnnek,
+   csak az ikonok maradnak, hogy a keresősáv ne csorduljon túl a headeren */
+@media (max-width: 1200px) {
+    header.scrolled .header-search {
+        max-width: 320px;
+    }
+
+    header.scrolled .header-search .search-input-group {
+        flex: 2;
+        min-width: 0;
+    }
+
+    header.scrolled .header-search .btn-search,
+    header.scrolled .header-search .btn-filters,
+    header.scrolled .header-search .btn-sort {
+        flex: 0 0 auto;
+        padding: 0 0.6rem;
+        font-size: 0;
+    }
+
+    header.scrolled .header-search .btn-search svg,
+    header.scrolled .header-search .btn-filters svg,
+    header.scrolled .header-search .btn-sort svg {
+        margin-right: 0;
+        width: 1rem;
+        height: 1rem;
+    }
+}
+
+/* ===== RESPONSIVE - KERESŐ GOMBOK (fejléc + főoldal keresősávja is) ===== */
+@media (max-width: 600px) {
+    .search-input-group {
+        padding: 0.75rem 0.6rem;
+    }
+
+    .btn-search,
+    .btn-filters,
+    .btn-sort {
+        padding: 0.75rem 0.6rem;
+        font-size: 0;
+    }
+
+    .btn-search svg,
+    .btn-filters svg,
+    .btn-sort svg {
+        margin-right: 0;
+        width: 1.1rem;
+        height: 1.1rem;
+    }
+}
+
+/* ===== RECEPTKÁRTYA + GALÉRIA (több oldalon újrahasznált komponens) ===== */
 .recipe-gallery {
     display: flex;
     flex-wrap: wrap;
@@ -339,7 +567,35 @@ button {
     background-color: var(--color-danger-hover);
 }
 
-/* Kedvenc gomb */
+/* Elkészítem / Vissza a recepthez gomb (recept részletező + asszisztens oldal is használja) */
+.btn-cook {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.9rem 2rem;
+    background: var(--color-cta);
+    color: #fff;
+    border: 2px solid transparent;
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.btn-cook:hover {
+    background: var(--color-cta-hover);
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+.btn-cook svg {
+    width: 1.2em;
+    height: 1.2em;
+}
+
+/* Kedvenc gomb (jelenleg nincs élő .btn-favorite osztályú elem, csak a -card és -banner variánsok vannak használva lejjebb) */
 .btn-favorite {
     background: none;
     border: 2px solid var(--color-favorite);
@@ -415,7 +671,100 @@ button {
     font-weight: 600;
 }
 
-/* Szűrő űrlap stílusok */
+/* Kedvenc szív kitöltése (kártyán) */
+.btn-favorite-card:not(.favorited) .lucide path {
+    fill: none;
+}
+
+.btn-favorite-card.favorited .lucide path {
+    fill: currentColor;
+}
+
+/* Csillagos értékelés a kártyán */
+.star-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 8px 0;
+}
+
+.star-rating .stars {
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+}
+
+.star-rating .stars span {
+    color: #DBD3C8;
+}
+
+.star-rating .stars span.filled {
+    color: var(--color-primary);
+}
+
+.star-rating .rating-number {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #555;
+}
+
+.star-rating .review-count {
+    font-size: 0.8rem;
+    color: #999;
+}
+
+.recipe-card .star-rating {
+    margin: 6px 0 4px 0;
+}
+
+/* ===== HOVER TOOLTIP A KÁRTYÁKON ===== */
+.card-tooltip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 10;
+}
+
+.recipe-card:hover {
+    z-index: 5;
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.recipe-description:hover ~ .card-tooltip,
+.card-tooltip:hover {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tooltip-description {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.no-results {
+    text-align: center;
+    color: var(--color-text-light);
+    padding: 40px 0;
+    width: 100%;
+}
+
+/* Régi szűrő űrlap stílusok - jelenleg nincs .filter-form/.filter-search/.filter-select/.btn-filter
+   osztályú elem a nézetekben (a szűrés ma a modal ablakon keresztül működik), de a szabályok
+   megtartva, hátha később visszakerül ez az űrlap-alapú megoldás */
 .filter-form {
     display: flex;
     flex-wrap: wrap;
@@ -470,295 +819,7 @@ button {
     background-color: var(--color-primary-hover);
 }
 
-.btn-reset {
-    text-decoration: none;
-    color: var(--color-text-light);
-    padding: 8px 12px;
-}
-
-.btn-reset:hover {
-    color: var(--color-text);
-    text-decoration: underline;
-}
-
-.no-results {
-    text-align: center;
-    color: var(--color-text-light);
-    padding: 40px 0;
-    width: 100%;
-}
-
-/* ===== HERO SZEKCIÓ ===== */
-html {
-    scroll-behavior: smooth;
-}
-
-.hero-section {
-    background-image: url('../images/hero_background.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    padding: 64px 0;
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
-    overflow: visible;
-    position: relative;
-}
-
-.hero-section::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    height: 160px;
-    background: linear-gradient(to bottom,
-        rgba(0, 0, 0, 0.12) 0%,
-        rgba(0, 0, 0, 0) 100%);
-    pointer-events: none;
-    z-index: 5;
-}
-
-.hero-section::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 260px;
-    background: linear-gradient(to bottom,
-        rgba(250, 246, 240, 0) 0%,
-        rgba(250, 246, 240, 0.1) 35%,
-        rgba(250, 246, 240, 0.3) 55%,
-        rgba(250, 246, 240, 0.6) 75%,
-        rgba(250, 246, 240, 0.85) 90%,
-        #FAF6F0 100%);
-    pointer-events: none;
-    z-index: 5;
-}
-
-.hero-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    gap: 80px;
-    position: relative;
-}
-
-.hero-text {
-    position: static;
-    flex: 3;
-    max-width: none;
-    padding-left: 1rem;
-}
-
-.hero-title {
-    font-size: 2.5rem;
-    color: var(--color-dark-brown);
-    margin-bottom: 20px;
-    line-height: 1.2;
-}
-
-.hero-highlight {
-    color: var(--color-hero-highlight);
-}
-
-.hero-subtitle {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--color-heading);
-    margin-bottom: 30px;
-}
-
-.hero-assistant-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3em;
-    color: var(--color-cta);
-    font-weight: 700;
-    background: rgba(74, 124, 47, 0.4);
-    padding: 0.15em 0.6em;
-    border-radius: 999px;
-}
-
-.hero-subtitle-icon {
-    width: 1.1em;
-    height: 1.1em;
-    color: var(--color-cta-hover);
-}
-
-.btn-secondary {
-    background-color: transparent;
-    color: var(--color-dark-brown);
-    padding: 12px 28px;
-    border-radius: 4px;
-    text-decoration: none;
-    font-weight: 500;
-    border: 2px solid var(--color-dark-brown);
-    transition: all 0.3s;
-}
-
-.btn-secondary:hover {
-    background-color: var(--color-dark-brown);
-    color: var(--color-white);
-}
-
-.hero-image {
-    flex: 2.5;
-    background: transparent;
-    height: auto;
-    overflow: visible;
-    margin-left: auto;
-}
-
-.hero-image img {
-    width: 100%;
-    position: relative;
-    top: -25px;
-    z-index: 10;
-    filter: drop-shadow(0 30px 60px var(--color-shadow-dark));
-    margin-top: 0px;
-    margin-bottom: -180px;
-}
-
-/* ===== SZEKCIÓK ===== */
-.latest-section,
-.recipes-section {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 45px 20px 60px 20px;
-    position: relative;
-}
-
-.section-title {
-    font-size: 1.8rem;
-    margin-bottom: 30px;
-    text-align: center;
-    color: var(--color-heading);
-    border-bottom: 3px solid var(--color-border-dark);
-    display: inline-block;
-    padding-bottom: 8px;
-}
-
-/* ===== RECEPT RÉSZLETES OLDAL ===== */
-
-/* Banner szekció */
-.recipe-banner {
-    position: relative;
-    width: 100%;
-    height: 300px;
-    overflow: hidden;
-    border-radius: 4px;
-}
-
-.banner-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border: 1.5px solid #ccc;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.5), inset 0 0 50px rgba(0,0,0,0.25);
-}
-
-.banner-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 2rem;
-    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
-}
-
-.banner-title {
-    color: var(--color-white);
-    font-size: 2.5rem;
-    margin: 0;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.recipe-title {
-    font-size: 2.5rem;
-    margin: 0 0 0.5rem 0;
-    color: var(--color-text);
-}
-
-.recipe-left {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.recipe-meta {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-}
-
-.meta-author {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.author-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid #ccc;
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.35);
-}
-
-.meta-date {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--color-text-light);
-}
-
-.meta-icon {
-    display: inline-flex;
-}
-
-.meta-icon svg {
-    width: 1.2rem;
-    height: 1.2rem;
-}
-
-.recipe-description {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: var(--color-text);
-}
-
-/* Felső szekció: kép balra, hozzávalók jobbra */
-.recipe-top {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: 2rem;
-    margin-bottom: 2rem;
-    margin-top: 2rem;
-}
-
-.alert-success {
-    margin-top: 1.5rem;
-    padding: 0.9rem 1.2rem;
-    background: rgba(40, 167, 69, 0.12);
-    border: 1px solid var(--color-success);
-    border-radius: 4px;
-    color: var(--color-success);
-    font-weight: 600;
-}
-
-/* Alsó szekció */
-.steps-card {
-    margin-bottom: 2rem;
-}
-
-/* Kártyák */
+/* ===== KÁRTYÁK (recept részletező + asszisztens oldal is használja) ===== */
 .content-card {
     background: var(--color-white);
     border: 1px solid #ECE3D8;
@@ -788,13 +849,7 @@ html {
     height: 1.5rem;
 }
 
-/* Hozzávalók listája */
-.ingredients-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
+/* Hozzávaló- és lépés-sor (recept részletező oldal listája ÉS az űrlap sorai is ezt használják) */
 .ingredient-item {
     display: flex;
     align-items: center;
@@ -804,24 +859,6 @@ html {
 
 .ingredient-item:last-child {
     border-bottom: none;
-}
-
-.ingredient-quantity {
-    font-weight: 600;
-    color: var(--color-primary);
-    min-width: 100px;
-}
-
-.ingredient-name {
-    color: var(--color-text);
-}
-
-/* Lépések listája */
-.steps-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    counter-reset: step-counter;
 }
 
 .step-item {
@@ -835,554 +872,68 @@ html {
     border-bottom: none;
 }
 
-.step-number {
-    flex-shrink: 0;
-    width: 36px;
-    height: 36px;
-    background: var(--color-primary);
-    color: var(--color-white);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 1rem;
-}
-
-.step-text {
-    margin: 0;
-    line-height: 1.6;
-    padding-top: 0.4rem;
-}
-
-/* Kedvenc gomb a banner jobb felső sarkában */
-.banner-favorite-form {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: #fff;
-    padding: 0.5rem 0.9rem;
-    border-radius: 24px;
-}
-
-.recipe-banner::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 420px;
-    height: 420px;
-    background: radial-gradient(circle 320px at bottom right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%);
-    pointer-events: none;
-    z-index: 1;
-}
-
-.banner-cook-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 1.5rem;
-    display: flex;
-    justify-content: flex-end;
-    z-index: 2;
-}
-
-.btn-cook-banner {
-    margin-top: 0;
-    font-size: 1.15rem;
-    padding: 1rem 2.2rem;
-    border: 2px solid transparent;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-}
-
-.btn-favorite-banner {
-    background: #fff;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-    transition: transform 0.2s;
-    color: var(--color-favorite);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-favorite-banner:hover {
-    transform: scale(1.2);
-}
-
-.btn-favorite-banner.favorited {
-    background: #fff;
-    color: var(--color-favorite);
-}
-
-/* Kedvenc szív kitöltése */
-.btn-favorite-card:not(.favorited) .lucide path,
-.btn-favorite-banner:not(.favorited) .lucide path {
-    fill: none;
-}
-
-.btn-favorite-card.favorited .lucide path,
-.btn-favorite-banner.favorited .lucide path {
-    fill: currentColor;
-}
-
-/* Reszponzív dizájn */
-@media (max-width: 768px) {
-    .recipe-banner {
-        height: 250px;
-    }
-
-    .banner-title {
-        font-size: 1.5rem;
-    }
-
-    .recipe-top {
-        grid-template-columns: 1fr;
-    }
-
-    .recipe-meta {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.75rem;
-    }
-}
-
-
-/* ===== MODERN KERESŐ SÁV ===== */
-.search-bar {
-    max-width: 720px;
-    margin: 3rem 0 2rem;
-    padding: 1rem;
-    background-color: var(--color-white);
-    border-radius: 4px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.08), 0 10px 20px rgba(0,0,0,0.12);
-}
-
-/* ===== Kereső a header-ben (görgetés után, animálva be- és kicsúszik) ===== */
-.header-search {
-    display: flex;
-    flex: 0 1 auto;
-    min-width: 0;
-    max-width: 0;
-    padding: 0 0.35rem;
-    box-sizing: border-box;
-    opacity: 0;
+/* ===== SAJÁT KÉP FELTÖLTŐ DOBOZ (recept űrlap) ===== */
+.upload-box {
+    position: relative;
+    display: block;
+    width: 220px;
+    height: 220px;
+    border: 2px dashed var(--color-border);
+    border-radius: 8px;
     overflow: hidden;
-    gap: 0.5rem;
-    margin: 0;
-    pointer-events: none;
-    transition: max-width 0.4s ease, opacity 0.3s ease, margin 0.4s ease;
-}
-
-header.scrolled .header-search {
-    flex: 1;
-    max-width: 760px;
-    opacity: 1;
-    margin: 0 1rem;
-    pointer-events: auto;
-}
-
-header.scrolled .header-search .search-row > * {
-    animation: headerSearchItemIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
-}
-
-header.scrolled .header-search .search-row > *:nth-child(1) { animation-delay: 0s; }
-header.scrolled .header-search .search-row > *:nth-child(2) { animation-delay: 0.05s; }
-header.scrolled .header-search .search-row > *:nth-child(3) { animation-delay: 0.1s; }
-header.scrolled .header-search .search-row > *:nth-child(4) { animation-delay: 0.15s; }
-header.scrolled .header-search .search-row > *:nth-child(5) { animation-delay: 0.2s; }
-header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0.25s; }
-
-@keyframes headerSearchItemIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px) scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-header.scrolled ~ main .recipes-section .search-bar {
-    display: none;
-}
-
-.header-search .search-row {
-    flex: 1;
-    min-width: 0;
-    height: 38px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.header-search .search-input-group,
-.header-search .btn-search,
-.header-search .btn-filters,
-.header-search .btn-sort {
-    height: 100%;
-    padding: 0 0.75rem;
-    font-size: 1rem;
-    box-sizing: border-box;
-}
-
-.header-search .btn-search:hover {
-    transform: none;
-}
-
-
-
-/* Keskenyebb asztali/tablet nézetben (pl. kisebb laptop) a feliratok eltűnnek,
-   csak az ikonok maradnak, hogy a keresősáv ne csorduljon túl a headeren */
-@media (max-width: 1200px) {
-    header.scrolled .header-search {
-        max-width: 320px;
-    }
-
-    header.scrolled .header-search .search-input-group {
-        flex: 2;
-        min-width: 0;
-    }
-
-    header.scrolled .header-search .btn-search,
-    header.scrolled .header-search .btn-filters,
-    header.scrolled .header-search .btn-sort {
-        flex: 0 0 auto;
-        padding: 0 0.6rem;
-        font-size: 0;
-    }
-
-    header.scrolled .header-search .btn-search svg,
-    header.scrolled .header-search .btn-filters svg,
-    header.scrolled .header-search .btn-sort svg {
-        margin-right: 0;
-        width: 1rem;
-        height: 1rem;
-    }
-}
-
-.search-row {
-    display: flex;
-    align-items: center;
+    cursor: pointer;
     background: var(--color-white);
-    border-radius: 4px;
-    overflow: hidden;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.search-input-group {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex: 1;
-    min-width: 0;
-    padding: 0.75rem 1rem;
+.upload-box:hover {
+    border-color: var(--color-primary);
+    background: var(--color-search-bg);
 }
 
-.search-input-icon {
-    flex-shrink: 0;
-    width: 1.1em;
-    height: 1.1em;
-    color: var(--color-text-light);
-}
-
-.search-input {
-    flex: 1;
-    min-width: 0;
-    padding: 0;
-    border: none;
-    font-size: 1rem;
-    color: var(--color-text);
-    background: transparent;
-}
-
-.search-input:focus {
-    outline: none;
-}
-
-.search-divider {
-    flex-shrink: 0;
-    width: 1px;
-    height: 1.5rem;
-    background: var(--color-border);
-}
-
-.btn-search,
-.btn-filters,
-.btn-sort {
-    display: inline-flex;
-    align-items: center;
-    gap: 0;
-    padding: 0.75rem 1rem;
-    border: none;
-    border-radius: 0;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background-color 0.2s, transform 0.1s;
-}
-
-.btn-search svg,
-.btn-filters svg,
-.btn-sort svg {
-    width: 1em;
-    height: 1em;
-    margin-right: 0.3em;
-}
-
-.header-search .btn-search svg,
-.header-search .btn-filters svg,
-.header-search .btn-sort svg {
-    width: 1em;
-    height: 1em;
-    margin-right: 0.25em;
-}
-
-.btn-search {
-    background: var(--color-cta);
-    color: var(--color-white);
-    transition: all 0.3s ease;
-}
-
-.btn-search:hover {
-    background: var(--color-cta-hover);
-}
-
-.btn-filters,
-.btn-sort {
-    background: transparent;
-    color: var(--color-text-light);
-}
-
-.btn-filters:hover,
-.btn-sort:hover {
-    background-color: var(--color-bg-hover);
-    color: var(--color-text);
-}
-
-.btn-filters:active,
-.btn-sort:active {
-    transform: scale(0.98);
-}
-
-/* ===== MODAL STÍLUSOK ===== */
-.modal {
+.upload-input {
     display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
+}
+
+.upload-placeholder {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
-    background-color: var(--color-shadow-dark);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
+    object-fit: cover;
+    opacity: 0; /* csak kiválasztott kép után látszik (a JS állítja 1-re) */
 }
 
-.modal.active {
-    display: flex;
-}
-
-.modal-content {
-    background: var(--color-white);
-    border-radius: 4px;
-    width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-}
-
-.modal-small {
-    max-width: 350px;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--color-border);
-}
-
-.modal-header h3 {
-    margin: 0;
-    font-size: 1.25rem;
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--color-text-light);
-    padding: 0;
-    width: 30px;
-    height: 30px;
+.upload-hint {
+    position: absolute;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    color: var(--color-text-lighter);
+    font-size: 10rem;
+    font-weight: 200;
+    line-height: 1;
+    transition: color 0.2s ease, transform 0.2s ease;
 }
 
-.close-btn:hover {
-    background-color: var(--color-bg-hover);
-}
-
-.modal-body {
-    padding: 1.5rem;
-}
-
-.modal-footer {
-    padding: 1rem 1.5rem;
-    border-top: 1px solid var(--color-border);
-    display: flex;
-    gap: 0.75rem;
-    justify-content: flex-end;
-}
-
-/* ===== SZŰRŐ CSOPORTOK ===== */
-.filter-group {
-    margin-bottom: 1.5rem;
-}
-
-.filter-group:last-child {
-    margin-bottom: 0;
-}
-
-.filter-group h4 {
-    margin: 0 0 0.75rem;
-    font-size: 1rem;
+.upload-box:hover .upload-hint {
     color: var(--color-primary);
-    border-bottom: 2px solid var(--color-primary-soft);
-    padding-bottom: 0.5rem;
+    transform: scale(1.1);
 }
 
-.checkbox-label,
-.radio-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0;
-    cursor: pointer;
+/* Karakterhossz-jelzések (max felirat + élő számláló) */
+.char-hint {
+    margin-left: 8px;
+    color: #999;
+    font-size: 0.85em;
 }
-
-.checkbox-label:hover,
-.radio-label:hover {
-    background-color: var(--color-bg-hover);
-}
-
-.checkbox-label input,
-.radio-label input {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-}
-
-/* ===== GOMBOK A MODALBAN ===== */
-.btn-apply {
-    padding: 0.6rem 1.25rem;
-    background-color: var(--color-primary);
-    color: var(--color-white);
-    border: none;
-    border-radius: 4px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.btn-apply:hover {
-    background-color: var(--color-primary-hover);
-}
-
-.modal-footer .btn-reset {
-    padding: 0.6rem 1.25rem;
-    background-color: var(--color-bg-hover);
-    color: var(--color-text);
-    border: none;
-    border-radius: 4px;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.modal-footer .btn-reset:hover {
-    background-color: var(--color-border);
-}
-
-/* ===== RESPONSIVE - KERESŐ SÁV ===== */
-@media (max-width: 600px) {
-    .search-input-group {
-        padding: 0.75rem 0.6rem;
-    }
-
-    .btn-search,
-    .btn-filters,
-    .btn-sort {
-        padding: 0.75rem 0.6rem;
-        font-size: 0;
-    }
-
-    .btn-search svg,
-    .btn-filters svg,
-    .btn-sort svg {
-        margin-right: 0;
-        width: 1.1rem;
-        height: 1.1rem;
-    }
-}
-
-/* ===== LOADING SPINNER ===== */
-.loading-spinner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-}
-
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid var(--color-border);
-    border-top-color: var(--color-primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* ===== LOAD MORE GOMB ===== */
-.btn-load-more {
-    display: block;
-    margin: 2rem auto;
-    padding: 0.8rem 2rem;
-    border-radius: 4px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    background: var(--color-white);
-    color: var(--color-primary);
-    border: 2px solid var(--color-search-border);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    transition: all 0.3s ease;
-}
-
-.btn-load-more:hover {
-    background: var(--color-search-bg);
-    transform: translateY(-2px);
-}
-
-.btn-load-more:disabled {
-    opacity: 0.7;
-    cursor: wait;
+.char-counter {
+    margin-left: 4px;
+    color: #999;
+    font-size: 0.85em;
+    min-width: 4em;
+    display: inline-block;
 }
 
 /* ===== FOOTER ===== */
@@ -1452,304 +1003,6 @@ header.scrolled ~ main .recipes-section .search-bar {
     font-size: 0.9rem;
 }
 
-/* ===== CSILLAGOS ÉRTÉKELÉS ===== */
-
-/* Közös alap: flex elrendezés, hogy a csillagok, szám és darabszám egy sorban legyen */
-.star-rating {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin: 8px 0;
-}
-
-/* Csillagok színe és mérete */
-.star-rating .stars {
-    font-size: 1.1rem;
-    letter-spacing: 1px;
-}
-
-.star-rating .stars span {
-    color: #DBD3C8;
-}
-
-.star-rating .stars span.filled {
-    color: var(--color-primary);
-}
-
-.star-rating .rating-number {
-    font-weight: 600;
-    color: var(--color-text);
-    font-size: 0.95rem;
-}
-
-.star-rating .review-count {
-    color: var(--color-text-light);
-    font-size: 0.85rem;
-}
-
-/* Átlag szám (pl. 4.2) — félkövér, hogy kitűnjön */
-.star-rating .rating-number {
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: #555;
-}
-
-/* Értékelések darabszáma — halványabb, kisebb */
-.star-rating .review-count {
-    font-size: 0.8rem;
-    color: #999;
-}
-
-/* Kártyán belüli csillag: kis függőleges margó */
-.recipe-card .star-rating {
-    margin: 6px 0 4px 0;
-}
-
-/* Részletes oldalon: nagyobb, hangsúlyosabb megjelenés */
-.star-rating-section {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 10px 0 6px 0;
-    text-decoration: none;
-    cursor: pointer;
-    width: fit-content;
-}
-
-#reviews {
-    scroll-margin-top: 100px;
-}
-
-.star-rating-section .stars {
-    font-size: 1.3rem;
-    color: #f5a623;
-    letter-spacing: 2px;
-}
-
-.star-rating-section .rating-number {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--color-text);
-}
-
-.star-rating-section .review-count {
-    font-size: 0.9rem;
-    color: #888;
-}
-
-/* ===== ÉRTÉKELÉSI KÁRTYA ===== */
-.rating-summary {
-    display: flex;
-    gap: 3rem;
-    align-items: center;
-}
-
-.rating-summary-left {
-    text-align: center;
-    min-width: 150px;
-}
-
-.rating-average {
-    font-size: 3.5rem;
-    font-weight: 700;
-    color: var(--color-primary);
-    line-height: 1;
-}
-
-.rating-stars-display {
-    margin: 0.5rem 0;
-    font-size: 1.5rem;
-    letter-spacing: 2px;
-}
-
-.rating-stars-display .star {
-    color: #DBD3C8;
-}
-
-.rating-stars-display .star.filled {
-    color: var(--color-primary);
-}
-
-.rating-count {
-    color: var(--color-text-light);
-    font-size: 0.9rem;
-}
-
-.rating-summary-right {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.rating-bar {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.rating-bar-label {
-    min-width: 30px;
-    font-weight: 600;
-    color: var(--color-text);
-    font-size: 0.9rem;
-}
-
-.rating-bar-track {
-    flex: 1;
-    height: 8px;
-    background: #F1EBE2;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.rating-bar-fill {
-    height: 100%;
-    background: var(--color-primary);
-    transition: width 0.3s ease;
-}
-
-.rating-bar-count {
-    min-width: 30px;
-    text-align: right;
-    color: var(--color-text-light);
-    font-size: 0.9rem;
-}
-
-.rating-divider {
-    border-top: 1px solid var(--color-border);
-    margin: 1.5rem 0;
-}
-
-.rating-personal {
-    text-align: center;
-}
-
-.rating-personal-title {
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-    color: var(--color-text);
-}
-
-.rating-stars-interactive {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin: 1rem 0;
-}
-
-.star-label {
-    cursor: pointer;
-    position: relative;
-}
-
-.star-input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.star-icon {
-    font-size: 2.5rem;
-    color: #D3C9BC;
-    transition: color 0.15s ease, transform 0.15s ease;
-    display: inline-block;
-}
-
-.star-icon.filled {
-    color: var(--color-primary);
-}
-
-.star-label:hover .star-icon {
-    color: var(--color-primary);
-    transform: scale(1.15);
-}
-
-.star-input:checked ~ .star-icon {
-    color: var(--color-primary);
-}
-
-.rating-personal-status {
-    color: var(--color-text-light);
-    font-size: 0.95rem;
-    margin-top: 0.5rem;
-    transition: color 0.3s ease;
-}
-
-.rating-login-prompt {
-    font-size: 1.1rem;
-    color: var(--color-text-light);
-}
-
-.rating-login-prompt a {
-    color: var(--color-primary);
-    font-weight: 600;
-    text-decoration: underline;
-}
-
-/* Reszponzív: mobilon függőleges elrendezés */
-@media (max-width: 768px) {
-    .rating-summary {
-        flex-direction: column;
-        gap: 2rem;
-    }
-
-    .rating-summary-left {
-        min-width: auto;
-    }
-
-    .rating-average {
-        font-size: 2.5rem;
-    }
-
-    .star-icon {
-        font-size: 2rem;
-    }
-}
-
-/* ===== HOVER TOOLTIP A KÁRTYÁKON ===== */
-
-/* Tooltip alapállapot: rejtett, a kártyán belül abszolút pozícióval */
-.card-tooltip {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.85);
-    color: #fff;
-    padding: 20px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow-y: auto;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-    z-index: 10;
-}
-
-/* Hover-re a tooltip megjelenik + kártya a többi fölé kerül */
-.recipe-card:hover {
-    z-index: 5;
-    transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.recipe-description:hover ~ .card-tooltip,
-.card-tooltip:hover {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Tooltip szöveg stílusa */
-.tooltip-description {
-    font-size: 0.9rem;
-    line-height: 1.6;
-    text-align: center;
-}
-
 /* ===== SCROLL TO TOP GOMB ===== */
 .scroll-to-top {
     position: fixed;
@@ -1786,22 +1039,20 @@ header.scrolled ~ main .recipes-section .search-bar {
 @media (min-width: 769px) {
     .logo-mobile,
     .mobile-menu-btn,
-    .mobile-search-sticky,
     .mobile-menu-overlay {
         display: none;
     }
 }
 
-/* ===== MOBIL NÉZET ===== */
+/* ===== MOBIL NÉZET (fejléc/navigáció rész - az oldal saját tartalmának mobil nézete a saját css fájljában van) ===== */
 @media (max-width: 768px) {
     /* Vízszintes csúszka tiltása */
     body {
         overflow-x: hidden;
     }
 
-    /* Desktop elemek elrejtése mobilon */
-    .logo,
-    .hero-image {
+    /* Desktop logó elrejtése mobilon */
+    .logo {
         display: none !important;
     }
 
@@ -1898,99 +1149,12 @@ header.scrolled ~ main .recipes-section .search-bar {
         height: 1rem;
     }
 
-    /* Kereső a hero-ban, közvetlenül az alcím alatt, a szövegoszlop szélességéhez igazítva */
-    .mobile-search-sticky {
-        display: block;
-        width: 100%;
-        margin-top: 40px;
-    }
-
-    .mobile-search-sticky .search-bar {
-        max-width: none;
-        width: 100%;
-        margin: 0;
-        background-color: var(--color-white);
-        border-radius: 4px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .mobile-search-sticky .search-input-group {
-        flex: 2;
-        min-width: 0;
-        padding: 0.6rem 0.9rem;
-    }
-
-    .mobile-search-sticky .search-input {
-        font-size: 1rem;
-    }
-
-    .mobile-search-sticky .btn-search,
-    .mobile-search-sticky .btn-filters,
-    .mobile-search-sticky .btn-sort {
-        flex: 0 0 auto;
-        padding: 0.6rem 0.5rem;
-        font-size: 0;
-        justify-content: center;
-    }
-
-    .mobile-search-sticky .btn-search svg,
-    .mobile-search-sticky .btn-filters svg,
-    .mobile-search-sticky .btn-sort svg {
-        margin-right: 0;
-        width: 1.1rem;
-        height: 1.1rem;
-    }
-
     /* Header - sticky viselkedés mobilon */
     header {
         padding: 0.5rem 1rem;
         position: sticky;
         top: 0;
         z-index: 1000;
-    }
-
-    /* Hero szekció */
-    .hero-section {
-        padding: 2rem 1rem 0;
-        min-height: 62vh;
-        display: flex;
-        align-items: flex-start;
-        flex-direction: column;
-        justify-content: flex-start;
-        background-size: 100% 100%;
-        background-position: center center;
-    }
-    .hero-section::before {
-        height: 90px;
-    }
-
-    .hero-section::after {
-        height: 160px;
-        background: linear-gradient(to bottom,
-            rgba(250, 246, 240, 0) 0%,
-            rgba(250, 246, 240, 0.1) 35%,
-            rgba(250, 246, 240, 0.3) 55%,
-            rgba(250, 246, 240, 0.6) 75%,
-            rgba(250, 246, 240, 0.85) 90%,
-            #FAF6F0 100%);
-    }
-
-    .hero-container {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1.5rem;
-        padding: 0 1rem;
-        justify-content: flex-start;
-        order: 1;
-    }
-
-    .hero-text {
-        flex: 0 0 auto;
-        text-align: left;
-    }
-
-    .hero-title {
-        font-size: 1.8rem;
     }
 
     /* Mobil oldalsó menü panel */
@@ -2039,16 +1203,7 @@ header.scrolled ~ main .recipes-section .search-bar {
         color: var(--color-primary);
     }
 
-    /* Alsó kereső sáv elrejtése mobilon */
-    .recipes-section .search-bar {
-        display: none;
-    }
-
-    .recipes-section {
-        padding-top: 20px;
-    }
-
-    /* Kártyák egymás alatt, középen */
+    /* Receptkártyák egymás alatt, középen (minden olyan oldalon, ahol a galéria komponens megjelenik) */
     .recipe-gallery {
         flex-direction: column;
         align-items: center;
@@ -2059,758 +1214,3 @@ header.scrolled ~ main .recipes-section .search-bar {
         max-width: 400px;
     }
 }
-
-/* ===== 404 HIBAOLDAL ===== */
-.error-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    min-height: 60vh;
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 3rem 1.5rem 4rem;
-}
-
-/* --- Kukta (kuktafazék) CSS-rajz + gőz animáció --- */
-.kukta {
-    position: relative;
-    width: 220px;
-    height: 170px;
-    margin: 0 auto 1.5rem;
-}
-
-.kukta-lid {
-    position: absolute;
-    bottom: 82px;
-    left: 35px;
-    width: 150px;
-    height: 18px;
-    background: var(--color-primary-hover);
-    border-radius: 9px;
-}
-
-.kukta-body {
-    position: absolute;
-    bottom: 0;
-    left: 45px;
-    width: 130px;
-    height: 85px;
-    background: var(--color-primary);
-    border-radius: 10px 10px 34px 34px;
-    box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.08);
-}
-
-.kukta-handle {
-    position: absolute;
-    bottom: 38px;
-    width: 34px;
-    height: 16px;
-    background: var(--color-primary-hover);
-    border-radius: 8px;
-}
-
-.kukta-handle-l { left: 14px; }
-.kukta-handle-r { right: 14px; }
-
-.kukta-valve {
-    position: absolute;
-    bottom: 100px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 12px;
-    height: 24px;
-    background: #5a4638;
-    border-radius: 6px 6px 4px 4px;
-}
-
-/* Szomorkodó arc a kuktán */
-.kukta-eye {
-    position: absolute;
-    bottom: 22px;
-    width: 9px;
-    height: 11px;
-    background: #4a3424;
-    border-radius: 50%;
-}
-
-.kukta-eye-l { left: 38px; }
-.kukta-eye-r { right: 38px; }
-
-.kukta-mouth {
-    position: absolute;
-    bottom: 7px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 18px;
-    height: 9px;
-    border: 2.5px solid #4a3424;
-    border-top: none;
-    border-radius: 0 0 12px 12px;
-}
-
-/* Gőzpöffögés a szelep felett */
-.kukta-steam {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 46px;
-    pointer-events: none;
-}
-
-.kukta-puff {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(230, 126, 34, 0.6) 0%, rgba(230, 126, 34, 0) 70%);
-    opacity: 0;
-    animation: kuktaSteam 2.4s ease-out infinite;
-}
-
-.kukta-puff:nth-child(1) { margin-left: -16px; animation-delay: 0s; }
-.kukta-puff:nth-child(2) { margin-left: -2px; animation-delay: 0.8s; }
-.kukta-puff:nth-child(3) { margin-left: 12px; animation-delay: 1.6s; }
-
-@keyframes kuktaSteam {
-    0%   { transform: translateY(0) scale(0.4); opacity: 0; }
-    30%  { opacity: 0.85; }
-    100% { transform: translateY(-78px) scale(2); opacity: 0; }
-}
-
-/* --- Szövegek, gomb --- */
-.error-code {
-    margin: 0;
-    font-size: clamp(5rem, 12vw, 7.5rem);
-    font-weight: 800;
-    line-height: 1;
-    color: var(--color-primary);
-    letter-spacing: 0.02em;
-}
-
-.error-title {
-    margin: 0.75rem 0 0;
-    font-size: clamp(1.4rem, 4vw, 1.9rem);
-    color: var(--color-dark-brown);
-}
-
-.error-text {
-    margin: 0.6rem auto 0;
-    max-width: 480px;
-    font-size: 1.05rem;
-    color: var(--color-text-light);
-    line-height: 1.5;
-}
-
-.btn-home {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 1.8rem;
-    padding: 0.9rem 2rem;
-    background-color: var(--color-primary);
-    color: var(--color-white);
-    font-size: 1.05rem;
-    font-weight: 700;
-    text-decoration: none;
-    border: none;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(230, 126, 34, 0.35);
-    transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.btn-home:hover {
-    background-color: var(--color-primary-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(230, 126, 34, 0.4);
-}
-
-.btn-home svg {
-    width: 1.15em;
-    height: 1.15em;
-}
-
-@media (max-width: 480px) {
-    .kukta {
-        transform: scale(0.85);
-    }
-
-    .error-text {
-        padding: 0 0.5rem;
-    }
-}
-/* ===== KUKTA ASSZISZTENS: teljes képernyős, fejléc/lábléc nélküli mód ===== */
-body.assistant-page header,
-body.assistant-page .site-footer,
-body.assistant-page .scroll-to-top {
-    display: none;
-}
-
-body.assistant-page main {
-    max-width: none;
-    width: 100%;
-    padding: 0;
-}
-
-/* Görgetés teljes letiltása: egyetlen képernyő tartalma se lehet magasabb a 100vh-nál */
-body.assistant-page {
-    overflow: hidden;
-    height: 100vh;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-body.assistant-page::-webkit-scrollbar {
-    display: none;
-}
-
-.assistant-close {
-    position: fixed;
-    top: 1.25rem;
-    left: 1.25rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.55);
-    color: #fff;
-    font-size: 1.3rem;
-    text-decoration: none;
-    z-index: 600;
-    transition: background 0.2s ease, transform 0.2s ease;
-}
-
-.assistant-close svg {
-    width: 1.6rem;
-    height: 1.6rem;
-}
-
-.assistant-close:hover {
-    background: rgba(0, 0, 0, 0.75);
-    transform: scale(1.08);
-}
-
-.assistant {
-    width: 100%;
-    max-width: none;
-    margin: 0;
-    min-height: 100vh;
-    background-image: linear-gradient(rgba(250, 246, 240, 0.92), rgba(250, 246, 240, 0.92)), var(--assistant-bg-image);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-.assistant-screen {
-    display: none;
-}
-
-.assistant-screen.is-active {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100vh;
-    overflow: hidden;
-    animation: assistantFade 0.3s ease;
-}
-
-@keyframes assistantFade {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: none; }
-}
-
-/* -1. lépés: háttérkép + leírás */
-.assistant-intro {
-    position: relative;
-    width: 100%;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-size: cover;
-    background-position: center;
-    border-radius: 0;
-    overflow: hidden;
-}
-
-.assistant-intro::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(255, 255, 255, 0.35);
-}
-
-.assistant-intro-content {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-    width: 100%;
-    max-width: 640px;
-    padding: 2rem;
-    box-sizing: border-box;
-}
-
-/* Ugyanaz a stílus, mint a recept kártyáké (.recipe-card), minimálisan áttetsző háttérrel */
-.assistant-intro-card {
-    background: rgba(255, 255, 255, 0.97);
-    border: 1px solid #ECE3D8;
-    border-radius: 4px;
-    padding: 20px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.assistant-intro-overlay {
-    color: var(--color-text);
-    text-align: center;
-}
-
-.assistant-greeting-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-.assistant-mascot {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 88px;
-    height: 88px;
-    margin-bottom: 0.8rem;
-    border-radius: 50%;
-    background: var(--color-primary);
-    color: #fff;
-}
-
-.assistant-mascot svg {
-    width: 44px;
-    height: 44px;
-}
-
-.assistant-greeting-text {
-    margin: 0;
-    max-width: 420px;
-    font-weight: 600;
-    color: var(--color-heading);
-}
-
-.assistant-intro-overlay h1 {
-    margin: 0 0 0.8rem;
-    font-size: 2rem;
-    color: var(--color-heading);
-}
-
-.assistant-intro-overlay p {
-    margin: 0;
-    line-height: 1.7;
-    color: var(--color-text);
-}
-
-.assistant-heading {
-    width: 100%;
-    text-align: center;
-    margin: 0 0 1.5rem;
-    box-sizing: border-box;
-    font-size: 2rem;
-}
-
-.assistant-heading-spaced {
-    margin: 1.5rem 0 0.5rem;
-}
-
-.assistant-ingredients {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding: 1rem 6rem;
-    box-sizing: border-box;
-}
-
-.assistant-ingredients-card {
-    width: 100%;
-    max-width: 1200px;
-    text-align: center;
-}
-
-/* Hozzávalók: lapok + rács */
-.ingredient-pages {
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.ingredient-grid {
-    display: grid;
-    gap: 12px;
-    margin-bottom: 1rem;
-}
-
-.ai-ingredient {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    padding: 20px;
-    background: var(--color-white);
-    border: 1px solid #ECE3D8;
-    border-radius: 4px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-    min-width: 0;
-}
-
-.ai-ingredient-qty {
-    font-weight: 700;
-    color: var(--color-primary);
-    white-space: nowrap;
-}
-
-.ai-ingredient-name {
-    text-align: right;
-    color: var(--color-text);
-    flex: 1;
-    min-width: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.ingredient-page-label {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 3.4rem;
-    height: 2.4rem;
-    padding: 0 0.9rem;
-    border-radius: 24px;
-    background: var(--color-primary);
-    color: #fff;
-    font-size: 1.15rem;
-    font-weight: 700;
-    line-height: 1;
-    vertical-align: middle;
-}
-
-.page-dots {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 14px;
-    margin-top: 0.5rem;
-}
-
-.page-dot {
-    width: 16px;
-    height: 16px;
-    padding: 0;
-    border-radius: 50%;
-    border: 2px solid var(--color-primary);
-    background: #fff;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.page-dot.is-active {
-    background: var(--color-primary);
-    transform: scale(1.25);
-}
-
-/* 1..n. lépések */
-.assistant-step {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding: 2rem 6rem;
-    box-sizing: border-box;
-}
-
-.assistant-step-card {
-    width: 100%;
-    max-width: 680px;
-    text-align: center;
-}
-
-.assistant-step-number {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: var(--color-primary);
-    color: #fff;
-    font-size: 1.6rem;
-    font-weight: 700;
-}
-
-.assistant-step-text {
-    font-size: 1.25rem;
-    line-height: 1.8;
-    max-width: 620px;
-    margin: 0 auto;
-    color: var(--color-text);
-}
-
-/* Befejezés + értékelés */
-.assistant-finish {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding: 2rem 6rem;
-    box-sizing: border-box;
-}
-
-.assistant-finish-card {
-    width: 100%;
-    max-width: 680px;
-    text-align: center;
-}
-
-.finish-emoji {
-    display: flex;
-    justify-content: center;
-    color: var(--color-cta);
-    margin-bottom: 0.5rem;
-}
-
-.finish-emoji svg {
-    width: 3rem;
-    height: 3rem;
-}
-
-.assistant-stars {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    font-size: 2.75rem;
-    margin: 0.5rem 0 0.4rem;
-}
-
-.assistant-star input {
-    display: none;
-}
-
-.assistant-star-icon {
-    color: #ccc;
-    cursor: pointer;
-    transition: color 0.15s ease;
-}
-
-.assistant-star-icon.filled {
-    color: var(--color-primary);
-}
-
-.assistant-rating-status {
-    margin: 0.4rem 0 1rem;
-    color: var(--color-text-light);
-}
-
-/* Navigáció: nagy, feltűnő nyilak a képernyő két szélén */
-.assistant-nav-zone {
-    position: fixed;
-    top: 0;
-    height: 100vh;
-    width: 132px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    cursor: pointer;
-    transition: background 0.25s ease;
-    z-index: 500;
-}
-
-.assistant-nav-zone:hover {
-    background: rgba(255, 255, 255, 0.85);
-}
-
-.assistant-nav-zone-prev {
-    left: 0;
-}
-
-.assistant-nav-zone-next {
-    right: 0;
-}
-
-.btn-assistant-nav {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 88px;
-    height: 88px;
-    padding: 0;
-    border: none;
-    border-radius: 50%;
-    background: var(--color-primary);
-    color: #fff;
-    font-size: 2.6rem;
-    line-height: 1;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
-    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-}
-
-.btn-assistant-nav svg {
-    width: 2.5rem;
-    height: 2.5rem;
-}
-
-.btn-assistant-nav:hover:not(:disabled) {
-    background: var(--color-primary-hover);
-    transform: scale(1.08);
-    box-shadow: 0 8px 22px rgba(0,0,0,0.35);
-}
-
-.btn-assistant-nav:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-    box-shadow: none;
-}
-
-.assistant-progress {
-    position: fixed;
-    top: 1.25rem;
-    right: 1.25rem;
-    pointer-events: none;
-    font-weight: 600;
-    color: #fff;
-    background: rgba(0, 0, 0, 0.55);
-    padding: 0.35rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    z-index: 500;
-}
-
-@media (max-width: 640px) {
-    .assistant-ingredients,
-    .assistant-step,
-    .assistant-finish {
-        padding: 0 3.5rem;
-    }
-
-    .assistant-intro-content {
-        padding: 1rem;
-    }
-
-    .assistant-heading {
-        font-size: 1.4rem;
-    }
-
-    .ingredient-page-label {
-        min-width: 2.6rem;
-        height: 1.9rem;
-        padding: 0 0.6rem;
-        font-size: 0.95rem;
-    }
-
-    .assistant-nav-zone {
-        width: 90px;
-    }
-
-    .btn-assistant-nav {
-        width: 60px;
-        height: 60px;
-        font-size: 1.8rem;
-    }
-
-    .btn-assistant-nav svg {
-        width: 1.75rem;
-        height: 1.75rem;
-    }
-}
-
-/* Elkészítem gomb (részletes oldal) */
-.btn-cook {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    padding: 0.9rem 2rem;
-    background: var(--color-cta);
-    color: #fff;
-    border: 2px solid transparent;
-    font-size: 1.05rem;
-    font-weight: 700;
-    text-decoration: none;
-    border-radius: 8px;
-    transition: background 0.25s ease, transform 0.25s ease;
-}
-
-.btn-cook:hover {
-    background: var(--color-cta-hover);
-    transform: translateY(-2px);
-    color: #fff;
-}
-
-.btn-cook svg {
-    width: 1.2em;
-    height: 1.2em;
-}
-
-/* ===== SAJÁT KÉP FELTÖLTŐ DOBOZ (recept űrlap) ===== */
-.upload-box {
-    position: relative;
-    display: block;
-    width: 220px;
-    height: 220px;
-    border: 2px dashed var(--color-border);
-    border-radius: 8px;
-    overflow: hidden;
-    cursor: pointer;
-    background: var(--color-white);
-}
-
-.upload-input {
-    display: none;
-}
-
-.upload-placeholder {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0.25; /* halvány előre definiált kép */
-}
-
-.upload-hint {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    text-align: center;
-    color: var(--color-text-light);
-    font-weight: 600;
-}
-
-/* Karakterhossz-jelzések (max felirat + élő számláló) */
-.char-hint {
-    margin-left: 8px;
-    color: #999;
-    font-size: 0.85em;
-}
-.char-counter {
-    margin-left: 4px;
-    color: #999;
-    font-size: 0.85em;
-    min-width: 4em;
-    display: inline-block;
-}
-

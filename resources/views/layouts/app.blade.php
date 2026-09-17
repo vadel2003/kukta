@@ -7,6 +7,9 @@
     <title>Kukta - @yield('title', 'Főoldal')</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}?v={{ filemtime(public_path('images/favicon.svg')) }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
+    {{-- Az admin/asszisztens css és az aloldal saját css-e ide kerül be (@push('styles')),
+         mindig ez után az app.css után, tehát felül tudja írni azt --}}
+    @stack('styles')
     <script src="{{ asset('js/lucide.min.js') }}?v={{ filemtime(public_path('js/lucide.min.js')) }}"></script>
 </head>
 <body class="@yield('bodyClass')">

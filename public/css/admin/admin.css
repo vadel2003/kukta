@@ -1,0 +1,23 @@
+/* Alapanyag / lépés sor eltávolító (×) gombja a recept létrehozás/szerkesztés oldalon
+   - mindig látszik, csak 3 sornál letiltva */
+.remove-step,
+.remove-ingredient {
+    background: none;
+    border: none;
+    color: var(--color-danger);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+}
+
+.remove-step:hover,
+.remove-ingredient:hover {
+    color: var(--color-danger-hover);
+}
+
+.remove-step:disabled,
+.remove-ingredient:disabled {
+    color: var(--color-text-lighter);
+    cursor: not-allowed;
+}
