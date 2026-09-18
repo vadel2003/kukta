@@ -21,11 +21,11 @@
             </a>
         </div>
 
-        <form action="{{ route('home') }}" method="GET" class="header-search">
+        <form action="{{ route('home') }}#recipes" method="GET" class="header-search">
             <div class="search-row">
                 <div class="search-input-group">
                     <i data-lucide="search" class="search-input-icon"></i>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Receptek keresése kulcsszó szerint..." class="search-input">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Keresés..." class="search-input">
                 </div>
                 <span class="search-divider"></span>
                 <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők</button>
@@ -131,102 +131,119 @@
         }
 
         // Scroll figyelés - kereső sáv megjelenítése header-ben
-        // Egyszer, betöltéskor mérjük le a search-bar pozícióját
-        // (mobilon a hero-ban lévő, desktopon a recipes-section-beli keresősáv a viszonyítási pont,
-        // attól függően, hogy éppen melyik látszik)
+        // Egyszer, betöltéskor mérjük le a viszonyítási pontot:
+        // desktopon a hero kép (serpenyő) félmagassága, hogy már korábban beúszon a fejléc keresője,
+        // mobilon (ahol nincs hero kép) a saját sticky keresősáv pozíciója a viszonyítási pont
+        const heroImage = document.querySelector('.hero-image');
         const desktopSearchBar = document.querySelector('.recipes-section .search-bar');
         const mobileSearchBar = document.querySelector('.mobile-search-sticky .search-bar');
-        const searchBar = (mobileSearchBar && mobileSearchBar.offsetHeight > 0) ? mobileSearchBar : desktopSearchBar;
+        const isMobileHero = !(heroImage && heroImage.offsetHeight > 0);
+        const referenceEl = isMobileHero
+            ? ((mobileSearchBar && mobileSearchBar.offsetHeight > 0) ? mobileSearchBar : desktopSearchBar)
+            : heroImage;
         const header = document.querySelector('header');
-        if (searchBar && header) {
-            const searchBarOffset = searchBar.getBoundingClientRect().top + window.scrollY;
+        if (referenceEl && header) {
+            const referenceRect = referenceEl.getBoundingClientRect();
+            const searchBarOffset = isMobileHero
+                ? referenceRect.top + window.scrollY
+                : referenceRect.top + window.scrollY + referenceEl.offsetHeight / 2;
             const headerHeight = header.offsetHeight;
+            const extraDelay = 80; // px - ennyivel görgessünk lejjebb, mielőtt a fejléc keresője beúszik
 
             window.addEventListener('scroll', function() {
                 header.classList.toggle('scrolled',
-                    window.scrollY >= searchBarOffset - headerHeight);
+                    window.scrollY >= searchBarOffset - headerHeight + extraDelay);
             });
         }
 
-        // AJAX form submit kezelés
-        const searchForm = document.getElementById('searchForm');
-        if (searchForm) searchForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const form = this;
-            const gallery = document.getElementById('recipe-gallery');
-            const spinner = document.getElementById('loading-spinner');
-            const loadMoreBtn = document.getElementById('load-more-btn');
-            
-            // "Load more" állapot reset
-            currentPage = 1;
-            if (loadMoreBtn) {
-                loadMoreBtn.style.display = 'none';
-            }
-            
-            // Loading spinner megjelenítése
-            spinner.style.display = 'flex';
-            gallery.style.opacity = '0.5';
-            
-            // AJAX kérés - tömbös paraméterek megfelelő kezelése
-            const formData = new FormData(form);
-            const params = new URLSearchParams();
-            for (const [key, value] of formData.entries()) {
-                params.append(key, value);
-            }
-            fetch(form.action + '?' + params.toString(), {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    gallery.innerHTML = data.html;
-                    if (window.lucide) lucide.createIcons();
+        // AJAX form submit kezelés - a fejléc keresője, a mobil hero-beli kereső és a
+        // desktop kereső (#searchForm) is ide tartozik, hogy sose töltődjön újra az oldal
+        const searchForms = document.querySelectorAll('.header-search, #searchForm, .mobile-search-sticky form');
+        searchForms.forEach(function (form) {
+            form.addEventListener('submit', function (e) {
+                const gallery = document.getElementById('recipe-gallery');
+                // Ha nem a főoldalon vagyunk (pl. a fejléc keresőjét használjuk egy másik oldalról),
+                // nincs galéria a DOM-ban - ilyenkor hagyjuk, hogy simán navigáljon a főoldalra
+                if (!gallery) return;
+                e.preventDefault();
 
-                    // "Load more" gomb frissítése
-                    if (data.hasMore) {
-                        if (loadMoreBtn) {
-                            loadMoreBtn.style.display = 'block';
-                            loadMoreBtn.disabled = false;
-                            loadMoreBtn.textContent = 'További receptek betöltése...';
-                        }
-                    }
-                    
-                    // Várakozás a képek betöltődésére
-                    const images = gallery.querySelectorAll('img');
-                    let loadedCount = 0;
-                    
-                    if (images.length === 0) {
-                        spinner.style.display = 'none';
-                        gallery.style.opacity = '1';
-                        return;
-                    }
-                    
-                    images.forEach(img => {
-                        if (img.complete) {
-                            loadedCount++;
-                        } else {
-                            img.addEventListener('load', () => {
-                                loadedCount++;
-                                if (loadedCount === images.length) {
-                                    spinner.style.display = 'none';
-                                    gallery.style.opacity = '1';
-                                }
-                            });
-                        }
-                    });
-                    
-                    if (loadedCount === images.length) {
-                        spinner.style.display = 'none';
-                        gallery.style.opacity = '1';
+                const spinner = document.getElementById('loading-spinner');
+                const loadMoreBtn = document.getElementById('load-more-btn');
+
+                // "Load more" állapot reset
+                currentPage = 1;
+                if (loadMoreBtn) {
+                    loadMoreBtn.style.display = 'none';
+                }
+
+                // Loading spinner megjelenítése
+                spinner.style.display = 'flex';
+                gallery.style.opacity = '0.5';
+
+                // AJAX kérés - tömbös paraméterek megfelelő kezelése
+                const formData = new FormData(form);
+                const params = new URLSearchParams();
+                for (const [key, value] of formData.entries()) {
+                    params.append(key, value);
+                }
+                fetch('{{ route('home') }}?' + params.toString(), {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                .catch(error => {
-                    console.error('Hiba:', error);
-                    spinner.style.display = 'none';
-                    gallery.style.opacity = '1';
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        gallery.innerHTML = data.html;
+                        if (window.lucide) lucide.createIcons();
+
+                        // "Load more" gomb frissítése
+                        if (data.hasMore) {
+                            if (loadMoreBtn) {
+                                loadMoreBtn.style.display = 'block';
+                                loadMoreBtn.disabled = false;
+                                loadMoreBtn.textContent = 'További receptek betöltése...';
+                            }
+                        }
+
+                        // A kártyák mindig a képernyőn legyenek keresés után (ne a hero maradjon látszódva)
+                        const recipesSection = document.getElementById('recipes');
+                        if (recipesSection) recipesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                        // Várakozás a képek betöltődésére
+                        const images = gallery.querySelectorAll('img');
+                        let loadedCount = 0;
+
+                        if (images.length === 0) {
+                            spinner.style.display = 'none';
+                            gallery.style.opacity = '1';
+                            return;
+                        }
+
+                        images.forEach(img => {
+                            if (img.complete) {
+                                loadedCount++;
+                            } else {
+                                img.addEventListener('load', () => {
+                                    loadedCount++;
+                                    if (loadedCount === images.length) {
+                                        spinner.style.display = 'none';
+                                        gallery.style.opacity = '1';
+                                    }
+                                });
+                            }
+                        });
+
+                        if (loadedCount === images.length) {
+                            spinner.style.display = 'none';
+                            gallery.style.opacity = '1';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Hiba:', error);
+                        spinner.style.display = 'none';
+                        gallery.style.opacity = '1';
+                    });
+            });
         });
 
         // "Load more" gomb kezelése

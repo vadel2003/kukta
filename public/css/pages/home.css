@@ -44,6 +44,7 @@
 }
 
 .hero-container {
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
@@ -51,6 +52,7 @@
     align-items: center;
     gap: 80px;
     position: relative;
+    z-index: 6;
 }
 
 .hero-text {
@@ -69,6 +71,11 @@
 
 .hero-highlight {
     color: var(--color-hero-highlight);
+}
+
+/* Ez a sortörés csak mobilon aktív, hogy a cím pontosan 3 sorra törjön */
+.mobile-break {
+    display: none;
 }
 
 .hero-subtitle {
@@ -157,11 +164,38 @@
     background-color: var(--color-white);
     border-radius: 4px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.08), 0 10px 20px rgba(0,0,0,0.12);
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-/* Amikor a fejléc görgetős keresője aktív, a főoldal saját alsó keresősávja elrejtve */
+/* A kártyák feletti kereső (recipes-section) vékonyabb, mint a fejléc/hero-beli változat */
+.recipes-section .search-bar {
+    padding: 0.5rem;
+}
+
+.recipes-section .search-bar .search-input-group,
+.recipes-section .search-bar .btn-search,
+.recipes-section .search-bar .btn-filters,
+.recipes-section .search-bar .btn-sort {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.recipes-section .search-bar .btn-search,
+.mobile-search-sticky .search-bar .btn-search {
+    background: var(--color-primary);
+}
+
+.recipes-section .search-bar .btn-search:hover,
+.mobile-search-sticky .search-bar .btn-search:hover {
+    background: var(--color-primary-hover);
+}
+
+/* Amikor a fejléc görgetős keresője aktív, a főoldal saját alsó keresősávja elhalványul,
+   de a helye megmarad (visibility, nem display), hogy a kártyák ne csússzanak feljebb */
 header.scrolled ~ main .recipes-section .search-bar {
-    display: none;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 /* ===== MODAL STÍLUSOK (Szűrők / Rendezés ablak, jelenleg csak a főoldalon van) ===== */
@@ -422,12 +456,17 @@ header.scrolled ~ main .recipes-section .search-bar {
         height: 1.1rem;
     }
 
-    /* Hero szekció */
+    /* Hero szekció - mobilon a 100vw helyett a szülő (main) paddingjéből "kitörős"
+       negatív margós megoldás, mert a 100vw mobil nézetben/emulációban szélesebb
+       tud lenni a ténylegesen látható képernyőnél, és ez okozta a kilógást */
     .hero-section {
+        width: auto;
+        margin-left: -1rem;
+        margin-right: -1rem;
         padding: 2rem 1rem 0;
         min-height: 62vh;
         display: flex;
-        align-items: flex-start;
+        align-items: stretch;
         flex-direction: column;
         justify-content: flex-start;
         background-size: 100% 100%;
@@ -450,7 +489,7 @@ header.scrolled ~ main .recipes-section .search-bar {
 
     .hero-container {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
         gap: 1.5rem;
         padding: 0 1rem;
         justify-content: flex-start;
@@ -464,6 +503,10 @@ header.scrolled ~ main .recipes-section .search-bar {
 
     .hero-title {
         font-size: 1.8rem;
+    }
+
+    .mobile-break {
+        display: inline;
     }
 
     /* Alsó kereső sáv elrejtése mobilon (a hero-ban lévő sticky verzió jelenik meg helyette) */

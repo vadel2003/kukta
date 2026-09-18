@@ -74,10 +74,6 @@ header {
     justify-self: end;
 }
 
-header.scrolled {
-    grid-template-columns: 1fr minmax(0, 760px) 1fr;
-}
-
 .header-left .logo {
     height: 40px;
     vertical-align: middle;
@@ -172,10 +168,12 @@ header.scrolled {
 
 /* Fő tartalom */
 main {
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 1rem;
     flex: 1;
+    min-width: 0;
 }
 
 /* Gombok */
@@ -306,7 +304,7 @@ button {
     gap: 0.5rem;
     margin: 0;
     pointer-events: none;
-    transition: max-width 0.4s ease, opacity 0.3s ease, margin 0.4s ease;
+    transition: max-width 0.6s ease, opacity 0.5s ease, margin 0.6s ease;
 }
 
 header.scrolled .header-search {
@@ -356,7 +354,14 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     box-sizing: border-box;
 }
 
+/* A fejléc keresés gombja fordított színezésű (fehér alapon narancs), mivel a fejléc háttere már narancs */
+.header-search .btn-search {
+    background: var(--color-white);
+    color: var(--color-primary);
+}
+
 .header-search .btn-search:hover {
+    background: var(--color-search-bg);
     transform: none;
 }
 
@@ -1046,9 +1051,14 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
 
 /* ===== MOBIL NÉZET (fejléc/navigáció rész - az oldal saját tartalmának mobil nézete a saját css fájljában van) ===== */
 @media (max-width: 768px) {
-    /* Vízszintes csúszka tiltása */
+    /* Vízszintes csúszka tiltása (html-re is kell, nem elég csak a body-ra).
+       overflow-x: hidden helyett clip kell, mert a hidden a böngészőben
+       automatikusan overflow-y: auto-t is beállít, ami eltöri a fejléc
+       position: sticky-jét (a clip erre nincs hatással). */
+    html,
     body {
-        overflow-x: hidden;
+        overflow-x: clip;
+        width: 100%;
     }
 
     /* Desktop logó elrejtése mobilon */
@@ -1078,11 +1088,19 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     }
 
     /* Mobil elemek megjelenítése */
+    /* A kuktasapka.svg-ben a rajzolt tartalom csak a vászon kb. 55%-át tölti ki,
+       a profil ikon viszont majdnem az egészet - emiatt kell jóval nagyobb
+       height, hogy a két ikon ténylegesen (nem csak a doboz méretében)
+       egyforma nagyságúnak tűnjön */
     .logo-mobile {
         display: block;
-        height: 48px;
+        height: 57px;
         width: auto;
         filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+    }
+
+    .profile-icon {
+        height: 32px;
     }
 
     .mobile-menu-btn {
@@ -1151,7 +1169,7 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
 
     /* Header - sticky viselkedés mobilon */
     header {
-        padding: 0.5rem 1rem;
+        padding: 0.35rem 1rem;
         position: sticky;
         top: 0;
         z-index: 1000;

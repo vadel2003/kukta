@@ -11,12 +11,12 @@
     <section id="hero" class="hero-section">
         <div class="hero-container">
             <div class="hero-text">
-                <h1 class="hero-title">Tapasztald meg<br>az <span class="hero-highlight">ételkészítés</span> új élményét!</h1>
+                <h1 class="hero-title">Tapasztald meg<br>az <span class="hero-highlight">ételkészítés</span><br class="mobile-break"> új élményét!</h1>
                 <p class="hero-subtitle">Próbáld ki receptjeinket a <span class="hero-assistant-badge">Kukta asszisztens <i data-lucide="bot" class="hero-subtitle-icon"></i></span> segítségével!</p>
 
                 <div class="mobile-search-sticky">
                     <div class="search-bar">
-                        <form action="{{ route('home') }}" method="GET">
+                        <form action="{{ route('home') }}#recipes" method="GET">
                             <div class="search-row">
                                 <div class="search-input-group">
                                     <i data-lucide="search" class="search-input-icon"></i>
@@ -43,7 +43,7 @@
 
         <!-- Modern kereső sáv -->
         <div class="search-bar">
-            <form action="{{ route('home') }}" method="GET" id="searchForm">
+            <form action="{{ route('home') }}#recipes" method="GET" id="searchForm">
                 <div class="search-row">
                     <div class="search-input-group">
                         <i data-lucide="search" class="search-input-icon"></i>

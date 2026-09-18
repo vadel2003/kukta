@@ -18,7 +18,7 @@
             <div class="assistant-intro-content">
                 <div class="assistant-intro-card assistant-greeting-card">
                     {{-- Ide kerül majd egy gif a kabalafiguráról --}}
-                    <div class="assistant-mascot"><i data-lucide="chef-hat"></i></div>
+                    <div class="assistant-mascot"><i data-lucide="bot"></i></div>
                     <p class="assistant-greeting-text">Szia! Én vagyok a Kukta asszisztensed, lépésről lépésre végigvezetlek a recepten.</p>
                 </div>
                 <div class="assistant-intro-card assistant-intro-overlay">
@@ -56,7 +56,7 @@
     <section class="assistant-screen">
         <div class="assistant-finish">
             <div class="content-card assistant-finish-card">
-                <div class="finish-emoji"><i data-lucide="party-popper"></i></div>
+                <div class="assistant-mascot"><i data-lucide="bot"></i></div>
                 <h2 class="assistant-heading">Gratulálunk!</h2>
                 <p>Sikeresen elkészítetted a(z) <strong>{{ $recipe->title }}</strong> receptet!</p>
                 <h2 class="assistant-heading assistant-heading-spaced">Jó étvágyat!</h2>
