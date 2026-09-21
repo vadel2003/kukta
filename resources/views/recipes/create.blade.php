@@ -35,84 +35,95 @@
         }
     @endphp
 
-    <h1>{{ $isEdit ? 'Recept szerkesztése' : 'Új recept feltöltése' }}</h1>
+    <div class="card-stack">
+        <div class="content-card">
+            <h1>{{ $isEdit ? 'Recept szerkesztése' : 'Új recept feltöltése' }}</h1>
+        </div>
 
-    @if (session('success'))
-        <p style="color: green;">{{ session('success') }}</p>
-    @endif
+        @if (session('success'))
+            <p class="form-success">{{ session('success') }}</p>
+        @endif
 
-    <form method="POST" action="{{ $isEdit ? route('recipes.update', $recipe->id) : route('recipes.store') }}" enctype="multipart/form-data">
+    <form method="POST" action="{{ $isEdit ? route('recipes.update', $recipe->id) : route('recipes.store') }}" enctype="multipart/form-data" class="form-sections">
         @csrf
         @if ($isEdit)
             @method('PUT')
         @endif
 
-        <div>
-            <label for="title">Recept címe <span style="color: red;">*</span></label>
-            <input type="text" name="title" id="title" value="{{ old('title', $recipe->title ?? '') }}" required maxlength="100" autofocus>
-            <small class="char-hint">max 100 karakter</small>
-            <small class="char-counter">0 / 100</small>
-            @error('title')
-                <span style="color: red;">{{ $message }}</span>
-            @enderror
+        <div class="content-card">
+            <h2 class="content-title">
+                <span class="title-icon"><i data-lucide="clipboard-list"></i></span>
+                Alapadatok
+            </h2>
+
+            <div class="form-group">
+                <label for="title">Recept címe <span class="form-error">*</span></label>
+                <input type="text" name="title" id="title" value="{{ old('title', $recipe->title ?? '') }}" required maxlength="100" autofocus>
+                <small class="char-counter">0 / 100</small>
+                @error('title')
+                    <span class="form-error">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="description">Leírás <span class="form-error">*</span></label>
+                <textarea name="description" id="description" rows="4" required maxlength="1000">{{ old('description', $recipe->description ?? '') }}</textarea>
+                <small class="char-counter">0 / 1000</small>
+                @error('description')
+                    <span class="form-error">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="prep_time">Elkészítési idő (perc) <span class="form-error">*</span></label>
+                <input type="number" name="prep_time" id="prep_time" value="{{ old('prep_time', $recipe->prep_time ?? '') }}" required min="1" max="1440">
+                @error('prep_time')
+                    <span class="form-error">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="difficulty">Nehézség <span class="form-error">*</span></label>
+                <select name="difficulty" id="difficulty" required>
+                    <option value="">-- Válassz --</option>
+                    @foreach (['könnyű', 'közepes', 'nehéz'] as $level)
+                        <option value="{{ $level }}" {{ old('difficulty', $recipe->difficulty ?? '') == $level ? 'selected' : '' }}>{{ ucfirst($level) }}</option>
+                    @endforeach
+                </select>
+                @error('difficulty')
+                    <span class="form-error">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="servings">Adag <span class="form-error">*</span></label>
+                <input type="number" name="servings" id="servings" value="{{ old('servings', $recipe->servings ?? '') }}" required min="1" max="50">
+                @error('servings')
+                    <span class="form-error">{{ $message }}</span>
+                @enderror
+            </div>
         </div>
 
-        <div>
-            <label for="description">Leírás <span style="color: red;">*</span></label>
-            <textarea name="description" id="description" rows="4" required maxlength="1000">{{ old('description', $recipe->description ?? '') }}</textarea>
-            <small class="char-hint">max 1000 karakter</small>
-            <small class="char-counter">0 / 1000</small>
-            @error('description')
-                <span style="color: red;">{{ $message }}</span>
-            @enderror
-        </div>
-
-        <div>
-            <label for="prep_time">Elkészítési idő (perc) <span style="color: red;">*</span></label>
-            <input type="number" name="prep_time" id="prep_time" value="{{ old('prep_time', $recipe->prep_time ?? '') }}" required min="1" max="1440">
-            @error('prep_time')
-                <span style="color: red;">{{ $message }}</span>
-            @enderror
-        </div>
-
-        <div>
-            <label for="difficulty">Nehézség <span style="color: red;">*</span></label>
-            <select name="difficulty" id="difficulty" required>
-                <option value="">-- Válassz --</option>
-                @foreach (['könnyű', 'közepes', 'nehéz'] as $level)
-                    <option value="{{ $level }}" {{ old('difficulty', $recipe->difficulty ?? '') == $level ? 'selected' : '' }}>{{ ucfirst($level) }}</option>
-                @endforeach
-            </select>
-            @error('difficulty')
-                <span style="color: red;">{{ $message }}</span>
-            @enderror
-        </div>
-
-        <div>
-            <label for="servings">Adag <span style="color: red;">*</span></label>
-            <input type="number" name="servings" id="servings" value="{{ old('servings', $recipe->servings ?? '') }}" required min="1" max="50">
-            @error('servings')
-                <span style="color: red;">{{ $message }}</span>
-            @enderror
-        </div>
-
-        <div>
-            <label>Kép kiválasztása</label>
+        <div class="content-card">
+            <h2 class="content-title">
+                <span class="title-icon"><i data-lucide="image"></i></span>
+                Kép
+            </h2>
 
             <div>
-                <h3>Tölts fel saját képet</h3>
+                <h3 style="margin-bottom: 0.5rem;">Tölts fel saját képet</h3>
                 <label class="upload-box">
                     <input type="file" name="thumbnail_image" accept="image/jpeg,image/png,image/gif,image/webp" class="upload-input">
                     <img src="{{ asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="" class="upload-placeholder">
                     <span class="upload-hint">+</span>
                 </label>
                 @error('thumbnail_image')
-                    <span style="color: red;">{{ $message }}</span>
+                    <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
 
-            <div>
-                <h3>Vagy válassz előre definiált képet</h3>
+            <div style="margin-top: 1rem;">
+                <h3 style="margin-bottom: 0.5rem;">Vagy válassz előre definiált képet</h3>
                 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                     @php
                         $defaultImages = glob(public_path('images/recipes/default/*.{jpg,jpeg,png,gif,webp}'), GLOB_BRACE);
@@ -126,181 +137,205 @@
                         <label style="text-align: center; cursor: pointer;">
                             <input type="radio" name="default_image" value="{{ $imageValue }}"
                                 {{ old('default_image', $recipe->thumbnail ?? '') == $imageValue ? 'checked' : '' }}>
-                            <img src="{{ $imageUrl }}" alt="{{ $imageName }}" style="width: 100px; height: 100px; object-fit: cover; display: block;">
+                            <img src="{{ $imageUrl }}" alt="{{ $imageName }}" style="width: 100px; height: 100px; object-fit: cover; display: block; border-radius: 4px;">
                         </label>
                     @endforeach
                 </div>
                 @error('default_image')
-                    <span style="color: red;">{{ $message }}</span>
+                    <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
         </div>
 
-        <div>
-            <label>Elkészítés lépései <span style="color: red;">*</span></label>
-            <div id="steps-container">
-                @php
-                    // Ha szerkesztés van, a meglévő lépések; ha nincs, 3 üres mező
-                    $stepCount = $isEdit && count($stepValues) > 0 ? count($stepValues) : 3;
-                @endphp
-                @for ($i = 0; $i < $stepCount; $i++)
-                    <div class="step-item">
-                        <label>{{ $i + 1 }}. lépés</label>
-                        <input type="text" name="steps[{{ $i }}][description]" value="{{ old('steps.' . $i . '.description', $stepValues[$i]['description'] ?? '') }}" placeholder="Add meg a(z) {{ $i + 1 }}. lépést" maxlength="1000">
-                        <small class="char-hint">max 1000 karakter</small>
-                        <small class="char-counter">0 / 1000</small>
-                        <select name="steps[{{ $i }}][step_category_id]">
-                            <option value="">-- Kategória --</option>
-                            @foreach ($stepCategories as $category)
-                                <option value="{{ $category->id }}" {{ old('steps.' . $i . '.step_category_id', $stepValues[$i]['step_category_id'] ?? '') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('steps.' . $i . '.description')
-                            <span style="color: red;">{{ $message }}</span>
-                        @enderror
-                        <button type="button" class="remove-step" title="Lépés eltávolítása">×</button>
-                    </div>
-                @endfor
+        <div class="content-card">
+            <h2 class="content-title">
+                <span class="title-icon"><i data-lucide="chef-hat"></i></span>
+                Elkészítés lépései <span class="form-error">*</span>
+            </h2>
+
+            <div class="form-group">
+                <div id="steps-container">
+                    @php
+                        // Ha szerkesztés van, a meglévő lépések; ha nincs, 3 üres mező
+                        $stepCount = $isEdit && count($stepValues) > 0 ? count($stepValues) : 3;
+                    @endphp
+                    @for ($i = 0; $i < $stepCount; $i++)
+                        <div class="step-item">
+                            <label>{{ $i + 1 }}. lépés</label>
+                            <input type="text" name="steps[{{ $i }}][description]" value="{{ old('steps.' . $i . '.description', $stepValues[$i]['description'] ?? '') }}" placeholder="Add meg a(z) {{ $i + 1 }}. lépést" maxlength="1000">
+                            <small class="char-counter">0 / 1000</small>
+                            <select name="steps[{{ $i }}][step_category_id]">
+                                <option value="">-- Kategória --</option>
+                                @foreach ($stepCategories as $category)
+                                    <option value="{{ $category->id }}" {{ old('steps.' . $i . '.step_category_id', $stepValues[$i]['step_category_id'] ?? '') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('steps.' . $i . '.description')
+                                <span class="form-error">{{ $message }}</span>
+                            @enderror
+                            <button type="button" class="remove-step" title="Lépés eltávolítása">×</button>
+                        </div>
+                    @endfor
+                </div>
+                @error('steps')
+                    <span class="form-error">{{ $message }}</span>
+                @enderror
+                <button type="button" id="add-step" class="btn-outline">+ Lépés hozzáadása</button>
             </div>
-            @error('steps')
-                <span style="color: red;">{{ $message }}</span>
-            @enderror
-            <button type="button" id="add-step">+ Lépés hozzáadása</button>
         </div>
 
-        <div>
-            <label>Alapanyagok <span style="color: red;">*</span></label>
-            <div id="ingredients">
-                @php
-                    // Ha szerkesztés van, a meglévő alapanyagok; ha nincs, 3 üres mező
-                    $ingredientCount = $isEdit && count($ingredientValues) > 0 ? count($ingredientValues) : 3;
-                @endphp
-                @for ($i = 0; $i < $ingredientCount; $i++)
-                    <div class="ingredient-item">
-                        <input type="text" name="ingredients[{{ $i }}][name]" list="ingredient-options" value="{{ old('ingredients.' . $i . '.name', $ingredientValues[$i]['name'] ?? '') }}" placeholder="Alapanyag neve" maxlength="50">
-                        <small class="char-hint">max 50 karakter</small>
-                        <small class="char-counter">0 / 50</small>
+        <div class="content-card">
+            <h2 class="content-title">
+                <span class="title-icon"><i data-lucide="cooking-pot"></i></span>
+                Alapanyagok <span class="form-error">*</span>
+            </h2>
 
-                        <input type="number" name="ingredients[{{ $i }}][quantity]" step="0.1" min="0.1" placeholder="Mennyiség" value="{{ old('ingredients.' . $i . '.quantity', $ingredientValues[$i]['quantity'] ?? '') }}">
+            <div class="form-group">
+                <div id="ingredients">
+                    @php
+                        // Ha szerkesztés van, a meglévő alapanyagok; ha nincs, 3 üres mező
+                        $ingredientCount = $isEdit && count($ingredientValues) > 0 ? count($ingredientValues) : 3;
+                    @endphp
+                    @for ($i = 0; $i < $ingredientCount; $i++)
+                        <div class="ingredient-item">
+                            <input type="text" name="ingredients[{{ $i }}][name]" list="ingredient-options" value="{{ old('ingredients.' . $i . '.name', $ingredientValues[$i]['name'] ?? '') }}" placeholder="Alapanyag neve" maxlength="50">
+                            <small class="char-counter">0 / 50</small>
 
-                        <select name="ingredients[{{ $i }}][unit]">
-                            <option value="">-- Mértékegység --</option>
-                            <option value="g" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'g' ? 'selected' : '' }}>g</option>
-                            <option value="kg" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'kg' ? 'selected' : '' }}>kg</option>
-                            <option value="ml" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'ml' ? 'selected' : '' }}>ml</option>
-                            <option value="l" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'l' ? 'selected' : '' }}>l</option>
-                            <option value="db" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'db' ? 'selected' : '' }}>db</option>
-                            <option value="csésze" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'csésze' ? 'selected' : '' }}>csésze</option>
-                            <option value="evőkanál" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'evőkanál' ? 'selected' : '' }}>evőkanál</option>
-                            <option value="teáskanál" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'teáskanál' ? 'selected' : '' }}>teáskanál</option>
-                            <option value="csipet" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'csipet' ? 'selected' : '' }}>csipet</option>
-                            <option value="ízlés szerint" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'ízlés szerint' ? 'selected' : '' }}>ízlés szerint</option>
-                        </select>
+                            <input type="number" name="ingredients[{{ $i }}][quantity]" step="0.1" min="0.1" placeholder="Mennyiség" value="{{ old('ingredients.' . $i . '.quantity', $ingredientValues[$i]['quantity'] ?? '') }}">
 
-                        <button type="button" class="remove-ingredient" title="Alapanyag eltávolítása">×</button>
+                            <select name="ingredients[{{ $i }}][unit]">
+                                <option value="">-- Mértékegység --</option>
+                                <option value="g" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'g' ? 'selected' : '' }}>g</option>
+                                <option value="kg" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'kg' ? 'selected' : '' }}>kg</option>
+                                <option value="ml" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'ml' ? 'selected' : '' }}>ml</option>
+                                <option value="l" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'l' ? 'selected' : '' }}>l</option>
+                                <option value="db" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'db' ? 'selected' : '' }}>db</option>
+                                <option value="csésze" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'csésze' ? 'selected' : '' }}>csésze</option>
+                                <option value="evőkanál" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'evőkanál' ? 'selected' : '' }}>evőkanál</option>
+                                <option value="teáskanál" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'teáskanál' ? 'selected' : '' }}>teáskanál</option>
+                                <option value="csipet" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'csipet' ? 'selected' : '' }}>csipet</option>
+                                <option value="ízlés szerint" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'ízlés szerint' ? 'selected' : '' }}>ízlés szerint</option>
+                            </select>
 
-                        @error('ingredients.' . $i . '.name')
-                            <span style="color: red;">{{ $message }}</span>
-                        @enderror
-                        @error('ingredients.' . $i . '.quantity')
-                            <span style="color: red;">{{ $message }}</span>
-                        @enderror
-                        @error('ingredients.' . $i . '.unit')
-                            <span style="color: red;">{{ $message }}</span>
-                        @enderror
-                    </div>
-                @endfor
+                            <button type="button" class="remove-ingredient" title="Alapanyag eltávolítása">×</button>
+
+                            @error('ingredients.' . $i . '.name')
+                                <span class="form-error">{{ $message }}</span>
+                            @enderror
+                            @error('ingredients.' . $i . '.quantity')
+                                <span class="form-error">{{ $message }}</span>
+                            @enderror
+                            @error('ingredients.' . $i . '.unit')
+                                <span class="form-error">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    @endfor
+                </div>
+
+                <datalist id="ingredient-options">
+                    @foreach ($ingredients as $ingredient)
+                        <option value="{{ $ingredient->name }}"></option>
+                    @endforeach
+                </datalist>
+
+                <button type="button" id="add-ingredient" class="btn-outline">+ Alapanyag hozzáadása</button>
+
+                @error('ingredients')
+                    <span class="form-error">{{ $message }}</span>
+                @enderror
             </div>
-
-            <datalist id="ingredient-options">
-                @foreach ($ingredients as $ingredient)
-                    <option value="{{ $ingredient->name }}"></option>
-                @endforeach
-            </datalist>
-
-            <button type="button" id="add-ingredient">+ Alapanyag hozzáadása</button>
-
-            @error('ingredients')
-                <span style="color: red;">{{ $message }}</span>
-            @enderror
         </div>
 
-        <div>
-            <label>Kategóriák</label>
+        <div class="content-card">
+            <h2 class="content-title">
+                <span class="title-icon"><i data-lucide="tags"></i></span>
+                Kategóriák
+            </h2>
 
             <div>
-                <h3>Napszak</h3>
-                @foreach ($mealTimes as $mealTime)
-                    <label>
-                        <input type="checkbox" name="meal_times[]" value="{{ $mealTime->id }}"
-                            {{ (is_array(old('meal_times')) && in_array($mealTime->id, old('meal_times'))) || ($isEdit && $recipe->mealTimes->contains($mealTime->id)) ? 'checked' : '' }}>
-                        {{ $mealTime->name }}
-                    </label>
-                @endforeach
+                <h3 style="margin-bottom: 0.25rem;">Napszak</h3>
+                <div class="checkbox-group">
+                    @foreach ($mealTimes as $mealTime)
+                        <label>
+                            <input type="checkbox" name="meal_times[]" value="{{ $mealTime->id }}"
+                                {{ (is_array(old('meal_times')) && in_array($mealTime->id, old('meal_times'))) || ($isEdit && $recipe->mealTimes->contains($mealTime->id)) ? 'checked' : '' }}>
+                            {{ $mealTime->name }}
+                        </label>
+                    @endforeach
+                </div>
                 @error('meal_times')
-                    <span style="color: red;">{{ $message }}</span>
+                    <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
 
-            <div>
-                <h3>Étel típusa <span style="color: red;">*</span></h3>
-                @foreach ($foodTypes as $foodType)
-                    <label>
-                        <input type="checkbox" name="food_types[]" value="{{ $foodType->id }}"
-                            {{ (is_array(old('food_types')) && in_array($foodType->id, old('food_types'))) || ($isEdit && $recipe->foodTypes->contains($foodType->id)) ? 'checked' : '' }}>
-                        {{ $foodType->name }}
-                    </label>
-                @endforeach
+            <div style="margin-top: 1rem;">
+                <h3 style="margin-bottom: 0.25rem;">Étel típusa <span class="form-error">*</span></h3>
+                <div class="checkbox-group">
+                    @foreach ($foodTypes as $foodType)
+                        <label>
+                            <input type="checkbox" name="food_types[]" value="{{ $foodType->id }}"
+                                {{ (is_array(old('food_types')) && in_array($foodType->id, old('food_types'))) || ($isEdit && $recipe->foodTypes->contains($foodType->id)) ? 'checked' : '' }}>
+                            {{ $foodType->name }}
+                        </label>
+                    @endforeach
+                </div>
                 @error('food_types')
-                    <span style="color: red;">{{ $message }}</span>
+                    <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
 
-            <div>
-                <h3>Étrend</h3>
-                @foreach ($diets as $diet)
-                    <label>
-                        <input type="radio" name="diet" value="{{ $diet->id }}"
-                            {{ old('diet', $isEdit ? $recipe->diets->pluck('id')->first() ?? '' : '') == $diet->id ? 'checked' : '' }}>
-                        {{ $diet->name }}
-                    </label>
-                @endforeach
+            <div style="margin-top: 1rem;">
+                <h3 style="margin-bottom: 0.25rem;">Étrend</h3>
+                <div class="checkbox-group">
+                    @foreach ($diets as $diet)
+                        <label>
+                            <input type="radio" name="diet" value="{{ $diet->id }}"
+                                {{ old('diet', $isEdit ? $recipe->diets->pluck('id')->first() ?? '' : '') == $diet->id ? 'checked' : '' }}>
+                            {{ $diet->name }}
+                        </label>
+                    @endforeach
+                </div>
                 @error('diet')
-                    <span style="color: red;">{{ $message }}</span>
+                    <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
 
-            <div>
-                <h3>Érzékenység</h3>
-                @foreach ($allergens as $allergen)
-                    <label>
-                        <input type="checkbox" name="allergens[]" value="{{ $allergen->id }}"
-                            {{ (is_array(old('allergens')) && in_array($allergen->id, old('allergens'))) || ($isEdit && $recipe->allergens->contains($allergen->id)) ? 'checked' : '' }}>
-                        {{ $allergen->name }}
-                    </label>
-                @endforeach
+            <div style="margin-top: 1rem;">
+                <h3 style="margin-bottom: 0.25rem;">Érzékenység</h3>
+                <div class="checkbox-group">
+                    @foreach ($allergens as $allergen)
+                        <label>
+                            <input type="checkbox" name="allergens[]" value="{{ $allergen->id }}"
+                                {{ (is_array(old('allergens')) && in_array($allergen->id, old('allergens'))) || ($isEdit && $recipe->allergens->contains($allergen->id)) ? 'checked' : '' }}>
+                            {{ $allergen->name }}
+                        </label>
+                    @endforeach
+                </div>
                 @error('allergens')
-                    <span style="color: red;">{{ $message }}</span>
+                    <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
 
-            <div>
-                <h3>Konyha</h3>
-                @foreach ($cuisines as $cuisine)
-                    <label>
-                        <input type="checkbox" name="cuisines[]" value="{{ $cuisine->id }}"
-                            {{ (is_array(old('cuisines')) && in_array($cuisine->id, old('cuisines'))) || ($isEdit && $recipe->cuisines->contains($cuisine->id)) ? 'checked' : '' }}>
-                        {{ $cuisine->name }}
-                    </label>
-                @endforeach
+            <div style="margin-top: 1rem;">
+                <h3 style="margin-bottom: 0.25rem;">Konyha</h3>
+                <div class="checkbox-group">
+                    @foreach ($cuisines as $cuisine)
+                        <label>
+                            <input type="checkbox" name="cuisines[]" value="{{ $cuisine->id }}"
+                                {{ (is_array(old('cuisines')) && in_array($cuisine->id, old('cuisines'))) || ($isEdit && $recipe->cuisines->contains($cuisine->id)) ? 'checked' : '' }}>
+                            {{ $cuisine->name }}
+                        </label>
+                    @endforeach
+                </div>
                 @error('cuisines')
-                    <span style="color: red;">{{ $message }}</span>
+                    <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
         </div>
 
-        <button type="submit">{{ $isEdit ? 'Módosítások mentése' : 'Recept feltöltése' }}</button>
+        <button type="submit" class="btn-cook">{{ $isEdit ? 'Módosítások mentése' : 'Recept feltöltése' }}</button>
     </form>
+    </div>
 
     <script>
         // Saját kép előnézet

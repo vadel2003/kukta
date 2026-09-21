@@ -3,27 +3,33 @@
 @section('title', 'Bejelentkezés')
 
 @section('content')
-    <h1>Bejelentkezés</h1>
-
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
-
-        <div>
-            <label for="email">Email cím:</label>
-            <input type="email" id="email" name="email" value="{{ old('email') }}" required maxlength="50">
-            @error('email')
-                <span style="color: red;">{{ $message }}</span>
-            @enderror
+    <div class="card-stack">
+        <div class="form-card">
+            <h1>Bejelentkezés</h1>
         </div>
 
-        <div>
-            <label for="password">Jelszó:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
+        <div class="form-card">
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
 
-        <div>
-            <button type="submit">Bejelentkezés</button>
+                <div class="form-group">
+                    <label for="email">Email cím:</label>
+                    <input type="email" id="email" name="email" value="{{ old('email') }}" required maxlength="50">
+                    @error('email')
+                        <span class="form-error">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Jelszó:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn-cook">Bejelentkezés</button>
+                </div>
+            </form>
+            <p>Még nincs fiókod? <a href="{{ route('register') }}">Regisztrálj!</a></p>
         </div>
-    </form>
-    <p>Még nincs fiókod? <a href="{{ route('register') }}">Regisztrálj!</a></p>
+    </div>
 @endsection
