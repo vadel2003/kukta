@@ -75,6 +75,10 @@ header {
 }
 
 .header-left .logo {
+    /* Ugyanakkora doboz, mint a .profile-icon (40px) - a fejléc emiatt nem lesz
+       vastagabb. A kuktasapka.svg viewBox-a szorosan a rajz köré van vágva
+       (l. a fájlban), így ebben a dobozban a sapka kb. ugyanakkorának látszik,
+       mint az avatar-kör a másik oldalon. */
     height: 40px;
     vertical-align: middle;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
@@ -480,6 +484,7 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
 /* Kártya alsó gombsor: Részletek + fakanál egymás mellett */
 .card-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     margin-top: auto;
 }
@@ -1042,7 +1047,6 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
 
 /* ===== MOBIL-SPECIFIKUS ELEMEK - DESKTOPON REJTVE ===== */
 @media (min-width: 769px) {
-    .logo-mobile,
     .mobile-menu-btn,
     .mobile-menu-overlay {
         display: none;
@@ -1059,11 +1063,6 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     body {
         overflow-x: clip;
         width: 100%;
-    }
-
-    /* Desktop logó elrejtése mobilon */
-    .logo {
-        display: none !important;
     }
 
     /* Hamburger elrejtése mobilon (az avatar veszi át a szerepét) */
@@ -1085,18 +1084,6 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
         padding: 0;
         box-shadow: none;
         gap: 0.5rem;
-    }
-
-    /* Mobil elemek megjelenítése */
-    /* A kuktasapka.svg-ben a rajzolt tartalom csak a vászon kb. 55%-át tölti ki,
-       a profil ikon viszont majdnem az egészet - emiatt kell jóval nagyobb
-       height, hogy a két ikon ténylegesen (nem csak a doboz méretében)
-       egyforma nagyságúnak tűnjön */
-    .logo-mobile {
-        display: block;
-        height: 57px;
-        width: auto;
-        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
     }
 
     .profile-icon {

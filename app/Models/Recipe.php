@@ -88,4 +88,42 @@ class Recipe extends Model
     {
         return $this->belongsToMany(Cuisine::class, 'cuisine_recipe', 'recipe_id', 'cuisine_id');
     }
+
+    /**
+     * Kulcsszavas keresés + kategória szűrők (étkezés, ételtípus, diéta, érzékenység, konyha).
+     * Ezt a főoldal, a Saját receptek és a Kedvenc receptek oldal is használja,
+     * hogy ne kelljen 3x ugyanazt a kódot írni. A rendezést szándékosan NEM ez csinálja,
+     * mert az oldalanként eltérhet (l. Kedvenc receptek: alapból a kedvencnek jelölés
+     * ideje szerint rendez, nem a recept létrehozási dátuma szerint).
+     */
+    public function scopeSearchAndFilter($query, $request)
+    {
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('ingredients', fn ($q2) => $q2->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('steps', fn ($q2) => $q2->where('description', 'like', "%{$search}%"));
+            });
+        }
+
+        if ($request->filled('meal_time')) {
+            $query->whereHas('mealTimes', fn ($q) => $q->whereIn('meal_time.id', (array) $request->input('meal_time')));
+        }
+        if ($request->filled('food_type')) {
+            $query->whereHas('foodTypes', fn ($q) => $q->whereIn('food_type.id', (array) $request->input('food_type')));
+        }
+        if ($request->filled('diet')) {
+            $query->whereHas('diets', fn ($q) => $q->whereIn('diet.id', (array) $request->input('diet')));
+        }
+        if ($request->filled('allergen')) {
+            $query->whereHas('allergens', fn ($q) => $q->whereIn('allergen.id', (array) $request->input('allergen')));
+        }
+        if ($request->filled('cuisine')) {
+            $query->whereHas('cuisines', fn ($q) => $q->whereIn('cuisine.id', (array) $request->input('cuisine')));
+        }
+
+        return $query;
+    }
 }

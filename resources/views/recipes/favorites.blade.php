@@ -2,52 +2,39 @@
 
 @section('title', 'Kedvenc receptek')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/pages/home.css') }}?v={{ filemtime(public_path('css/pages/home.css')) }}">
+@endpush
+
 @section('content')
     <h1>Kedvenc receptek</h1>
 
-    @if ($favoriteRecipes->isEmpty())
+    @if (!$hasAnyFavorites)
         <p>Még nincsenek kedvenc receptjeid.</p>
     @else
-        <div class="recipe-gallery">
-            @foreach ($favoriteRecipes as $recipe)
-                <div class="recipe-card">
-                    <div class="card-image-wrapper">
-                        <img src="{{ $recipe->thumbnail ? asset($recipe->thumbnail) : asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="{{ $recipe->title }}" class="recipe-image">
-                        <form action="{{ route('recipes.favorite', $recipe->id) }}" method="POST" class="card-favorite-form" data-remove-card="true">
-                            @csrf
-                            <button type="submit" class="btn-favorite-card favorited" title="Kedvenc törlése">
-                                <i data-lucide="heart"></i>
-                            </button>
-                            <span class="favorite-badge">{{ $recipe->favorites_count }}</span>
-                        </form>
-                    </div>
-                    <h2>{{ $recipe->title }}</h2>
+        <section id="recipes" class="recipes-section">
+            @include('partials.recipe-search-bar', [
+                'searchAction' => route('recipes.favorites'),
+                'searchPlaceholder' => 'Kedvenc receptek keresése kulcsszó szerint...',
+                'mealTimes' => $mealTimes,
+                'foodTypes' => $foodTypes,
+                'diets' => $diets,
+                'allergens' => $allergens,
+                'cuisines' => $cuisines,
+            ])
 
-                    {{-- ⭐ Csillagos értékelés (dinamikus) --}}
-                    <div class="star-rating">
-                        <span class="stars">
-                            @for ($i = 1; $i <= 5; $i++)
-                                <span class="{{ $i <= round($recipe->scores_avg_score ?? 0) ? 'filled' : '' }}">★</span>
-                            @endfor
-                        </span>
-                        <span class="rating-number">{{ number_format($recipe->scores_avg_score ?? 0, 1) }}</span>
-                        <span class="review-count">({{ $recipe->scores_count ?? 0 }})</span>
-                    </div>
+            <div id="recipe-gallery" class="recipe-gallery">
+                @include('partials.recipe-gallery')
+            </div>
 
-                    <p class="recipe-description">{{ Str::limit($recipe->description, 100) }}</p>
-                    <div class="card-actions">
-                        <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-view">Részletek</a>
-                        <a href="{{ route('recipes.assistant', $recipe->id) }}" class="btn-spoon" title="Kukta asszisztens" aria-label="Kukta asszisztens">
-                            <i data-lucide="bot"></i>
-                        </a>
-                    </div>
+            @if ($recipes->hasMorePages())
+                <button id="load-more-btn" class="btn-load-more">További receptek betöltése...</button>
+            @endif
 
-                    {{-- Hover tooltip: a recept teljes leírása --}}
-                    <div class="card-tooltip">
-                        <p class="tooltip-description">{{ $recipe->description }}</p>
-                    </div>
-                </div>
-            @endforeach
-        </div>
+            <div id="loading-spinner" class="loading-spinner" style="display: none;">
+                <div class="spinner"></div>
+                <p>Betöltés...</p>
+            </div>
+        </section>
     @endif
 @endsection

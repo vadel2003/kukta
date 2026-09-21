@@ -9,24 +9,62 @@
 @section('content')
     <h1>Felhasználók kezelése</h1>
 
+    @if (session('success'))
+        <p style="color: green;">{{ session('success') }}</p>
+    @endif
+
+    <form action="{{ route('admin.users') }}" method="GET" class="ingredient-search">
+        <input type="hidden" name="sort" value="{{ $sort }}">
+        <input type="hidden" name="direction" value="{{ $direction }}">
+        <input type="text" name="search" value="{{ $search }}" placeholder="Keresés név vagy email szerint...">
+        <button type="submit" class="btn-edit">Keresés</button>
+        @if ($search)
+            <a href="{{ route('admin.users', ['sort' => $sort, 'direction' => $direction]) }}" class="btn-clear-search">Összes</a>
+        @endif
+    </form>
+
     @if ($users->isEmpty())
-        <p>Nincs még felhasználó.</p>
+        <p>{{ $search ? 'Nincs találat.' : 'Nincs még felhasználó.' }}</p>
     @else
-        <table>
+        @php
+            // Oszlopok a fejléchez - így nem kell 4x ugyanazt a rendező linket kiírni
+            $columns = [
+                'id' => 'ID',
+                'name' => 'Név',
+                'email' => 'Email',
+                'role' => 'Szerepkör',
+            ];
+        @endphp
+        <table class="admin-table">
             <thead>
                 <tr>
-                    <th>Név</th>
-                    <th>Email</th>
-                    <th>Szerepkör</th>
-                    <th></th>
+                    @foreach ($columns as $key => $label)
+                        @php
+                            $nextDirection = ($sort === $key && $direction === 'asc') ? 'desc' : 'asc';
+                            $arrow = $sort === $key ? ($direction === 'asc' ? ' ▲' : ' ▼') : '';
+                        @endphp
+                        <th>
+                            <a href="{{ route('admin.users', ['search' => $search, 'sort' => $key, 'direction' => $nextDirection]) }}">
+                                {{ $label }}{{ $arrow }}
+                            </a>
+                        </th>
+                        @if ($key === 'id')
+                            <th></th> {{-- profilkép oszlop, nem rendezhető --}}
+                        @endif
+                    @endforeach
+                    <th></th> {{-- műveletek oszlop --}}
                 </tr>
             </thead>
             <tbody>
                 @foreach ($users as $user)
                     <tr>
+                        <td>{{ $user->id }}</td>
+                        <td>
+                            <img src="{{ $user->avatar ? asset($user->avatar) : asset('images/default_avatar.svg') }}" alt="Profilkép" class="user-avatar">
+                        </td>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
-                        <td>{{ $user->isAdmin() ? 'Admin' : 'Felhasználó' }}</td>
+                        <td>{{ $user->isAdmin() ? 'Superadmin' : 'Regisztrált felhasználó' }}</td>
                         <td>
                             @if (!$user->isAdmin() && $user->id !== Auth::id())
                                 <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Biztosan törlöd ezt a felhasználót? A receptjei megmaradnak, de a kedvencei és értékelései törlődnek.')">

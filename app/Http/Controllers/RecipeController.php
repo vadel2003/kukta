@@ -198,29 +198,147 @@ class RecipeController extends Controller
         return redirect()->route('recipes.my')->with('success', 'Recept sikeresen feltöltve!');
     }
 
-    public function myRecipes()
+    public function myRecipes(Request $request)
     {
-        $myRecipes = Recipe::where('user_id', Auth::id())
-            ->withCount('favorites')
-            ->orderBy('creation_date', 'desc')
-            ->get();
+        $hasAnyRecipes = Recipe::where('user_id', Auth::id())->exists();
 
-        return view('recipes.my', compact('myRecipes'));
+        $query = Recipe::where('user_id', Auth::id())
+            ->withCount('favorites')
+            ->withCount('scores')
+            ->withAvg('scores', 'score')
+            ->searchAndFilter($request);
+
+        $sort = $request->input('sort', 'relevance');
+        $search = $request->input('search');
+
+        switch ($sort) {
+            case 'date':
+                $query->orderBy('creation_date', 'desc');
+                break;
+
+            case 'popularity':
+                $query->withCount('favorites')
+                    ->orderBy('favorites_count', 'desc');
+                break;
+
+            default: // relevance
+                if ($search) {
+                    $query->orderByRaw('CASE WHEN title LIKE ? THEN 1 WHEN description LIKE ? THEN 2 ELSE 3 END', ["%{$search}%", "%{$search}%"]);
+                }
+                $query->orderBy('creation_date', 'desc');
+        }
+
+        $myRecipes = $query->paginate(21);
+
+        // Kellhet a szív-gomb állapotához, ha valaki a saját receptjét is kedvencnek jelölte
+        $favoriteIds = Favorite::where('user_id', Auth::id())->pluck('recipe_id')->toArray();
+
+        if ($request->ajax()) {
+            $html = view('partials.recipe-gallery', [
+                'recipes' => $myRecipes,
+                'favoriteIds' => $favoriteIds,
+                'showOwnerActions' => true,
+            ])->render();
+            return response()->json([
+                'html' => $html,
+                'hasMore' => $myRecipes->hasMorePages(),
+            ]);
+        }
+
+        $mealTimes = MealTime::orderBy('id')->get();
+        $foodTypes = FoodType::orderBy('id')->get();
+        $diets = Diet::orderBy('id')->get();
+        $allergens = Allergen::orderBy('id')->get();
+        $cuisines = Cuisine::orderBy('id')->get();
+
+        return view('recipes.my', [
+            'recipes' => $myRecipes,
+            'favoriteIds' => $favoriteIds,
+            'showOwnerActions' => true,
+            'hasAnyRecipes' => $hasAnyRecipes,
+            'mealTimes' => $mealTimes,
+            'foodTypes' => $foodTypes,
+            'diets' => $diets,
+            'allergens' => $allergens,
+            'cuisines' => $cuisines,
+        ]);
     }
 
-    public function favorites()
+    public function favorites(Request $request)
     {
-        $favoriteRecipes = Auth::user()->favorites()
-            ->with('recipe.user')
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(fn ($f) => $f->recipe);
+        $hasAnyFavorites = Favorite::where('user_id', Auth::id())->exists();
 
-        $favoriteRecipes->loadCount('favorites');
-        $favoriteRecipes->loadCount('scores');
-        $favoriteRecipes->loadAvg('scores', 'score');
+        // A recipe táblából indulunk (nem a favorites-ból), mert a keresés/szűrés a recept
+        // mezőin/kapcsolatain dolgozik. A favorites táblához a bejelentkezett felhasználóra
+        // szűkítve kapcsolódunk (JOIN), így csak a ténylegesen kedvencnek jelölt receptek
+        // jönnek vissza, és a "favorited_at" oszlop is elérhető lesz a rendezéshez.
+        $query = Recipe::query()
+            ->join('favorites', function ($join) {
+                $join->on('favorites.recipe_id', '=', 'recipe.id')
+                    ->where('favorites.user_id', Auth::id());
+            })
+            ->select('recipe.*', 'favorites.created_at as favorited_at')
+            ->with('user')
+            ->withCount('favorites')
+            ->withCount('scores')
+            ->withAvg('scores', 'score')
+            ->searchAndFilter($request);
 
-        return view('recipes.favorites', compact('favoriteRecipes'));
+        $sort = $request->input('sort', 'relevance');
+        $search = $request->input('search');
+
+        switch ($sort) {
+            case 'date':
+                $query->orderBy('recipe.creation_date', 'desc');
+                break;
+
+            case 'popularity':
+                $query->withCount('favorites')
+                    ->orderBy('favorites_count', 'desc');
+                break;
+
+            default: // relevance
+                if ($search) {
+                    $query->orderByRaw('CASE WHEN recipe.title LIKE ? THEN 1 WHEN recipe.description LIKE ? THEN 2 ELSE 3 END', ["%{$search}%", "%{$search}%"]);
+                }
+                // Külön eset a főoldalhoz/saját receptekhez képest: alapból NEM a recept
+                // létrehozási dátuma, hanem a kedvencnek jelölés ideje szerint rendezünk -
+                // így a legutóbb kedvencnek jelölt recept kerül előre.
+                $query->orderBy('favorited_at', 'desc');
+        }
+
+        $favoriteRecipes = $query->paginate(21);
+        $favoriteIds = $favoriteRecipes->pluck('id')->toArray();
+
+        if ($request->ajax()) {
+            $html = view('partials.recipe-gallery', [
+                'recipes' => $favoriteRecipes,
+                'favoriteIds' => $favoriteIds,
+                'removeOnUnfavorite' => true,
+            ])->render();
+            return response()->json([
+                'html' => $html,
+                'hasMore' => $favoriteRecipes->hasMorePages(),
+            ]);
+        }
+
+        $mealTimes = MealTime::orderBy('id')->get();
+        $foodTypes = FoodType::orderBy('id')->get();
+        $diets = Diet::orderBy('id')->get();
+        $allergens = Allergen::orderBy('id')->get();
+        $cuisines = Cuisine::orderBy('id')->get();
+
+        return view('recipes.favorites', [
+            'recipes' => $favoriteRecipes,
+            'favoriteIds' => $favoriteIds,
+            'removeOnUnfavorite' => true,
+            'hasAnyFavorites' => $hasAnyFavorites,
+            'mealTimes' => $mealTimes,
+            'foodTypes' => $foodTypes,
+            'diets' => $diets,
+            'allergens' => $allergens,
+            'cuisines' => $cuisines,
+        ]);
     }
 
     public function toggleFavorite(Request $request, $id)

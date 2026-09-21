@@ -16,8 +16,7 @@
     <header>
         <div class="header-left">
             <a href="{{ route('home') }}">
-                <img src="{{ asset('images/kukta-logo.svg') }}?v={{ filemtime(public_path('images/kukta-logo.svg')) }}" alt="Kukta" class="logo">
-                <img src="{{ asset('images/kukta-sapka.svg') }}?v={{ filemtime(public_path('images/kukta-sapka.svg')) }}" alt="Kukta" class="logo-mobile">
+                <img src="{{ asset('images/kukta-sapka.svg') }}?v={{ filemtime(public_path('images/kukta-sapka.svg')) }}" alt="Kukta" class="logo">
             </a>
         </div>
 
@@ -162,9 +161,19 @@
         searchForms.forEach(function (form) {
             form.addEventListener('submit', function (e) {
                 const gallery = document.getElementById('recipe-gallery');
-                // Ha nem a főoldalon vagyunk (pl. a fejléc keresőjét használjuk egy másik oldalról),
-                // nincs galéria a DOM-ban - ilyenkor hagyjuk, hogy simán navigáljon a főoldalra
+                // Ha az aktuális oldalon nincs galéria a DOM-ban, nincs mit lecserélni -
+                // hagyjuk, hogy a form simán navigáljon a saját action-je szerint
                 if (!gallery) return;
+
+                // A form saját action-je dönti el, HOVA keresünk (főoldal / saját receptek /
+                // kedvencek - mindegyiknek saját #searchForm-ja van). Ha ez másik oldalra mutat,
+                // mint ahol épp vagyunk (pl. a fejléc keresője egy másik oldalról a főoldalra
+                // keres), hagyjuk simán navigálni ahelyett, hogy a jelenlegi oldal galériáját
+                // cserélnénk le másik oldal találataira.
+                const targetUrl = form.action.split('#')[0];
+                const targetPath = new URL(targetUrl, window.location.href).pathname;
+                if (targetPath !== window.location.pathname) return;
+
                 e.preventDefault();
 
                 const spinner = document.getElementById('loading-spinner');
@@ -186,7 +195,7 @@
                 for (const [key, value] of formData.entries()) {
                     params.append(key, value);
                 }
-                fetch('{{ route('home') }}?' + params.toString(), {
+                fetch(targetUrl + '?' + params.toString(), {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     }

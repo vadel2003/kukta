@@ -42,7 +42,9 @@ Route::delete('/recept/{id}', [RecipeController::class, 'destroy'])->name('recip
 
 // Admin
 Route::get('/admin/alapanyagok', [AdminController::class, 'ingredients'])->name('admin.ingredients');
+Route::post('/admin/alapanyagok', [AdminController::class, 'storeIngredient'])->name('admin.ingredients.store');
 Route::delete('/admin/alapanyagok/{id}', [AdminController::class, 'destroyIngredient'])->name('admin.ingredients.destroy');
+Route::put('/admin/alapanyagok/{id}', [AdminController::class, 'updateIngredient'])->name('admin.ingredients.update');
 Route::get('/admin/receptek', [AdminController::class, 'recipes'])->name('admin.recipes');
 Route::get('/admin/felhasznalok', [AdminController::class, 'users'])->name('admin.users');
 Route::delete('/admin/felhasznalok/{id}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');

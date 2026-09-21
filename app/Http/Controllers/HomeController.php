@@ -16,45 +16,14 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Recept-lekérdezés építése
+        // 1. Recept-lekérdezés építése + keresés/szűrés (megosztott scope a Recipe modellben)
         $query = Recipe::with('user')
             ->withCount('favorites')
             ->withCount('scores')
-            ->withAvg('scores', 'score');
+            ->withAvg('scores', 'score')
+            ->searchAndFilter($request);
 
-        // 2. Keresés: név, leírás, hozzávalók, elkészítés
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhereHas('ingredients', function ($q2) use ($search) {
-                        $q2->where('name', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('steps', function ($q2) use ($search) {
-                        $q2->where('description', 'like', "%{$search}%");
-                    });
-            });
-        }
-
-        // 3. Kategória szűrők (tömbök - checkboxok miatt)
-        if ($request->filled('meal_time')) {
-            $query->whereHas('mealTimes', fn ($q) => $q->whereIn('meal_time.id', (array)$request->input('meal_time')));
-        }
-        if ($request->filled('food_type')) {
-            $query->whereHas('foodTypes', fn ($q) => $q->whereIn('food_type.id', (array)$request->input('food_type')));
-        }
-        if ($request->filled('diet')) {
-            $query->whereHas('diets', fn ($q) => $q->whereIn('diet.id', (array)$request->input('diet')));
-        }
-        if ($request->filled('allergen')) {
-            $query->whereHas('allergens', fn ($q) => $q->whereIn('allergen.id', (array)$request->input('allergen')));
-        }
-        if ($request->filled('cuisine')) {
-            $query->whereHas('cuisines', fn ($q) => $q->whereIn('cuisine.id', (array)$request->input('cuisine')));
-        }
-
-        // 4. Rendezés
+        // 2. Rendezés
         $sort = $request->input('sort', 'relevance');
         $search = $request->input('search');
 
@@ -81,7 +50,7 @@ class HomeController extends Controller
 
         $recipes = $query->paginate(21);
 
-        // 5. A bejelentkezett felhasználó kedvenc recept ID-i
+        // 3. A bejelentkezett felhasználó kedvenc recept ID-i
         $favoriteIds = [];
         if (Auth::check()) {
             $favoriteIds = Favorite::where('user_id', Auth::id())
@@ -89,7 +58,7 @@ class HomeController extends Controller
                 ->toArray();
         }
 
-        // 6. Kategóriák a szűrő legördülőkhöz
+        // 4. Kategóriák a szűrő legördülőkhöz
         $mealTimes = MealTime::orderBy('id')->get();
         $foodTypes = FoodType::orderBy('id')->get();
         $diets = Diet::orderBy('id')->get();
