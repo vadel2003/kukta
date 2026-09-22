@@ -1,3 +1,16 @@
+/* Admin táblázatos oldalak (alapanyagok/receptek/felhasználók) kártya-konténere -
+   ugyanaz a vizuális nyelv, mint a .form-card (app.css), csak teljes szélességű,
+   hogy a táblázat ne csupaszon lógjon a háttéren, mint a többi kártyázott aloldal */
+.admin-panel {
+    background: var(--color-white);
+    border: 1px solid #ECE3D8;
+    border-radius: 4px;
+    padding: 2rem;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    width: 100%;
+    margin: 0 auto;
+}
+
 /* Alapanyag / lépés sor eltávolító (×) gombja a recept létrehozás/szerkesztés oldalon
    - mindig látszik, csak 3 sornál letiltva */
 .remove-step,
@@ -28,7 +41,6 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 1rem;
-    margin-top: 1rem;
 }
 
 .ingredient-search {
@@ -40,7 +52,7 @@
 .ingredient-search input[type="text"] {
     flex: 1;
     padding: 0.6rem 0.8rem;
-    border: 1px solid var(--color-search-border);
+    border: 1px solid var(--color-border);
     border-radius: 4px;
 }
 
@@ -73,7 +85,7 @@
 .admin-table th,
 .admin-table td {
     padding: 0.6rem 0.8rem;
-    border-bottom: 1px solid var(--color-search-border);
+    border-bottom: 1px solid var(--color-border);
     text-align: left;
 }
 
@@ -128,7 +140,7 @@
 
 .ingredient-edit-form input {
     padding: 0.4rem 0.6rem;
-    border: 1px solid var(--color-search-border);
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     margin-top: 0.2rem;
 }

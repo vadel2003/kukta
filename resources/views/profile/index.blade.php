@@ -19,12 +19,15 @@
 
             <div class="form-group">
                 <label for="avatar">Profilkép</label>
-                @if (Auth::user()->avatar)
-                    <img src="{{ asset(Auth::user()->avatar) }}" alt="Profilkép" class="profile-avatar-preview">
-                @else
-                    <img src="{{ asset('images/default_avatar.svg') }}" alt="Alapértelmezett profilkép" class="profile-avatar-preview">
-                @endif
-                <input type="file" name="avatar" id="avatar" accept="image/*">
+                <label class="avatar-upload">
+                    @if (Auth::user()->avatar)
+                        <img src="{{ asset(Auth::user()->avatar) }}" alt="Profilkép" class="profile-avatar-preview" id="avatar-preview">
+                    @else
+                        <img src="{{ asset('images/default_avatar.svg') }}" alt="Alapértelmezett profilkép" class="profile-avatar-preview" id="avatar-preview">
+                    @endif
+                    <span class="avatar-upload-hint"><i data-lucide="camera"></i></span>
+                    <input type="file" name="avatar" id="avatar" accept="image/*" class="upload-input">
+                </label>
                 @error('avatar')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
@@ -93,4 +96,18 @@
             </form>
         </div>
     </div>
+
+    <script>
+        // Profilkép élő előnézete kiválasztás után (ua. minta, mint a recept-form
+        // saját kép feltöltőjénél: recipes/create.blade.php)
+        const avatarInput = document.querySelector('.avatar-upload .upload-input');
+        const avatarPreview = document.getElementById('avatar-preview');
+        if (avatarInput) {
+            avatarInput.addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    avatarPreview.src = URL.createObjectURL(this.files[0]);
+                }
+            });
+        }
+    </script>
 @endsection

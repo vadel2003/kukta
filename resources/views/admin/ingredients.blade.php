@@ -7,60 +7,64 @@
 @endpush
 
 @section('content')
-    <h1>Alapanyagok kezelése</h1>
+    <div class="card-stack">
+        <div class="form-card form-card--wide">
+            <h1>Alapanyagok kezelése</h1>
+        </div>
 
-    @if (session('success'))
-        <p style="color: green;">{{ session('success') }}</p>
-    @endif
+        <div class="admin-panel">
+        @if (session('success'))
+            <p class="form-success">{{ session('success') }}</p>
+        @endif
 
-    @if ($errors->any())
-        <ul style="color: red;">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    @endif
+        @if ($errors->any())
+            <ul class="form-error">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        @endif
 
-    <div class="ingredient-toolbar">
-        <form action="{{ route('admin.ingredients') }}" method="GET" class="ingredient-search">
-            <input type="hidden" name="sort" value="{{ $sort }}">
-            <input type="hidden" name="direction" value="{{ $direction }}">
-            <input type="text" name="search" value="{{ $search }}" placeholder="Keresés név szerint...">
-            <button type="submit" class="btn-edit">Keresés</button>
-            @if ($search)
-                <a href="{{ route('admin.ingredients', ['sort' => $sort, 'direction' => $direction]) }}" class="btn-clear-search">Összes</a>
-            @endif
-        </form>
+        <div class="ingredient-toolbar">
+            <form action="{{ route('admin.ingredients') }}" method="GET" class="ingredient-search">
+                <input type="hidden" name="sort" value="{{ $sort }}">
+                <input type="hidden" name="direction" value="{{ $direction }}">
+                <input type="text" name="search" value="{{ $search }}" placeholder="Keresés név szerint...">
+                <button type="submit" class="btn-edit">Keresés</button>
+                @if ($search)
+                    <a href="{{ route('admin.ingredients', ['sort' => $sort, 'direction' => $direction]) }}" class="btn-clear-search">Összes</a>
+                @endif
+            </form>
 
-        <button type="button" class="btn-edit" onclick="toggleNewIngredientForm()">Új alapanyag</button>
-    </div>
+            <button type="button" class="btn-edit" onclick="toggleNewIngredientForm()">Új alapanyag</button>
+        </div>
 
-    <div id="new-ingredient-form" class="hidden-row">
-        <form action="{{ route('admin.ingredients.store') }}" method="POST" class="ingredient-edit-form">
-            @csrf
-            <label>Név
-                <input type="text" name="name" maxlength="50" required>
-            </label>
-            <label>Kalória
-                <input type="number" name="calories" step="0.1" min="0" required>
-            </label>
-            <label>Szénhidrát
-                <input type="number" name="carbohydrate" step="0.1" min="0" required>
-            </label>
-            <label>Fehérje
-                <input type="number" name="protein" step="0.1" min="0" required>
-            </label>
-            <label>Zsír
-                <input type="number" name="fat" step="0.1" min="0" required>
-            </label>
-            <button type="submit" class="btn-edit">Mentés</button>
-            <button type="button" class="btn-delete" onclick="toggleNewIngredientForm()">Mégse</button>
-        </form>
-    </div>
+        <div id="new-ingredient-form" class="hidden-row">
+            <form action="{{ route('admin.ingredients.store') }}" method="POST" class="ingredient-edit-form">
+                @csrf
+                <label>Név
+                    <input type="text" name="name" maxlength="50" required>
+                </label>
+                <label>Kalória
+                    <input type="number" name="calories" step="0.1" min="0" required>
+                </label>
+                <label>Szénhidrát
+                    <input type="number" name="carbohydrate" step="0.1" min="0" required>
+                </label>
+                <label>Fehérje
+                    <input type="number" name="protein" step="0.1" min="0" required>
+                </label>
+                <label>Zsír
+                    <input type="number" name="fat" step="0.1" min="0" required>
+                </label>
+                <button type="submit" class="btn-edit">Mentés</button>
+                <button type="button" class="btn-delete" onclick="toggleNewIngredientForm()">Mégse</button>
+            </form>
+        </div>
 
-    @if ($ingredients->isEmpty())
-        <p>{{ $search ? 'Nincs találat.' : 'Nincs még alapanyag.' }}</p>
-    @else
+        @if ($ingredients->isEmpty())
+            <p>{{ $search ? 'Nincs találat.' : 'Nincs még alapanyag.' }}</p>
+        @else
         @php
             // Oszlopok a fejléchez - így nem kell 5x ugyanazt a rendező linket kiírni
             $columns = [
@@ -134,6 +138,8 @@
             </tbody>
         </table>
     @endif
+        </div>
+    </div>
 
     <script>
         // Megjelenítő és szerkesztő sor felcserélése - mindkét sor ugyanazzal a togglelal

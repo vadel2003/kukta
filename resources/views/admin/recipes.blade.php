@@ -7,25 +7,29 @@
 @endpush
 
 @section('content')
-    <h1>Receptek kezelése</h1>
+    <div class="card-stack">
+        <div class="form-card form-card--wide">
+            <h1>Receptek kezelése</h1>
+        </div>
 
-    @if (session('success'))
-        <p style="color: green;">{{ session('success') }}</p>
-    @endif
-
-    <form action="{{ route('admin.recipes') }}" method="GET" class="ingredient-search">
-        <input type="hidden" name="sort" value="{{ $sort }}">
-        <input type="hidden" name="direction" value="{{ $direction }}">
-        <input type="text" name="search" value="{{ $search }}" placeholder="Keresés cím vagy feltöltő szerint...">
-        <button type="submit" class="btn-edit">Keresés</button>
-        @if ($search)
-            <a href="{{ route('admin.recipes', ['sort' => $sort, 'direction' => $direction]) }}" class="btn-clear-search">Összes</a>
+        <div class="admin-panel">
+        @if (session('success'))
+            <p class="form-success">{{ session('success') }}</p>
         @endif
-    </form>
 
-    @if ($recipes->isEmpty())
-        <p>{{ $search ? 'Nincs találat.' : 'Nincs még feltöltött recept.' }}</p>
-    @else
+        <form action="{{ route('admin.recipes') }}" method="GET" class="ingredient-search">
+            <input type="hidden" name="sort" value="{{ $sort }}">
+            <input type="hidden" name="direction" value="{{ $direction }}">
+            <input type="text" name="search" value="{{ $search }}" placeholder="Keresés cím vagy feltöltő szerint...">
+            <button type="submit" class="btn-edit">Keresés</button>
+            @if ($search)
+                <a href="{{ route('admin.recipes', ['sort' => $sort, 'direction' => $direction]) }}" class="btn-clear-search">Összes</a>
+            @endif
+        </form>
+
+        @if ($recipes->isEmpty())
+            <p>{{ $search ? 'Nincs találat.' : 'Nincs még feltöltött recept.' }}</p>
+        @else
         @php
             // Oszlopok a fejléchez - csak a ténylegesen megjelenő adatok szerint rendezhető
             $columns = [
@@ -74,4 +78,6 @@
             </tbody>
         </table>
     @endif
+        </div>
+    </div>
 @endsection

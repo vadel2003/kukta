@@ -7,25 +7,29 @@
 @endpush
 
 @section('content')
-    <h1>Felhasználók kezelése</h1>
+    <div class="card-stack">
+        <div class="form-card form-card--wide">
+            <h1>Felhasználók kezelése</h1>
+        </div>
 
-    @if (session('success'))
-        <p style="color: green;">{{ session('success') }}</p>
-    @endif
-
-    <form action="{{ route('admin.users') }}" method="GET" class="ingredient-search">
-        <input type="hidden" name="sort" value="{{ $sort }}">
-        <input type="hidden" name="direction" value="{{ $direction }}">
-        <input type="text" name="search" value="{{ $search }}" placeholder="Keresés név vagy email szerint...">
-        <button type="submit" class="btn-edit">Keresés</button>
-        @if ($search)
-            <a href="{{ route('admin.users', ['sort' => $sort, 'direction' => $direction]) }}" class="btn-clear-search">Összes</a>
+        <div class="admin-panel">
+        @if (session('success'))
+            <p class="form-success">{{ session('success') }}</p>
         @endif
-    </form>
 
-    @if ($users->isEmpty())
-        <p>{{ $search ? 'Nincs találat.' : 'Nincs még felhasználó.' }}</p>
-    @else
+        <form action="{{ route('admin.users') }}" method="GET" class="ingredient-search">
+            <input type="hidden" name="sort" value="{{ $sort }}">
+            <input type="hidden" name="direction" value="{{ $direction }}">
+            <input type="text" name="search" value="{{ $search }}" placeholder="Keresés név vagy email szerint...">
+            <button type="submit" class="btn-edit">Keresés</button>
+            @if ($search)
+                <a href="{{ route('admin.users', ['sort' => $sort, 'direction' => $direction]) }}" class="btn-clear-search">Összes</a>
+            @endif
+        </form>
+
+        @if ($users->isEmpty())
+            <p>{{ $search ? 'Nincs találat.' : 'Nincs még felhasználó.' }}</p>
+        @else
         @php
             // Oszlopok a fejléchez - így nem kell 4x ugyanazt a rendező linket kiírni
             $columns = [
@@ -79,4 +83,6 @@
             </tbody>
         </table>
     @endif
+        </div>
+    </div>
 @endsection
