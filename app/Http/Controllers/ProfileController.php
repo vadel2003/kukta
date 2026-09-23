@@ -17,19 +17,13 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         $validated = $request->validate([
-            'username' => ['required', 'string', 'max:30', 'unique:user,username,' . $user->id . ',id'],
+            'name' => ['required', 'string', 'max:30', 'unique:user,name,' . $user->id . ',id'],
             'email' => ['required', 'string', 'email', 'max:50', 'unique:user,email,' . $user->id . ',id'],
-            'current_password' => ['required', 'current_password'],
-            'new_password' => ['nullable', 'string', 'min:8', 'max:50', 'confirmed'],
             'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ]);
 
-        $user->username = $validated['username'];
+        $user->name = $validated['name'];
         $user->email = $validated['email'];
-
-        if ($validated['new_password']) {
-            $user->password = $validated['new_password'];
-        }
 
         if ($request->hasFile('avatar')) {
             // Régi kép törlése, ha van
@@ -42,11 +36,32 @@ class ProfileController extends Controller
             $filename = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('avatars'), $filename);
             $user->avatar = 'avatars/' . $filename;
+        } elseif ($request->boolean('remove_avatar') && $user->avatar) {
+            // "Eltávolítás" link - visszaáll az alapértelmezett avatarra
+            if (file_exists(public_path($user->avatar))) {
+                unlink(public_path($user->avatar));
+            }
+            $user->avatar = null;
         }
 
         $user->save();
 
-        return redirect()->route('profile.index')->with('success', 'Profil adatai sikeresen frissítve!');
+        return redirect()->route('profile.index')->with('success', 'Alapadatok sikeresen frissítve!');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'new_password' => ['required', 'string', 'min:8', 'max:50', 'confirmed'],
+        ]);
+
+        $user->password = $validated['new_password'];
+        $user->save();
+
+        return redirect()->route('profile.index')->with('success', 'Jelszó sikeresen frissítve!');
     }
 
     public function destroy(Request $request)

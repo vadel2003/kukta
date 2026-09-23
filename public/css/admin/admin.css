@@ -1,14 +1,27 @@
 /* Admin táblázatos oldalak (alapanyagok/receptek/felhasználók) kártya-konténere -
    ugyanaz a vizuális nyelv, mint a .form-card (app.css), csak teljes szélességű,
-   hogy a táblázat ne csupaszon lógjon a háttéren, mint a többi kártyázott aloldal */
+   hogy a táblázat ne csupaszon lógjon a háttéren, mint a többi kártyázott aloldal.
+   A padding-top 24px (nem 32px), mert a H1 mostantól a kártyán kívül van, mint a
+   Profil oldalon. */
 .admin-panel {
     background: var(--color-white);
     border: 1px solid #ECE3D8;
     border-radius: 4px;
-    padding: 2rem;
+    padding: 24px 32px 32px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.1);
     width: 100%;
     margin: 0 auto;
+}
+
+/* .btn-edit méretű/alakú gomb, de narancssárga (mint a Profil oldal elsődleges
+   gombja) - csak az admin táblák Keresés/Új alapanyag/Mentés/Módosítás gombjain,
+   a .btn-edit-t máshol is használó recipe-gallery "Szerkesztés" gombja zöld marad */
+.btn-edit-primary {
+    background-color: var(--color-primary);
+}
+
+.btn-edit-primary:hover {
+    background-color: var(--color-primary-hover);
 }
 
 /* Alapanyag / lépés sor eltávolító (×) gombja a recept létrehozás/szerkesztés oldalon
@@ -47,6 +60,24 @@
     display: flex;
     gap: 0.5rem;
     max-width: 500px;
+}
+
+/* A tömeges törlés gomb + az oldal saját "Új ..." gombja együtt, jobbra igazítva */
+.toolbar-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Kijelölő checkbox oszlop - ne nyúljon szét, középre igazítva a sorban */
+.admin-table th:first-child,
+.admin-table td:first-child {
+    width: 1%;
+    text-align: center;
+}
+
+.bulk-delete-btn:disabled {
+    background-color: var(--color-text-lighter);
+    cursor: not-allowed;
 }
 
 .ingredient-search input[type="text"] {
@@ -92,6 +123,22 @@
 .admin-table th a {
     color: inherit;
     text-decoration: none;
+}
+
+/* A művelet-oszlop (pl. Részletek + Törlés) ne törjön két sorba - enélkül egy
+   hosszú szomszédos oszlop (pl. Leírás) elszívhatja a helyét, és a gombok
+   egymás alá esnek */
+.admin-table-actions {
+    white-space: nowrap;
+}
+
+/* A "Részletek" és "Törlés" gomb azonos méretű legyen, a hosszabb szöveghez
+   (Részletek) igazítva, ne a szöveg hossza határozza meg egyenként */
+.admin-table-actions .btn-edit,
+.admin-table-actions .btn-delete {
+    display: inline-block;
+    min-width: 105px;
+    text-align: center;
 }
 
 .admin-table tbody tr:hover {

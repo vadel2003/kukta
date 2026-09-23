@@ -36,7 +36,8 @@
     @endphp
 
     <div class="card-stack">
-        <div class="content-card">
+        <div>
+            <a href="{{ route('home') }}" class="back-link"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
             <h1>{{ $isEdit ? 'Recept szerkesztése' : 'Új recept feltöltése' }}</h1>
         </div>
 
@@ -50,6 +51,7 @@
             @method('PUT')
         @endif
 
+        <div class="grid-2col">
         <div class="content-card">
             <h2 class="content-title">
                 <span class="title-icon"><i data-lucide="clipboard-list"></i></span>
@@ -58,8 +60,10 @@
 
             <div class="form-group">
                 <label for="title">Recept címe <span class="form-error">*</span></label>
-                <input type="text" name="title" id="title" value="{{ old('title', $recipe->title ?? '') }}" required maxlength="100" autofocus>
-                <small class="char-counter">0 / 100</small>
+                <div class="field-control">
+                    <input type="text" name="title" id="title" value="{{ old('title', $recipe->title ?? '') }}" required maxlength="100" autofocus>
+                    <small class="char-counter">0 / 100</small>
+                </div>
                 @error('title')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
@@ -67,8 +71,10 @@
 
             <div class="form-group">
                 <label for="description">Leírás <span class="form-error">*</span></label>
-                <textarea name="description" id="description" rows="4" required maxlength="1000">{{ old('description', $recipe->description ?? '') }}</textarea>
-                <small class="char-counter">0 / 1000</small>
+                <div class="field-control">
+                    <textarea name="description" id="description" rows="4" required maxlength="1000">{{ old('description', $recipe->description ?? '') }}</textarea>
+                    <small class="char-counter">0 / 1000</small>
+                </div>
                 @error('description')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
@@ -145,6 +151,7 @@
                     <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
+        </div>
         </div>
 
         <div class="content-card">
@@ -333,7 +340,7 @@
             </div>
         </div>
 
-        <button type="submit" class="btn-cook">{{ $isEdit ? 'Módosítások mentése' : 'Recept feltöltése' }}</button>
+        <button type="submit" class="btn-cook btn-cook-primary">{{ $isEdit ? 'Módosítások mentése' : 'Recept feltöltése' }}</button>
     </form>
     </div>
 

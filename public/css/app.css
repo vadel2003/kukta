@@ -40,6 +40,9 @@
 
 html {
     scroll-behavior: smooth;
+    /* A ragadós fejléc (58px) alá ne kerüljön elem sem ugrásnál (pl. #recipes
+       link), sem billentyűzetes fókuszálásnál (pl. Tab a Mentés gombra) */
+    scroll-padding-top: 70px;
 }
 
 body {
@@ -188,6 +191,11 @@ button {
     border-radius: 4px;
     cursor: pointer;
     font-size: 1rem;
+    /* A <button> alapból nem örökli az oldal betűtípusát/sormagasságát (böngésző-
+       alapértelmezett fontot használ), ezért egy <button> és egy ugyanolyan
+       paddingú <a> gomb más magasságú lenne emellett nélkül */
+    font-family: inherit;
+    line-height: inherit;
 }
 
 /* ===== MODERN KERESŐ SÁV - komponens osztályok (fejléc + főoldal is használja) ===== */
@@ -631,6 +639,38 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     height: 1.2em;
 }
 
+/* .btn-cook, ha egy sima <form> (nem flex konténer, pl. login/register kártya)
+   egyetlen/utolsó eleme - enélkül a form blokk-szélességű elemként a bal
+   szélhez tapadna, a szövege pedig balra igazítva jelenne meg benne */
+.btn-cook-centered {
+    display: flex;
+    justify-content: center;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* .btn-cook méretű/alakú gomb, de narancssárga (mint a főoldal kereső gombja,
+   .recipes-section .search-bar .btn-search, home.css) - csak a Profil oldal
+   Mentés/Jelszó frissítése gombján, a többi .btn-cook zöld marad */
+.btn-cook-primary {
+    background: var(--color-primary);
+}
+
+.btn-cook-primary:hover {
+    background: var(--color-primary-hover);
+}
+
+/* .btn-cook méretű/alakú gomb veszélyes művelethez - csak a színe tér el */
+.btn-cook-danger {
+    background: var(--color-danger);
+}
+
+.btn-cook-danger:hover {
+    background: var(--color-danger-hover);
+    color: #fff;
+}
+
 /* Kedvenc gomb (jelenleg nincs élő .btn-favorite osztályú elem, csak a -card és -banner variánsok vannak használva lejjebb) */
 .btn-favorite {
     background: none;
@@ -958,13 +998,21 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     transform: scale(1.1);
 }
 
-/* Karakterhossz-számláló */
+/* Karakterhossz-számláló - csak akkor látszik, ha a mező közelít a limithez
+   (JS: updateCounter, layouts/app.blade.php), addig opacity:0 (nem display:none,
+   hogy megjelenéskor ne ugorjon a layout) */
 .char-counter {
     margin-left: 4px;
     color: #999;
     font-size: 0.85em;
     min-width: 4em;
     display: inline-block;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.char-counter--visible {
+    opacity: 1;
 }
 
 /* ===== FORM ŰRLAP KOMPONENSEK (login, register, profil, recept form is használja) ===== */
@@ -982,10 +1030,20 @@ select {
     font-family: inherit;
     color: var(--color-text);
     background-color: var(--color-white);
+    transition: border-color 0.15s ease;
 }
 
 textarea {
     resize: vertical;
+}
+
+input[type="text"]:hover:not(:focus):not(:disabled),
+input[type="email"]:hover:not(:focus):not(:disabled),
+input[type="password"]:hover:not(:focus):not(:disabled),
+input[type="number"]:hover:not(:focus):not(:disabled),
+textarea:hover:not(:focus):not(:disabled),
+select:hover:not(:focus):not(:disabled) {
+    border-color: #bbb;
 }
 
 input[type="text"]:focus,
@@ -999,11 +1057,33 @@ select:focus {
     box-shadow: 0 0 0 2px var(--color-primary-soft);
 }
 
+input:disabled,
+textarea:disabled,
+select:disabled {
+    background-color: var(--color-bg-hover);
+    color: var(--color-text-light);
+    cursor: not-allowed;
+}
+
+/* Hibás mező (validációs hiba mellé, a @error blade direktívával együtt) */
+input.is-invalid,
+textarea.is-invalid,
+select.is-invalid {
+    border-color: var(--color-danger);
+}
+
+input.is-invalid:focus,
+textarea.is-invalid:focus,
+select.is-invalid:focus {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
+}
+
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-    margin-bottom: 1.2rem;
+    gap: 8px;
+    margin-bottom: 24px;
 }
 
 .form-group label {
@@ -1021,25 +1101,23 @@ select:focus {
     margin-bottom: 1rem;
 }
 
-/* Középre igazított, keskeny kártya - bejelentkezés/regisztráció/profil form köré */
+/* Középre igazított, keskeny kártya - bejelentkezés/regisztráció form köré.
+   A padding-top 24px (nem 32px), mert a cím a Profil oldal mintája szerint
+   a kártyán kívül van (back-link + sima H1). */
 .form-card {
     background: var(--color-white);
     border: 1px solid #ECE3D8;
     border-radius: 4px;
-    padding: 2rem;
+    padding: 24px 32px 32px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.1);
     width: 100%;
     max-width: 440px;
     margin: 0 auto;
 }
 
-/* Szélesebb változat olyan formhoz, ahol több/hosszabb mező van (pl. profil szerkesztése) */
+/* Szélesebb változat olyan formhoz, ahol több/hosszabb mező van */
 .form-card--wide {
     max-width: 760px;
-}
-
-.form-card h1 {
-    color: var(--color-heading);
 }
 
 .form-card p {
@@ -1127,40 +1205,294 @@ select:focus {
     box-shadow: inset 0 0 15px rgba(0,0,0,0.35);
 }
 
-/* Profilkép feltöltő - a kép maga kattintható (rejtett file input mögötte, ua. minta
-   mint a recept-form .upload-box-a), hover-re sötét overlay jelzi, hogy módosítható */
-.avatar-upload {
-    position: relative;
-    display: inline-block;
-    /* Fix méret kell, különben a .form-group (flex column) alapból kinyújtaná
-       a label-t a teljes szélességre (align-items: stretch), és a kör alakú
-       overlay ovállá torzulna */
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    cursor: pointer;
+/* ===== MODAL (megosztott keret - a Szűrők/Rendezés modal tartalma home.css-ben
+   van, de a JS (openModal/closeModal, layouts/app.blade.php) globális, ezért a
+   keret-stílus is itt van, hogy a Profil oldal fiók-törlés megerősítése is
+   használhassa saját CSS-fájl behúzása nélkül) ===== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-shadow-dark);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
 }
 
-.avatar-upload-hint {
-    position: absolute;
-    inset: 0;
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--color-white);
+    border-radius: 4px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-small {
+    max-width: 350px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-text-light);
+    padding: 0;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.45);
-    color: var(--color-white);
-    opacity: 0;
-    transition: opacity 0.2s ease;
 }
 
-.avatar-upload:hover .avatar-upload-hint {
-    opacity: 1;
+.close-btn:hover {
+    background-color: var(--color-bg-hover);
 }
 
-.avatar-upload-hint svg {
-    width: 28px;
-    height: 28px;
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+/* ===== PROFIL OLDAL - 3 önálló panel (Alapadatok / Jelszó módosítása / Fiók törlése) ===== */
+.profile-page {
+    max-width: 950px;
+    margin: 3rem auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Két egyenlő oszlop egymás mellett (Profil: Alapadatok + Jelszó módosítása;
+   recept form: Alapadatok + Kép) - a grid alapból azonos magasságúra
+   nyújtja mindkét panelt */
+.grid-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--color-text-light);
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+}
+
+.back-link:hover {
+    color: var(--color-primary);
+}
+
+.back-link svg {
+    width: 1em;
+    height: 1em;
+}
+
+.profile-panel {
+    padding: 24px 32px 32px;
+}
+
+/* Mező + karakterszámláló közös wrapper-e - a számláló a mező alá van
+   pozicionálva (nem a normál dokumentumfolyamban), különben a helye akkor
+   is foglalt maradna, amikor még nem látszik (opacity:0), és emiatt
+   egyenetlen lenne a térköz a maxlength-es és a sima mezők között. Bármely
+   oldal használhatja (profil, recept form stb.), ahol egy input/textarea
+   mellé karakterszámláló tartozik. */
+.field-control {
+    position: relative;
+}
+
+.field-control .char-counter {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 2px;
+}
+
+.profile-panel .panel-footer {
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* A rács egyenlő magasságúra nyújtja az Alapadatok és Jelszó módosítása
+   panelt - a gombsávnak a panel ALJÁRA kell tapadnia (nem a mezők alá
+   közvetlenül), hogy a két gomb mindig egy vonalban legyen, validációs
+   hibaüzenettel együtt is. Ehhez a panel és a form is flex-column, a
+   form nyúlik ki (flex:1), a footer pedig margin-top:auto-val ül az aljára. */
+.grid-2col .profile-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.grid-2col .profile-panel form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.grid-2col .panel-footer {
+    margin-top: auto;
+}
+
+/* A piros "él" box-shadow-dal van rajzolva (nem border-left-lel), hogy ne
+   vegyen el helyet a paddingból - így a 3 panel tartalma egy vonalban marad */
+.profile-panel--danger {
+    box-shadow: inset 4px 0 0 var(--color-danger), 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.profile-panel--danger .content-title {
+    border-bottom-color: rgba(220, 53, 69, 0.25);
+}
+
+/* Fiók törlése: egy sorban - balra a szöveg+mező, jobbra a gomb, a mező
+   aljához igazítva (nem külön alsó gombsáv, mint a másik két panelben) */
+.danger-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.danger-row-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.danger-row-text .field-hint {
+    margin-bottom: 12px;
+}
+
+.danger-row-text .form-group {
+    max-width: 400px;
+    margin-bottom: 0;
+}
+
+.danger-row .btn-cook-danger {
+    flex-shrink: 0;
+}
+
+/* Profilkép sor: kép balra, gomb + segédszöveg + eltávolítás-link jobbra mellette */
+.avatar-row {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.avatar-row .profile-avatar-preview {
+    width: 96px;
+    height: 96px;
+    flex-shrink: 0;
+}
+
+.avatar-row-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+}
+
+.field-hint {
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+}
+
+.btn-link-danger {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--color-text-light);
+    text-decoration: underline;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.btn-link-danger:hover {
+    color: var(--color-danger);
+}
+
+/* A 2 oszlopos rács (Profil: Alapadatok + Jelszó módosítása; recept form:
+   Alapadatok + Kép) egymás alá kerül, ha a két ~460px-es oszlopnak már nem
+   lenne elég hely - a Profil oldal Fiók törlése panelje mindig is a rács
+   ALATT, teljes szélességben van, ezért azt itt nem kell külön kezelni */
+@media (max-width: 900px) {
+    .grid-2col {
+        grid-template-columns: 1fr;
+    }
+
+    .danger-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .danger-row-text .form-group {
+        max-width: 100%;
+    }
+
+    .danger-row .btn-cook-danger {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 640px) {
+    .profile-panel {
+        padding: 20px;
+    }
+
+    .profile-panel .form-group {
+        max-width: 100%;
+    }
+
+    .profile-panel .panel-footer {
+        justify-content: stretch;
+    }
+
+    .profile-panel .panel-footer .btn-cook {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .avatar-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 
 /* ===== FOOTER ===== */

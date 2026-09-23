@@ -93,6 +93,22 @@ class AdminController extends Controller
         return redirect()->route('admin.ingredients')->with('success', 'Alapanyag sikeresen törölve!');
     }
 
+    public function bulkDestroyIngredients(Request $request)
+    {
+        if (!Auth::user()?->isAdmin()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:ingredient,id'],
+        ]);
+
+        Ingredient::whereIn('id', $validated['ids'])->delete();
+
+        return redirect()->route('admin.ingredients')->with('success', 'A kijelölt alapanyagok sikeresen törölve!');
+    }
+
     public function recipes(Request $request)
     {
         if (!Auth::user()?->isAdmin()) {
@@ -133,6 +149,22 @@ class AdminController extends Controller
         $recipes = $recipesQuery->get();
 
         return view('admin.recipes', compact('recipes', 'search', 'sort', 'direction'));
+    }
+
+    public function bulkDestroyRecipes(Request $request)
+    {
+        if (!Auth::user()?->isAdmin()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:recipe,id'],
+        ]);
+
+        Recipe::whereIn('id', $validated['ids'])->delete();
+
+        return redirect()->route('admin.recipes')->with('success', 'A kijelölt receptek sikeresen törölve!');
     }
 
     public function users(Request $request)
@@ -179,5 +211,26 @@ class AdminController extends Controller
         $user->delete();
 
         return redirect()->route('admin.users')->with('success', 'Felhasználó sikeresen törölve!');
+    }
+
+    public function bulkDestroyUsers(Request $request)
+    {
+        if (!Auth::user()?->isAdmin()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:user,id'],
+        ]);
+
+        // Az admin és a saját fiók sosem törölhető így sem - ugyanaz a védelem,
+        // mint az egyedi destroyUser-nél.
+        User::whereIn('id', $validated['ids'])
+            ->where('role', '!=', 1)
+            ->where('id', '!=', Auth::id())
+            ->delete();
+
+        return redirect()->route('admin.users')->with('success', 'A kijelölt felhasználók sikeresen törölve!');
     }
 }

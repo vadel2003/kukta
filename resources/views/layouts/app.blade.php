@@ -395,14 +395,56 @@
             });
         }
 
-        // Karakterszámláló (maxlength-es mezők)
+        // Karakterszámláló (maxlength-es mezők) - csak akkor jelenik meg,
+        // ha a beírt hossz eléri a limit kb. 80%-át (kevesebb vizuális zaj)
         function updateCounter(el) {
             const counter = el.parentElement.querySelector('.char-counter');
-            if (counter) counter.textContent = el.value.length + ' / ' + el.maxLength;
+            if (!counter) return;
+            counter.textContent = el.value.length + ' / ' + el.maxLength;
+            counter.classList.toggle('char-counter--visible', el.value.length >= el.maxLength * 0.8);
         }
         document.querySelectorAll('input[maxlength], textarea[maxlength]').forEach(updateCounter);
         document.addEventListener('input', function (e) {
             if (e.target.matches('input[maxlength], textarea[maxlength]')) updateCounter(e.target);
+        });
+
+        // Tömeges kijelölés + törlés az admin táblázatokban (Alapanyagok/Receptek/
+        // Felhasználók) - egy oldalon mindig csak egy táblázat van, ezért osztály
+        // alapján, ID nélkül működik mindhárom oldalon ugyanezzel a kóddal.
+        document.querySelectorAll('.select-all-checkbox').forEach(function (selectAll) {
+            const table = selectAll.closest('table');
+            const checkboxes = table.querySelectorAll('.row-checkbox');
+            const bulkForm = document.querySelector('.bulk-delete-form');
+            const bulkBtn = bulkForm ? bulkForm.querySelector('.bulk-delete-btn') : null;
+
+            function updateBulkButton() {
+                const checkedCount = table.querySelectorAll('.row-checkbox:checked').length;
+                if (bulkBtn) {
+                    bulkBtn.disabled = checkedCount === 0;
+                    bulkBtn.textContent = checkedCount > 0 ? 'Törlés (' + checkedCount + ')' : 'Törlés';
+                }
+                selectAll.checked = checkboxes.length > 0 && checkedCount === checkboxes.length;
+            }
+
+            selectAll.addEventListener('change', function () {
+                checkboxes.forEach(function (cb) { cb.checked = selectAll.checked; });
+                updateBulkButton();
+            });
+
+            checkboxes.forEach(function (cb) {
+                cb.addEventListener('change', updateBulkButton);
+            });
+
+            updateBulkButton();
+        });
+
+        document.querySelectorAll('.bulk-delete-form').forEach(function (form) {
+            form.addEventListener('submit', function (e) {
+                const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
+                if (!confirm('Biztosan törlöd a kijelölt ' + checkedCount + ' elemet?')) {
+                    e.preventDefault();
+                }
+            });
         });
 
         // Lucide ikonok inicializálása

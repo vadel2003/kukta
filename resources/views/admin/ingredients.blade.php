@@ -8,7 +8,8 @@
 
 @section('content')
     <div class="card-stack">
-        <div class="form-card form-card--wide">
+        <div>
+            <a href="{{ route('home') }}" class="back-link"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
             <h1>Alapanyagok kezelése</h1>
         </div>
 
@@ -30,13 +31,20 @@
                 <input type="hidden" name="sort" value="{{ $sort }}">
                 <input type="hidden" name="direction" value="{{ $direction }}">
                 <input type="text" name="search" value="{{ $search }}" placeholder="Keresés név szerint...">
-                <button type="submit" class="btn-edit">Keresés</button>
+                <button type="submit" class="btn-edit btn-edit-primary">Keresés</button>
                 @if ($search)
                     <a href="{{ route('admin.ingredients', ['sort' => $sort, 'direction' => $direction]) }}" class="btn-clear-search">Összes</a>
                 @endif
             </form>
 
-            <button type="button" class="btn-edit" onclick="toggleNewIngredientForm()">Új alapanyag</button>
+            <div class="toolbar-actions">
+                <form id="bulk-delete-form" method="POST" action="{{ route('admin.ingredients.bulkDestroy') }}" class="bulk-delete-form">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn-delete bulk-delete-btn" disabled>Törlés</button>
+                </form>
+                <button type="button" class="btn-edit btn-edit-primary" onclick="toggleNewIngredientForm()">Új alapanyag</button>
+            </div>
         </div>
 
         <div id="new-ingredient-form" class="hidden-row">
@@ -57,7 +65,7 @@
                 <label>Zsír
                     <input type="number" name="fat" step="0.1" min="0" required>
                 </label>
-                <button type="submit" class="btn-edit">Mentés</button>
+                <button type="submit" class="btn-edit btn-edit-primary">Mentés</button>
                 <button type="button" class="btn-delete" onclick="toggleNewIngredientForm()">Mégse</button>
             </form>
         </div>
@@ -78,6 +86,7 @@
         <table class="admin-table">
             <thead>
                 <tr>
+                    <th><input type="checkbox" class="select-all-checkbox"></th>
                     @foreach ($columns as $key => $label)
                         @php
                             $nextDirection = ($sort === $key && $direction === 'asc') ? 'desc' : 'asc';
@@ -95,13 +104,14 @@
             <tbody>
                 @foreach ($ingredients as $ingredient)
                     <tr id="ingredient-row-{{ $ingredient->id }}">
+                        <td><input type="checkbox" name="ids[]" value="{{ $ingredient->id }}" class="row-checkbox" form="bulk-delete-form"></td>
                         <td>{{ $ingredient->name }}</td>
                         <td>{{ $ingredient->calories }}</td>
                         <td>{{ $ingredient->carbohydrate }}</td>
                         <td>{{ $ingredient->protein }}</td>
                         <td>{{ $ingredient->fat }}</td>
                         <td>
-                            <button type="button" class="btn-edit" onclick="toggleIngredientEdit({{ $ingredient->id }})">Módosítás</button>
+                            <button type="button" class="btn-edit btn-edit-primary" onclick="toggleIngredientEdit({{ $ingredient->id }})">Módosítás</button>
                             <form action="{{ route('admin.ingredients.destroy', $ingredient->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Biztosan törlöd ezt az alapanyagot? Minden receptből eltűnik!')">
                                 @csrf
                                 @method('DELETE')
@@ -110,7 +120,7 @@
                         </td>
                     </tr>
                     <tr id="ingredient-edit-{{ $ingredient->id }}" class="edit-row hidden-row">
-                        <td colspan="6">
+                        <td colspan="7">
                             <form action="{{ route('admin.ingredients.update', $ingredient->id) }}" method="POST" class="ingredient-edit-form">
                                 @csrf
                                 @method('PUT')
@@ -129,7 +139,7 @@
                                 <label>Zsír
                                     <input type="number" name="fat" value="{{ $ingredient->fat }}" step="0.1" min="0" required>
                                 </label>
-                                <button type="submit" class="btn-edit">Mentés</button>
+                                <button type="submit" class="btn-edit btn-edit-primary">Mentés</button>
                                 <button type="button" class="btn-delete" onclick="toggleIngredientEdit({{ $ingredient->id }})">Mégse</button>
                             </form>
                         </td>

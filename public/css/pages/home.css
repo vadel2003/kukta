@@ -198,83 +198,8 @@ header.scrolled ~ main .recipes-section .search-bar {
     pointer-events: none;
 }
 
-/* ===== MODAL STÍLUSOK (Szűrők / Rendezés ablak, jelenleg csak a főoldalon van) ===== */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--color-shadow-dark);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal.active {
-    display: flex;
-}
-
-.modal-content {
-    background: var(--color-white);
-    border-radius: 4px;
-    width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-}
-
-.modal-small {
-    max-width: 350px;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--color-border);
-}
-
-.modal-header h3 {
-    margin: 0;
-    font-size: 1.25rem;
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--color-text-light);
-    padding: 0;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-.close-btn:hover {
-    background-color: var(--color-bg-hover);
-}
-
-.modal-body {
-    padding: 1.5rem;
-}
-
-.modal-footer {
-    padding: 1rem 1.5rem;
-    border-top: 1px solid var(--color-border);
-    display: flex;
-    gap: 0.75rem;
-    justify-content: flex-end;
-}
-
-/* ===== SZŰRŐ CSOPORTOK (Szűrők modal) ===== */
+/* ===== SZŰRŐ CSOPORTOK (Szűrők modal - a modal-keret alapstílusa app.css-ben van,
+   mert a Profil oldal is használja a fiók törlése megerősítéséhez) ===== */
 .filter-group {
     margin-bottom: 1.5rem;
 }

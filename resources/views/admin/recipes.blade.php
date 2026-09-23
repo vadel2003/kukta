@@ -8,7 +8,8 @@
 
 @section('content')
     <div class="card-stack">
-        <div class="form-card form-card--wide">
+        <div>
+            <a href="{{ route('home') }}" class="back-link"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
             <h1>Receptek kezelése</h1>
         </div>
 
@@ -17,15 +18,23 @@
             <p class="form-success">{{ session('success') }}</p>
         @endif
 
-        <form action="{{ route('admin.recipes') }}" method="GET" class="ingredient-search">
-            <input type="hidden" name="sort" value="{{ $sort }}">
-            <input type="hidden" name="direction" value="{{ $direction }}">
-            <input type="text" name="search" value="{{ $search }}" placeholder="Keresés cím vagy feltöltő szerint...">
-            <button type="submit" class="btn-edit">Keresés</button>
-            @if ($search)
-                <a href="{{ route('admin.recipes', ['sort' => $sort, 'direction' => $direction]) }}" class="btn-clear-search">Összes</a>
-            @endif
-        </form>
+        <div class="ingredient-toolbar">
+            <form action="{{ route('admin.recipes') }}" method="GET" class="ingredient-search">
+                <input type="hidden" name="sort" value="{{ $sort }}">
+                <input type="hidden" name="direction" value="{{ $direction }}">
+                <input type="text" name="search" value="{{ $search }}" placeholder="Keresés cím vagy feltöltő szerint...">
+                <button type="submit" class="btn-edit btn-edit-primary">Keresés</button>
+                @if ($search)
+                    <a href="{{ route('admin.recipes', ['sort' => $sort, 'direction' => $direction]) }}" class="btn-clear-search">Összes</a>
+                @endif
+            </form>
+
+            <form id="bulk-delete-form" method="POST" action="{{ route('admin.recipes.bulkDestroy') }}" class="bulk-delete-form">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn-delete bulk-delete-btn" disabled>Törlés</button>
+            </form>
+        </div>
 
         @if ($recipes->isEmpty())
             <p>{{ $search ? 'Nincs találat.' : 'Nincs még feltöltött recept.' }}</p>
@@ -40,6 +49,7 @@
         <table class="admin-table">
             <thead>
                 <tr>
+                    <th><input type="checkbox" class="select-all-checkbox"></th>
                     <th></th>
                     @foreach ($columns as $key => $label)
                         @php
@@ -59,14 +69,15 @@
             <tbody>
                 @foreach ($recipes as $recipe)
                     <tr>
+                        <td><input type="checkbox" name="ids[]" value="{{ $recipe->id }}" class="row-checkbox" form="bulk-delete-form"></td>
                         <td>
                             <img src="{{ $recipe->thumbnail ? asset($recipe->thumbnail) : asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="{{ $recipe->title }}" class="recipe-thumbnail">
                         </td>
                         <td>{{ $recipe->title }}</td>
                         <td>{{ $recipe->user->name ?? 'törölt felhasználó' }}</td>
                         <td>{{ Str::limit($recipe->description, 100) }}</td>
-                        <td>
-                            <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-edit">Részletek</a>
+                        <td class="admin-table-actions">
+                            <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-edit btn-edit-primary">Részletek</a>
                             <form action="{{ route('recipes.destroy', $recipe->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Biztosan törlöd ezt a receptet?')">
                                 @csrf
                                 @method('DELETE')
