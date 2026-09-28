@@ -61,7 +61,8 @@
             <div class="form-group">
                 <label for="title">Recept címe <span class="form-error">*</span></label>
                 <div class="field-control">
-                    <input type="text" name="title" id="title" value="{{ old('title', $recipe->title ?? '') }}" required maxlength="100" autofocus>
+                    {{-- textarea (nem input), hogy a teljes 100 karakter látsszon; az Entert a lenti JS tiltja, mert a cím egysoros adat --}}
+                    <textarea name="title" id="title" rows="2" required maxlength="100" autofocus>{{ old('title', $recipe->title ?? '') }}</textarea>
                     <small class="char-counter">0 / 100</small>
                 </div>
                 @error('title')
@@ -72,7 +73,7 @@
             <div class="form-group">
                 <label for="description">Leírás <span class="form-error">*</span></label>
                 <div class="field-control">
-                    <textarea name="description" id="description" rows="4" required maxlength="1000">{{ old('description', $recipe->description ?? '') }}</textarea>
+                    <textarea name="description" id="description" rows="18" required maxlength="1000">{{ old('description', $recipe->description ?? '') }}</textarea>
                     <small class="char-counter">0 / 1000</small>
                 </div>
                 @error('description')
@@ -113,11 +114,21 @@
         <div class="content-card">
             <h2 class="content-title">
                 <span class="title-icon"><i data-lucide="image"></i></span>
-                Kép
+                Kép <span class="form-error">*</span>
             </h2>
 
             <div>
-                <h3 style="margin-bottom: 0.5rem;">Tölts fel saját képet</h3>
+                <h3 class="image-section-title">Tölts fel saját képet</h3>
+                {{-- Hiba miatti visszatöltéskor a böngésző biztonsági okból nem tölti vissza a
+                     fájlmezőt, ezért szólunk, ha a felhasználó előzőleg saját képet választott.
+                     old() csak hibás beküldés utáni visszairányításkor tartalmaz adatot. --}}
+                @if (old('had_upload') === '1')
+                    <p class="form-warning">
+                        Az űrlap hiba miatt visszatöltődött. A feltöltött képet a böngésző nem tudja megőrizni, kérjük, válaszd ki újra!
+                    </p>
+                @endif
+                {{-- a JS állítja 1-re, ha saját képet választott (így tudjuk, kell-e a fenti figyelmeztetés) --}}
+                <input type="hidden" name="had_upload" value="0" class="had-upload">
                 <label class="upload-box">
                     <input type="file" name="thumbnail_image" accept="image/jpeg,image/png,image/gif,image/webp" class="upload-input">
                     <img src="{{ asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="" class="upload-placeholder">
@@ -128,22 +139,43 @@
                 @enderror
             </div>
 
-            <div style="margin-top: 1rem;">
-                <h3 style="margin-bottom: 0.5rem;">Vagy válassz előre definiált képet</h3>
-                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+            <div class="image-section">
+                <h3 class="image-section-title">Vagy válassz előre definiált képet</h3>
+                <div class="image-picker">
                     @php
-                        $defaultImages = glob(public_path('images/recipes/default/*.{jpg,jpeg,png,gif,webp,svg}'), GLOB_BRACE);
+                        // Fájlnév => megjelenő név. A tömb sorrendje = a választó sorrendje.
+                        // Új alapkép hozzáadásakor ide is fel kell venni.
+                        $defaultImages = [
+                            'soup_thumbnail.svg'        => 'Leves',
+                            'main_course_thumbnail.svg' => 'Főétel',
+                            'dessert_thumbnail.svg'     => 'Desszert',
+                            'starter_thumbnail.svg'     => 'Előétel / Nasi',
+                            'side_dish_thumbnail.svg'   => 'Köret',
+                            'salad_thumbnail.svg'       => 'Saláta',
+                            'pasta_thumbnail.svg'       => 'Tészta',
+                            'breakfast_thumbnail.svg'   => 'Reggeli',
+                            'bakery_thumbnail.svg'      => 'Pékáru',
+                            'fruit_thumbnail.svg'       => 'Gyümölcs',
+                            'drink_thumbnail.svg'       => 'Ital',
+                            'preserve_thumbnail.svg'    => 'Befőtt',
+                        ];
                     @endphp
-                    @foreach ($defaultImages as $imagePath)
+                    @foreach ($defaultImages as $imageName => $imageLabel)
                         @php
-                            $imageName = basename($imagePath);
-                            $imageUrl = asset('images/recipes/default/' . $imageName);
+                            $imagePath = public_path('images/recipes/default/' . $imageName);
                             $imageValue = 'images/recipes/default/' . $imageName;
                         @endphp
-                        <label style="text-align: center; cursor: pointer;">
-                            <input type="radio" name="default_image" value="{{ $imageValue }}"
+                        {{-- ha egy fájl hiányzik a mappából, kihagyjuk (ne legyen törött kép) --}}
+                        @continue(!is_file($imagePath))
+                        <label class="image-option">
+                            {{-- a rádiógomb láthatatlan, de ez küldi az értéket; a stílust a mögötte lévő kártya kapja (CSS :checked + ...) --}}
+                            <input type="radio" name="default_image" value="{{ $imageValue }}" class="image-option-input"
                                 {{ old('default_image', $recipe->thumbnail ?? '') == $imageValue ? 'checked' : '' }}>
-                            <img src="{{ $imageUrl }}" alt="{{ $imageName }}" style="width: 100px; height: 100px; object-fit: cover; display: block; border-radius: 4px;">
+                            <span class="image-option-card">
+                                {{-- ?v=... : ha a képfájl változik, a böngésző nem a régit mutatja a cache-ből --}}
+                                <img src="{{ asset($imageValue) }}?v={{ filemtime($imagePath) }}" alt="">
+                                <span class="image-option-label">{{ $imageLabel }}</span>
+                            </span>
                         </label>
                     @endforeach
                 </div>
@@ -345,17 +377,41 @@
     </div>
 
     <script>
+        // A cím textarea, de egysoros adat: Enterre ne törjön sort,
+        // beillesztett sortörés helyett pedig szóköz kerüljön bele
+        const titleInput = document.getElementById('title');
+        titleInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') e.preventDefault();
+        });
+        titleInput.addEventListener('input', function () {
+            if (this.value.includes('\n')) this.value = this.value.replace(/\n/g, ' ');
+        });
+
         // Saját kép előnézet
         const thumbnailInput = document.querySelector('.upload-input');
         const thumbnailPreview = document.querySelector('.upload-placeholder');
+        const defaultImageRadios = document.querySelectorAll('.image-option-input');
+        const hadUploadInput = document.querySelector('.had-upload');
         if (thumbnailInput) {
             thumbnailInput.addEventListener('change', function () {
                 if (this.files && this.files[0]) {
                     thumbnailPreview.src = URL.createObjectURL(this.files[0]);
                     thumbnailPreview.style.opacity = '1';
+                    hadUploadInput.value = '1';
+                    // saját kép választásakor az alapkép-választás törlődik (a szerver úgyis a feltöltöttet menti)
+                    defaultImageRadios.forEach(radio => radio.checked = false);
                 }
             });
         }
+
+        // alapkép választásakor a feltöltött saját kép törlődik, hogy egyértelmű legyen, melyik lesz mentve
+        defaultImageRadios.forEach(radio => {
+            radio.addEventListener('change', function () {
+                thumbnailInput.value = '';
+                thumbnailPreview.style.opacity = '0';
+                hadUploadInput.value = '0';
+            });
+        });
 
         document.getElementById('add-step').addEventListener('click', function() {
             const container = document.getElementById('steps-container');

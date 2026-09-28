@@ -1,7 +1,7 @@
 @forelse ($recipes as $recipe)
     <div class="recipe-card">
         <div class="card-image-wrapper">
-            <img src="{{ $recipe->thumbnail ? asset($recipe->thumbnail) : asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="{{ $recipe->title }}" class="recipe-image">
+            <img src="{{ $recipe->thumbnail_url }}" alt="{{ $recipe->title }}" class="recipe-image">
             @auth
                 <form action="{{ route('recipes.favorite', $recipe->id) }}" method="POST" class="card-favorite-form" @if(!empty($removeOnUnfavorite)) data-remove-card="true" @endif>
                     @csrf
@@ -32,12 +32,22 @@
                 <i data-lucide="bot"></i>
             </a>
             @if (!empty($showOwnerActions))
-                <a href="{{ route('recipes.edit', $recipe->id) }}" class="btn-edit">Szerkesztés</a>
-                <form action="{{ route('recipes.destroy', $recipe->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Biztosan törlöd ezt a receptet?')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn-delete">Törlés</button>
-                </form>
+                {{-- Saját receptek: külön sorban, a kártya stílusához illő keretes gombok --}}
+                <div class="card-owner-actions">
+                    <a href="{{ route('recipes.edit', $recipe->id) }}" class="btn-card-edit">
+                        <i data-lucide="pencil"></i> Szerkesztés
+                    </a>
+                    {{-- data-confirm: beküldés előtt a közös megerősítő ablak jön fel (layouts/app.blade.php) --}}
+                    <form action="{{ route('recipes.destroy', $recipe->id) }}" method="POST"
+                        data-confirm-title="Biztosan törlöd a receptet?"
+                        data-confirm="A(z) „{{ $recipe->title }}” recept véglegesen törlődik. Ez a művelet nem visszavonható.">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-card-delete">
+                            <i data-lucide="trash-2"></i> Törlés
+                        </button>
+                    </form>
+                </div>
             @endif
         </div>
 

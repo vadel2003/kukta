@@ -616,6 +616,66 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     color: var(--color-primary);
 }
 
+/* Saját receptek kártyáin: Szerkesztés + Törlés külön, teljes szélességű sorban.
+   flex-basis: 100% -> a .card-actions (flex-wrap) új sorba tördeli.
+   Belül grid 1fr 1fr: két pontosan egyforma oszlop (flex:1-gyel a link saját
+   padding/border-e miatt a Szerkesztés szélesebb lett volna, mint a formban ülő Törlés) */
+.card-owner-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    flex-basis: 100%;
+}
+
+/* keretes gombok, mint a Részletek (.btn-view), csak visszafogottabbak.
+   position + z-index: a .btn-view::after rétege az egész kártyát lefedi
+   (kattintásra a részletekre visz) - e nélkül ezekre a gombokra nem lehetne kattintani */
+.btn-card-edit,
+.btn-card-delete {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 6px 8px;
+    background: var(--color-white);
+    border: 2px solid var(--color-border);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-card-edit svg,
+.btn-card-delete svg {
+    width: 16px;
+    height: 16px;
+}
+
+.btn-card-edit {
+    color: var(--color-text-light);
+}
+
+.btn-card-edit:hover {
+    border-color: var(--color-primary);
+    background: var(--color-search-bg);
+    color: var(--color-primary);
+}
+
+.btn-card-delete {
+    color: var(--color-danger);
+}
+
+.btn-card-delete:hover {
+    border-color: var(--color-danger);
+    background: #fdecee;
+}
+
 .btn-edit {
     display: inline-block;
     padding: 8px 16px;
@@ -1015,6 +1075,103 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     opacity: 0; /* csak kiválasztott kép után látszik (a JS állítja 1-re) */
 }
 
+/* ===== ELŐRE DEFINIÁLT KÉPEK VÁLASZTÓJA (recept űrlap) ===== */
+.image-section-title {
+    margin-bottom: 0.5rem;
+}
+
+.image-section {
+    margin-top: 1rem;
+}
+
+/* auto-fill + minmax: annyi oszlop, amennyi min. 155px-es szélességgel kifér,
+   így mobilon magától kevesebb oszlopra tördel */
+.image-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 12px;
+}
+
+.image-option {
+    cursor: pointer;
+}
+
+/* A rádiógomb láthatatlan, de a helyén marad (nem display:none), így
+   billentyűzettel (Tab + nyilak) is választható és az űrlap elküldi */
+.image-option-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.image-option-card {
+    position: relative;
+    display: block;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--color-white);
+    transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* ugyanaz az arány (1.55:1), mint a receptkártya képén (.recipe-image: kb. 310x200),
+   így azt mutatja, ami a kártyán lesz */
+.image-option-card img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1.55;
+    object-fit: cover;
+}
+
+.image-option-label {
+    display: block;
+    padding: 6px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+}
+
+.image-option:hover .image-option-card {
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+}
+
+/* "+" = szomszéd-kombinátor: a bejelölt rádiógomb UTÁN közvetlenül következő kártya.
+   Így JS nélkül, tisztán CSS-ből jelöljük a kiválasztott képet. */
+.image-option-input:checked + .image-option-card {
+    border-color: var(--color-primary);
+    background: var(--color-search-bg);
+}
+
+.image-option-input:checked + .image-option-card .image-option-label {
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+/* pipa jelvény a kiválasztott kép jobb felső sarkában */
+.image-option-input:checked + .image-option-card::after {
+    content: '✓';
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: var(--color-white);
+    font-weight: 700;
+}
+
+/* billentyűzetes navigációnál látszódjon, melyik képen áll a fókusz */
+.image-option-input:focus-visible + .image-option-card {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
 .upload-hint {
     position: absolute;
     inset: 0;
@@ -1129,6 +1286,17 @@ select.is-invalid:focus {
 .form-error {
     color: var(--color-danger);
     font-size: 0.85rem;
+}
+
+/* Figyelmeztetés (nem hiba, csak teendő) - pl. hibás beküldés után újra ki kell választani a képet */
+.form-warning {
+    margin-bottom: 0.75rem;
+    padding: 0.6rem 0.8rem;
+    border-left: 4px solid var(--color-primary);
+    border-radius: 4px;
+    background: var(--color-search-bg);
+    color: var(--color-text);
+    font-size: 0.9rem;
 }
 
 .form-success {

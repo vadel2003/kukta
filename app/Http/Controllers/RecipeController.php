@@ -55,12 +55,15 @@ class RecipeController extends Controller
             'allergens.*' => ['exists:allergen,id'],
             'cuisines' => ['nullable', 'array'],
             'cuisines.*' => ['exists:cuisine,id'],
-            'thumbnail_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            // kép kötelező: vagy feltöltött saját kép, vagy kiválasztott alapkép
+            'thumbnail_image' => ['nullable', 'required_without:default_image', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
             'default_image' => ['nullable', 'string'],
         ], [
             'food_types.required' => 'Válassz legalább egy ételtípust!',
             'food_types.min' => 'Válassz legalább egy ételtípust!',
             'ingredients.*.quantity.min' => 'A mennyiség legalább 0,1 legyen!',
+            'thumbnail_image.required_without' => 'Tölts fel saját képet, vagy válassz egy alapképet!',
+            'thumbnail_image.required' => 'Tölts fel saját képet, vagy válassz egy alapképet!',
         ]);
 
         // Lépések előfeldolgozása: üres sor kihagyása + kategória kötelező
@@ -541,12 +544,15 @@ class RecipeController extends Controller
             'allergens.*' => ['exists:allergen,id'],
             'cuisines' => ['nullable', 'array'],
             'cuisines.*' => ['exists:cuisine,id'],
-            'thumbnail_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            // kép csak akkor kötelező, ha a receptnek még nincs képe és alapképet sem választott
+            'thumbnail_image' => ['nullable', Rule::requiredIf(empty($recipe->thumbnail) && !$request->filled('default_image')), 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
             'default_image' => ['nullable', 'string'],
         ], [
             'food_types.required' => 'Válassz legalább egy ételtípust!',
             'food_types.min' => 'Válassz legalább egy ételtípust!',
             'ingredients.*.quantity.min' => 'A mennyiség legalább 0,1 legyen!',
+            'thumbnail_image.required_without' => 'Tölts fel saját képet, vagy válassz egy alapképet!',
+            'thumbnail_image.required' => 'Tölts fel saját képet, vagy válassz egy alapképet!',
         ]);
 
         // Lépések előfeldolgozása: üres sor kihagyása + kategória kötelező

@@ -112,6 +112,25 @@
         <i data-lucide="arrow-up"></i>
     </button>
 
+    {{-- Közös megerősítő ablak a böngésző confirm() ablaka helyett. Bármelyik form
+         használhatja: <form ... data-confirm="Üzenet" data-confirm-title="Cím (opcionális)">
+         - beküldéskor ez az ablak jön fel, és csak az "Igen, törlöm" küldi el a formot. --}}
+    <div id="confirmModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3 class="confirm-modal-title"></h3>
+                <button type="button" class="close-btn" onclick="closeModal('confirmModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="confirm-modal-message"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-outline" onclick="closeModal('confirmModal')">Mégse</button>
+                <button type="button" class="btn-delete" onclick="submitConfirmedForm()">Igen, törlöm</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Modal kezelő függvények
         function openModal(modalId) {
@@ -128,6 +147,31 @@
                 event.target.classList.remove('active');
             }
         }
+
+        // Közös megerősítő ablak (#confirmModal): melyik formot kell elküldeni "Igen"-re
+        let formToConfirm = null;
+
+        function openConfirmModal(form, title, message) {
+            formToConfirm = form;
+            // textContent (nem innerHTML): a szöveg (pl. recept címe) sima szövegként kerül be, kódként nem futhat le
+            document.querySelector('.confirm-modal-title').textContent = title;
+            document.querySelector('.confirm-modal-message').textContent = message;
+            openModal('confirmModal');
+        }
+
+        function submitConfirmedForm() {
+            // form.submit() nem vált ki újabb 'submit' eseményt, így az ablak nem nyílik fel újra
+            if (formToConfirm) formToConfirm.submit();
+        }
+
+        // Minden data-confirm attribútumos form beküldését "elkapjuk" (a document szintjén,
+        // így az utólag - pl. "További receptek" gombbal - betöltött formokra is működik)
+        document.addEventListener('submit', function (e) {
+            const form = e.target;
+            if (!form.dataset.confirm) return;
+            e.preventDefault();
+            openConfirmModal(form, form.dataset.confirmTitle || 'Biztosan folytatod?', form.dataset.confirm);
+        });
 
         // Scroll figyelés - kereső sáv megjelenítése header-ben
         // Egyszer, betöltéskor mérjük le a viszonyítási pontot:
@@ -438,12 +482,13 @@
             updateBulkButton();
         });
 
+        // Tömeges törlés: a darabszám miatt az üzenet dinamikus, ezért nem data-confirm,
+        // hanem közvetlenül a közös megerősítő ablakot nyitjuk meg
         document.querySelectorAll('.bulk-delete-form').forEach(function (form) {
             form.addEventListener('submit', function (e) {
+                e.preventDefault();
                 const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
-                if (!confirm('Biztosan törlöd a kijelölt ' + checkedCount + ' elemet?')) {
-                    e.preventDefault();
-                }
+                openConfirmModal(form, 'Biztosan törlöd a kijelölt elemeket?', 'A kijelölt ' + checkedCount + ' elem véglegesen törlődik. Ez a művelet nem visszavonható.');
             });
         });
 

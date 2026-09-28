@@ -17,6 +17,11 @@ class FoodTypeSeeder extends Seeder
             'Köret',
             'Saláta',
             'Nasi',
+            'Tészta',
+            'Pékáru',
+            'Ital',
+            'Befőtt',
+            'Gyümölcs',
         ];
 
         foreach ($foodTypes as $name) {

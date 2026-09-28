@@ -8,13 +8,13 @@
 @endpush
 
 @section('content')
-<div class="assistant" style="--assistant-bg-image: url('{{ $recipe->thumbnail ? asset($recipe->thumbnail) : asset('images/recipes/default/recipe_placeholder.jpg') }}');">
+<div class="assistant" style="--assistant-bg-image: url('{{ $recipe->thumbnail_url }}');">
 
     <a href="{{ route('recipes.show', $recipe->id) }}" class="assistant-close" aria-label="Kilépés az asszisztensből"><i data-lucide="x"></i></a>
 
     {{-- -1. lépés: leírás + háttérkép --}}
     <section class="assistant-screen is-active">
-        <div class="assistant-intro" style="background-image: url('{{ $recipe->thumbnail ? asset($recipe->thumbnail) : asset('images/recipes/default/recipe_placeholder.jpg') }}');">
+        <div class="assistant-intro" style="background-image: url('{{ $recipe->thumbnail_url }}');">
             <div class="assistant-intro-content">
                 <div class="assistant-intro-card assistant-greeting-card">
                     {{-- Ide kerül majd egy gif a kabalafiguráról --}}

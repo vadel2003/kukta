@@ -7,7 +7,11 @@
 @endpush
 
 @section('content')
-    <h1>Saját receptek</h1>
+    <div class="card-stack">
+    <div>
+        <a href="{{ route('home') }}" class="back-link"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
+        <h1>Saját receptek</h1>
+    </div>
 
     @if (!$hasAnyRecipes)
         <p>Még nem töltöttél fel receptet. <a href="{{ route('recipes.create') }}">Tölts fel egyet most!</a></p>
@@ -37,4 +41,5 @@
             </div>
         </section>
     @endif
+    </div>
 @endsection

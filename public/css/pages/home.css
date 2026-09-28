@@ -145,6 +145,19 @@
     position: relative;
 }
 
+/* Saját / Kedvenc receptek oldalon a szekció egy .card-stack-ben van (cím + vissza link
+   felette), ott a térközöket a card-stack adja - a főoldali padding felesleges, és
+   el is tolná a keresőt/kártyákat a címhez képest */
+.card-stack .recipes-section {
+    width: 100%;
+    padding: 0;
+}
+
+/* a kereső főoldali 3rem felső margója itt túl nagy rés lenne a cím alatt */
+.card-stack .recipes-section .search-bar {
+    margin-top: 0;
+}
+
 .section-title {
     font-size: 1.8rem;
     margin-bottom: 30px;

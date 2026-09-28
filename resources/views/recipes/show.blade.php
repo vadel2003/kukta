@@ -17,7 +17,7 @@
         <!-- Bal oldal: kép + info -->
         <div class="recipe-left">
             <div class="recipe-banner">
-                <img src="{{ $recipe->thumbnail ? asset($recipe->thumbnail) : asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="{{ $recipe->title }}" class="banner-image">
+                <img src="{{ $recipe->thumbnail_url }}" alt="{{ $recipe->title }}" class="banner-image">
                 @auth
                     <form action="{{ route('recipes.favorite', $recipe->id) }}" method="POST" class="banner-favorite-form">
                         @csrf

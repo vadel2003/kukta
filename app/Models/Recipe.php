@@ -33,6 +33,19 @@ class Recipe extends Model
         ];
     }
 
+    /**
+     * A borítókép teljes URL-je ($recipe->thumbnail_url). A végére ?v=<módosítás ideje>
+     * kerül, így ha a képfájl megváltozik, a böngésző új címnek látja és nem a régi,
+     * gyorsítótárazott képet mutatja.
+     */
+    public function getThumbnailUrlAttribute(): string
+    {
+        $path = $this->thumbnail ?: 'images/recipes/default/recipe_placeholder.jpg';
+        $file = public_path($path);
+
+        return asset($path) . (is_file($file) ? '?v=' . filemtime($file) : '');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

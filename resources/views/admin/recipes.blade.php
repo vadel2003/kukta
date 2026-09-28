@@ -71,14 +71,14 @@
                     <tr>
                         <td><input type="checkbox" name="ids[]" value="{{ $recipe->id }}" class="row-checkbox" form="bulk-delete-form"></td>
                         <td>
-                            <img src="{{ $recipe->thumbnail ? asset($recipe->thumbnail) : asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="{{ $recipe->title }}" class="recipe-thumbnail">
+                            <img src="{{ $recipe->thumbnail_url }}" alt="{{ $recipe->title }}" class="recipe-thumbnail">
                         </td>
                         <td>{{ $recipe->title }}</td>
                         <td>{{ $recipe->user->name ?? 'törölt felhasználó' }}</td>
                         <td>{{ Str::limit($recipe->description, 100) }}</td>
                         <td class="admin-table-actions">
                             <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-edit btn-edit-primary">Részletek</a>
-                            <form action="{{ route('recipes.destroy', $recipe->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Biztosan törlöd ezt a receptet?')">
+                            <form action="{{ route('recipes.destroy', $recipe->id) }}" method="POST" style="display: inline;" data-confirm-title="Biztosan törlöd a receptet?" data-confirm="A(z) „{{ $recipe->title }}” recept véglegesen törlődik. Ez a művelet nem visszavonható.">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn-delete">Törlés</button>

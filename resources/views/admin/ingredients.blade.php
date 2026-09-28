@@ -112,7 +112,7 @@
                         <td>{{ $ingredient->fat }}</td>
                         <td>
                             <button type="button" class="btn-edit btn-edit-primary" onclick="toggleIngredientEdit({{ $ingredient->id }})">Módosítás</button>
-                            <form action="{{ route('admin.ingredients.destroy', $ingredient->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Biztosan törlöd ezt az alapanyagot? Minden receptből eltűnik!')">
+                            <form action="{{ route('admin.ingredients.destroy', $ingredient->id) }}" method="POST" style="display: inline;" data-confirm-title="Biztosan törlöd az alapanyagot?" data-confirm="A(z) „{{ $ingredient->name }}” alapanyag minden receptből eltűnik. Ez a művelet nem visszavonható.">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn-delete">Törlés</button>

@@ -86,7 +86,7 @@
                         <td>{{ $user->isAdmin() ? 'Superadmin' : 'Regisztrált felhasználó' }}</td>
                         <td>
                             @if (!$user->isAdmin() && $user->id !== Auth::id())
-                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Biztosan törlöd ezt a felhasználót? A receptjei megmaradnak, de a kedvencei és értékelései törlődnek.')">
+                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display: inline;" data-confirm-title="Biztosan törlöd a felhasználót?" data-confirm="„{{ $user->name }}” receptjei megmaradnak, de a kedvencei és értékelései véglegesen törlődnek. Ez a művelet nem visszavonható.">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-delete">Törlés</button>

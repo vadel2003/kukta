@@ -263,7 +263,13 @@ class RecipeSeeder extends Seeder
             3 => 'images/recipes/default/dessert_thumbnail.svg',     // desszert
             4 => 'images/recipes/default/starter_thumbnail.svg',     // előétel
             5 => 'images/recipes/default/side_dish_thumbnail.svg',   // köret
-            6 => 'images/recipes/default/salad_thumbnail.png',       // saláta
+            6 => 'images/recipes/default/salad_thumbnail.svg',       // saláta
+            7 => 'images/recipes/default/starter_thumbnail.svg',     // nasi
+            8 => 'images/recipes/default/pasta_thumbnail.svg',       // tészta
+            9 => 'images/recipes/default/bakery_thumbnail.svg',      // pékáru
+            10 => 'images/recipes/default/drink_thumbnail.svg',      // ital
+            11 => 'images/recipes/default/preserve_thumbnail.svg',   // befőtt
+            12 => 'images/recipes/default/fruit_thumbnail.svg',      // gyümölcs
         ];
 
         foreach ($pivotData as $recipeId => $data) {
