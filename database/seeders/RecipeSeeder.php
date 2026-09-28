@@ -258,11 +258,11 @@ class RecipeSeeder extends Seeder
 
         // Thumbnail hozzárendelése food_type alapján
         $thumbnailMap = [
-            1 => 'images/recipes/default/soup_thumbnail.png',        // leves
-            2 => 'images/recipes/default/main_course_thumbnail.png', // főétel
-            3 => 'images/recipes/default/dessert_thumbnail.png',     // desszert
-            4 => 'images/recipes/default/starter_thumbnail.png',     // előétel
-            5 => 'images/recipes/default/side_dish_thumbnail.png',   // köret
+            1 => 'images/recipes/default/soup_thumbnail.svg',        // leves
+            2 => 'images/recipes/default/main_course_thumbnail.svg', // főétel
+            3 => 'images/recipes/default/dessert_thumbnail.svg',     // desszert
+            4 => 'images/recipes/default/starter_thumbnail.svg',     // előétel
+            5 => 'images/recipes/default/side_dish_thumbnail.svg',   // köret
             6 => 'images/recipes/default/salad_thumbnail.png',       // saláta
         ];
 

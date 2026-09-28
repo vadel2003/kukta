@@ -172,6 +172,14 @@
     padding: 0.5rem;
 }
 
+/* Csak maga a kereső mező (szövegdoboz) legyen kiemelve narancs kerettel,
+   nem az egész sáv (szűrők/rendezés/keresés gomb marad az eredeti, visszafogott stílusban) */
+.recipes-section .search-bar .search-input-group {
+    border: 2px solid var(--color-primary);
+    border-radius: 4px;
+    margin: 0.25rem;
+}
+
 .recipes-section .search-bar .search-input-group,
 .recipes-section .search-bar .btn-search,
 .recipes-section .search-bar .btn-filters,

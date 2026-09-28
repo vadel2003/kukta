@@ -132,7 +132,7 @@
                 <h3 style="margin-bottom: 0.5rem;">Vagy válassz előre definiált képet</h3>
                 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                     @php
-                        $defaultImages = glob(public_path('images/recipes/default/*.{jpg,jpeg,png,gif,webp}'), GLOB_BRACE);
+                        $defaultImages = glob(public_path('images/recipes/default/*.{jpg,jpeg,png,gif,webp,svg}'), GLOB_BRACE);
                     @endphp
                     @foreach ($defaultImages as $imagePath)
                         @php

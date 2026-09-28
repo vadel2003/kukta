@@ -355,11 +355,17 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     }
 }
 
+/* A .search-row alapból fehér hátterű (l. fentebb) - ez itt a fejlécben
+   szétválasztja: csak a kereső mező + a Keresés gomb kap fehér "dobozt",
+   a Szűrők/Rendezés gomb átlátszó marad és a fejléc narancs háttere látszik át rajta */
 .header-search .search-row {
     flex: 1;
     min-width: 0;
     height: 38px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    overflow: visible;
 }
 
 .header-search .search-input-group,
@@ -372,10 +378,39 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     box-sizing: border-box;
 }
 
+.header-search .search-input-group {
+    background: var(--color-white);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* A Szűrők/Rendezés gomb szövege eddig a fehér dobozra volt tervezve (szürke szín) -
+   most hogy a hátterük átlátszó és a narancs fejlécen ülnek, fehér szöveg kell a
+   olvashatósághoz, ugyanúgy ahogy a Keresés gomb is fordított színezésű itt */
+.header-search .btn-filters,
+.header-search .btn-sort {
+    color: var(--color-white);
+    opacity: 0.85;
+}
+
+.header-search .btn-filters:hover,
+.header-search .btn-sort:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: var(--color-white);
+    opacity: 1;
+    border-radius: 4px;
+}
+
+.header-search .search-divider {
+    background: rgba(255, 255, 255, 0.35);
+}
+
 /* A fejléc keresés gombja fordított színezésű (fehér alapon narancs), mivel a fejléc háttere már narancs */
 .header-search .btn-search {
     background: var(--color-white);
     color: var(--color-primary);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .header-search .btn-search:hover {
