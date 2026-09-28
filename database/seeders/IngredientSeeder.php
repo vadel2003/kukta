@@ -120,6 +120,18 @@ class IngredientSeeder extends Seeder
             ['name' => 'Kávé',               'calories' => 2,   'carbohydrate' => 0.0,  'protein' => 0.1,  'fat' => 0.0],
             ['name' => 'Tökmag',             'calories' => 559, 'carbohydrate' => 11.0, 'protein' => 30.0, 'fat' => 49.0],
             ['name' => 'Zsír',               'calories' => 896, 'carbohydrate' => 0.0,  'protein' => 0.0,  'fat' => 99.0],
+            ['name' => 'Tyúkhús',            'calories' => 215, 'carbohydrate' => 0.0,  'protein' => 25.0, 'fat' => 12.0],
+            ['name' => 'Babapiskóta',        'calories' => 390, 'carbohydrate' => 80.0, 'protein' => 8.0,  'fat' => 4.0],
+            ['name' => 'Szójaszósz',         'calories' => 53,  'carbohydrate' => 5.0,  'protein' => 8.0,  'fat' => 0.6],
+            ['name' => 'Gyömbér',            'calories' => 80,  'carbohydrate' => 18.0, 'protein' => 1.8,  'fat' => 0.8],
+            ['name' => 'Joghurt',            'calories' => 61,  'carbohydrate' => 4.7,  'protein' => 3.5,  'fat' => 3.3],
+            ['name' => 'Porcukor',           'calories' => 389, 'carbohydrate' => 100.0,'protein' => 0.0,  'fat' => 0.0],
+            ['name' => 'Garnéla',            'calories' => 99,  'carbohydrate' => 0.2,  'protein' => 24.0, 'fat' => 0.3],
+            ['name' => 'Rizstészta',         'calories' => 364, 'carbohydrate' => 80.0, 'protein' => 6.0,  'fat' => 0.6],
+            ['name' => 'Földimogyoró',       'calories' => 567, 'carbohydrate' => 16.0, 'protein' => 26.0, 'fat' => 49.0],
+            ['name' => 'Lazac',              'calories' => 208, 'carbohydrate' => 0.0,  'protein' => 20.0, 'fat' => 13.0],
+            ['name' => 'Szezámmag',          'calories' => 573, 'carbohydrate' => 23.0, 'protein' => 18.0, 'fat' => 50.0],
+            ['name' => 'Tofu',               'calories' => 76,  'carbohydrate' => 1.9,  'protein' => 8.0,  'fat' => 4.8],
         ];
 
         DB::table('ingredient')->insert($ingredients);

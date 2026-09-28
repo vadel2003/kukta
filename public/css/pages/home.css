@@ -187,8 +187,11 @@
 
 /* Csak maga a kereső mező (szövegdoboz) legyen kiemelve narancs kerettel,
    nem az egész sáv (szűrők/rendezés/keresés gomb marad az eredeti, visszafogott stílusban) */
+/* A keret szándékosan egy árnyalattal világosabb a Keresés gomb narancsánál (#e67e22):
+   a vékony vonal fehér alapon sötétebbnek hat, mint ugyanaz a szín a nagy, kitöltött
+   gombon - így a kettő szemre egyforma */
 .recipes-section .search-bar .search-input-group {
-    border: 2px solid var(--color-primary);
+    border: 2px solid #ec9243;
     border-radius: 4px;
     margin: 0.25rem;
 }
@@ -199,6 +202,14 @@
 .recipes-section .search-bar .btn-sort {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
+}
+
+/* a gombok kerekítése egyezzen a keresőmezőével (4px) - az app.css közös
+   gombstílusa border-radius: 0-t ad nekik */
+.recipes-section .search-bar .btn-search,
+.recipes-section .search-bar .btn-filters,
+.recipes-section .search-bar .btn-sort {
+    border-radius: 4px;
 }
 
 .recipes-section .search-bar .btn-search,

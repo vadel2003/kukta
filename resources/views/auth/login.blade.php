@@ -3,7 +3,8 @@
 @section('title', 'Bejelentkezés')
 
 @section('content')
-    <div class="card-stack">
+    {{-- card-stack--narrow: a cím és a vissza link egy oszlopban a kártyával (mint a Profil oldalon) --}}
+    <div class="card-stack card-stack--narrow">
         <div>
             <a href="{{ route('home') }}" class="back-link"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
             <h1>Bejelentkezés</h1>
@@ -14,7 +15,7 @@
                 @csrf
 
                 <div class="form-group">
-                    <label for="email">Email cím:</label>
+                    <label for="email">Email cím</label>
                     <div class="field-control">
                         <input type="email" id="email" name="email" value="{{ old('email') }}" required maxlength="50" class="{{ $errors->has('email') ? 'is-invalid' : '' }}" aria-describedby="email-counter">
                         <small class="char-counter" id="email-counter">0 / 50</small>
@@ -25,7 +26,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Jelszó:</label>
+                    <label for="password">Jelszó</label>
                     <input type="password" id="password" name="password" required class="{{ $errors->has('password') ? 'is-invalid' : '' }}">
                     @error('password')
                         <span class="form-error">{{ $message }}</span>

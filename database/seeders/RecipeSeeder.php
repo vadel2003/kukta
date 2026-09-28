@@ -13,7 +13,7 @@ class RecipeSeeder extends Seeder
             // User 1 (admin) - receptek 1-10
             ['title' => 'Gulyásleves',                  'description' => 'Hagyományos magyar gulyásleves marhahússal, burgonyával, sárgarépával és paprikával. A lassú főzésnek köszönhetően az ízek tökéletesen összeérnek.', 'prep_time' => 120, 'difficulty' => 'közepes', 'servings' => 6, 'creation_date' => '2024-01-15', 'user_id' => 1],
             ['title' => 'Csirkepörkölt',                'description' => 'Szaftos csirkepörkölt hagymás alapon, paprikával és paradicsommal. Hagyományos magyar étel, amely tökéletes nokedlivel vagy tarhonyával.', 'prep_time' => 60, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2024-02-10', 'user_id' => 1],
-            ['title' => 'Túrós csusza',                 'description' => 'Édes túrós csusza tejföllel és szalonnával. A házi készítésű tésztát gazdagon megkenjük túróval és megszórjuk ropogós szalonnadarabokkal.', 'prep_time' => 30, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2024-03-05', 'user_id' => 1],
+            ['title' => 'Túrós csusza',                 'description' => 'Sós túrós csusza tejföllel és szalonnával. A kifőzött tésztát gazdagon megszórjuk túróval és megszórjuk ropogós szalonnadarabokkal.', 'prep_time' => 30, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2024-03-05', 'user_id' => 1],
             ['title' => 'Rakott krumpli',               'description' => 'Réteges rakott burgonya tojással, kolbásszal és tejföllel. A sütőben aranybarnára sütve az egyik legnépszerűbb magyar egytálétel.', 'prep_time' => 70, 'difficulty' => 'közepes', 'servings' => 6, 'creation_date' => '2024-03-20', 'user_id' => 1],
             ['title' => 'Halászlé',                     'description' => 'Bajai halászlé vegyes halakból, paprikás alapon. Friss pontyból, harcsából és keszegből készül, tésztával tálalva.', 'prep_time' => 90, 'difficulty' => 'nehéz', 'servings' => 6, 'creation_date' => '2024-04-12', 'user_id' => 1],
             ['title' => 'Lángos',                       'description' => 'Ropogós lángos tejföllel és reszelt sajttal. A kelt tésztából készült finomság forró olajban sül, majd gazdagon megkenik.', 'prep_time' => 90, 'difficulty' => 'közepes', 'servings' => 4, 'creation_date' => '2024-05-01', 'user_id' => 1],
@@ -54,7 +54,7 @@ class RecipeSeeder extends Seeder
             ['title' => 'Fasírt',                       'description' => 'Sütőben sült fasírt hagymás burgonyapürével. A darált húst tojással, fűszerekkel és zsemlemorzsával keverjük.', 'prep_time' => 60, 'difficulty' => 'könnyű', 'servings' => 6, 'creation_date' => '2025-07-25', 'user_id' => 4],
             ['title' => 'Karfiolleves',                 'description' => 'Krémes karfiolleves sajttal. A karfiolt megfőzzük, turmixoljuk, majd sajttal és tejszínnel dúsítjuk.', 'prep_time' => 40, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2025-08-05', 'user_id' => 4],
             ['title' => 'Töltött tojás',                'description' => 'Töltött tojás majonézes töltelékkel. A főtt tojások sárgáját mustárral és majonézzel keverjük.', 'prep_time' => 25, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2025-08-20', 'user_id' => 4],
-            ['title' => 'Sólet',                        'description' => 'Hagyományos sólet babbal és füstölt hússal. A babot és a húst együtt főzzük hagymával és fűszerekkel.', 'prep_time' => 180, 'difficulty' => 'nehéz', 'servings' => 6, 'creation_date' => '2025-09-02', 'user_id' => 4],
+            ['title' => 'Sólet',                        'description' => 'Hagyományos sólet babbal, marhahússal és főtt tojással. A babot és a húst együtt, lassan sütjük hagymával és fűszerekkel.', 'prep_time' => 180, 'difficulty' => 'nehéz', 'servings' => 6, 'creation_date' => '2025-09-02', 'user_id' => 4],
             ['title' => 'Gyümölcsleves',                'description' => 'Hideg gyümölcsleves tejszínnel. Vegyes gyümölcsökből készült édes leves, amelyet hidegen tálalunk.', 'prep_time' => 30, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2025-09-18', 'user_id' => 4],
             ['title' => 'Puliszka',                     'description' => 'Krémes puliszka sajttal és tejföllel. A kukoricadarát sós vízben főzzük sűrűre, sajttal megszórjuk.', 'prep_time' => 30, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2025-10-01', 'user_id' => 4],
 
@@ -76,7 +76,7 @@ class RecipeSeeder extends Seeder
             ['title' => 'Paradicsomos csirkemell',      'description' => 'Paradicsomos szószban sült csirkemell sajttal. A húst paradicsommal és reszelt sajttal borítjuk.', 'prep_time' => 45, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2026-04-01', 'user_id' => 6],
             ['title' => 'Sütőtök krémleves',            'description' => 'Őszi sütőtök krémleves pirított tökmaggal. A sütőtököt megsütjük, krémesre turmixoljuk.', 'prep_time' => 60, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2026-04-15', 'user_id' => 6],
             ['title' => 'Rizses hús',                   'description' => 'Paprikás rizses hús zöldborsóval. A rizst és a húst együtt főzzük paprikás alapon.', 'prep_time' => 50, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2026-04-28', 'user_id' => 6],
-            ['title' => 'Málnás muffin',                'description' => 'Puha málnás muffin cukormázzal. A tésztába friss vagy fagyasztott málnát keverünk.', 'prep_time' => 35, 'difficulty' => 'könnyű', 'servings' => 12, 'creation_date' => '2026-05-10', 'user_id' => 6],
+            ['title' => 'Málnás muffin',                'description' => 'Puha málnás muffin porcukorral. A tésztába friss vagy fagyasztott málnát keverünk.', 'prep_time' => 35, 'difficulty' => 'könnyű', 'servings' => 12, 'creation_date' => '2026-05-10', 'user_id' => 6],
             ['title' => 'Sárgaborsó főzelék',           'description' => 'Krémes sárgaborsó főzelék füstölt kolbásszal. A sárgaborsót puhára főzzük és összetörjük.', 'prep_time' => 60, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2026-05-22', 'user_id' => 6],
             ['title' => 'Csokis brownie',               'description' => 'Sűrű, nedves csokoládés brownie dióval. A csokoládét és vajat megolvasztjuk, a tésztába diót keverünk.', 'prep_time' => 45, 'difficulty' => 'könnyű', 'servings' => 9, 'creation_date' => '2026-06-05', 'user_id' => 6],
             ['title' => 'Kolbászos lecsós tészta',      'description' => 'Lecsóval és kolbásszal készült tésztaétel. A lecsót kolbásszal gazdagítjuk, tésztával tálaljuk.', 'prep_time' => 40, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2026-06-18', 'user_id' => 6],
@@ -136,6 +136,24 @@ class RecipeSeeder extends Seeder
             ['title' => 'Brassói aprópecsenye',          'description' => 'Erdélyi sertéshúsos-burgonyás egytálétel fokhagymával. A húst és a burgonyát együtt pirítjuk, fokhagymával és pirospaprikával ízesítjük.', 'prep_time' => 60, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2026-07-25', 'user_id' => 1],
             ['title' => 'Somlói galuska',                'description' => 'Klasszikus magyar desszert háromféle piskótával, vaníliasodóval és csokoládéöntettel. Dióval és tejszínhabbal gazdagon tálalva.', 'prep_time' => 90, 'difficulty' => 'közepes', 'servings' => 8, 'creation_date' => '2026-07-30', 'user_id' => 1],
             ['title' => 'Debreceni gulyás',              'description' => 'Kolbászos-burgonyás gulyásleves debreceni módra. A füstölt kolbász és a pirospaprika adja jellegzetes, füstös ízét.', 'prep_time' => 120, 'difficulty' => 'közepes', 'servings' => 6, 'creation_date' => '2026-08-05', 'user_id' => 1],
+
+            // Receptek 106-121: ázsiai, halas, italok, befőttek, gyümölcsök
+            ['title' => 'Garnélás pad thai',             'description' => 'Thai pirított rizstészta garnélával, tojással és földimogyoróval. Édes-savanykás szójás szósszal, wokban készül.', 'prep_time' => 30, 'difficulty' => 'közepes', 'servings' => 4, 'creation_date' => '2026-07-05', 'user_id' => 8],
+            ['title' => 'Teriyaki lazac szezámmaggal',   'description' => 'Serpenyőben sült lazac mézes-szójás teriyaki mázzal, párolt rizzsel és brokkolival, pirított szezámmaggal megszórva.', 'prep_time' => 35, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2026-07-10', 'user_id' => 9],
+            ['title' => 'Szezámos-mogyorós tofu tál',    'description' => 'Ropogósra sült tofu pirított zöldségekkel, gyömbéres szójaszósszal, rizzsel, földimogyoróval és szezámmaggal.', 'prep_time' => 30, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2026-07-12', 'user_id' => 10],
+            ['title' => 'Mustáros-mézes lazac',          'description' => 'Sütőben sült lazacfilé mustáros-mézes mázzal, friss citromos salátával. Gyors, könnyű vacsora.', 'prep_time' => 30, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2026-07-15', 'user_id' => 3],
+            ['title' => 'Fokhagymás garnélás spagetti',  'description' => 'Olasz spagetti fokhagymás-chilis olajon pirított garnélával, citrommal és petrezselyemmel.', 'prep_time' => 25, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2026-07-18', 'user_id' => 2],
+            ['title' => 'Tzatziki',                      'description' => 'Görög fokhagymás-uborkás joghurtmártás olívaolajjal. Mártogatósnak, előételnek vagy grillhúsok mellé.', 'prep_time' => 15, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2026-07-20', 'user_id' => 7],
+            ['title' => 'Házi limonádé',                 'description' => 'Frissítő házi limonádé frissen facsart citromból, cukorsziruppal. Nyári melegben jéghidegen a legjobb.', 'prep_time' => 10, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2026-07-22', 'user_id' => 4],
+            ['title' => 'Epres-banános smoothie',        'description' => 'Krémes epres-banános turmix joghurttal, mézzel és zabpehellyel. Gyors, laktató reggeli ital.', 'prep_time' => 5, 'difficulty' => 'könnyű', 'servings' => 2, 'creation_date' => '2026-07-24', 'user_id' => 5],
+            ['title' => 'Mézes-gyömbéres citromos tea',  'description' => 'Melegítő gyömbértea citrommal, mézzel és fahéjjal. Hideg napokra és megfázás ellen.', 'prep_time' => 15, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2026-07-26', 'user_id' => 6],
+            ['title' => 'Meggybefőtt',                   'description' => 'Hagyományos meggybefőtt cukorsziruppal, télire eltéve. Süteményekhez, gyümölcsleveshez is kiváló.', 'prep_time' => 60, 'difficulty' => 'közepes', 'servings' => 6, 'creation_date' => '2026-06-20', 'user_id' => 7],
+            ['title' => 'Almabefőtt fahéjjal',           'description' => 'Fahéjas almabefőtt gerezdekre vágott almából, cukorsziruppal. Sült húsok mellé vagy desszertnek.', 'prep_time' => 60, 'difficulty' => 'közepes', 'servings' => 6, 'creation_date' => '2026-06-25', 'user_id' => 8],
+            ['title' => 'Eperlekvár',                    'description' => 'Házi eperlekvár citrommal, tartósítószer nélkül. Palacsintába, kenyérre, süteményekbe.', 'prep_time' => 90, 'difficulty' => 'könnyű', 'servings' => 10, 'creation_date' => '2026-05-30', 'user_id' => 9],
+            ['title' => 'Gyümölcssaláta',                'description' => 'Friss gyümölcssaláta almával, banánnal, eperrel és málnával, mézzel és dióval.', 'prep_time' => 15, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2026-06-01', 'user_id' => 10],
+            ['title' => 'Sült alma dióval',              'description' => 'Sütőben sült egész alma mézes-fahéjas diós töltelékkel. Egyszerű őszi-téli desszert.', 'prep_time' => 35, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2026-06-05', 'user_id' => 2],
+            ['title' => 'Csokoládés eper',               'description' => 'Olvasztott csokoládéba mártott friss eper darált dióval. Látványos, gyors édesség.', 'prep_time' => 20, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2026-06-08', 'user_id' => 3],
+            ['title' => 'Garnélás sült rizs',            'description' => 'Ázsiai pirított rizs garnélával, tojással, zöldségekkel és szójaszósszal, szezámmaggal megszórva.', 'prep_time' => 30, 'difficulty' => 'könnyű', 'servings' => 4, 'creation_date' => '2026-07-28', 'user_id' => 4],
         ];
 
         foreach ($recipes as $recipe) {
@@ -144,139 +162,171 @@ class RecipeSeeder extends Seeder
             DB::table('recipe')->insert($recipe);
         }
 
-        // Pivot data: recipe ID => [meal_time_ids, food_type_ids, diet_ids, allergen_ids, cuisine_ids]
-        $pivotData = [];
-        for ($i = 1; $i <= 105; $i++) {
-            $pivotData[$i] = [
-                'meal_times' => [2, 3],
-                'food_types' => [2],
-                'diets' => [1],
-                'allergens' => [],
-                'cuisines' => [1],
-            ];
-        }
-
-        // --- Food types ---
-        // Soups
-        foreach ([1, 5, 14, 17, 22, 33, 36, 39, 42, 44, 46, 49, 54, 61, 64, 68, 74, 84, 96, 102, 105] as $id) {
-            $pivotData[$id]['food_types'] = [1];
-        }
-        // Desserts
-        foreach ([7, 10, 16, 19, 24, 27, 32, 43, 48, 56, 58, 70, 77, 80, 87, 90, 99, 104] as $id) {
-            $pivotData[$id]['food_types'] = [3];
-        }
-        // Appetizers
-        foreach ([6, 37, 66, 73, 94] as $id) {
-            $pivotData[$id]['food_types'] = [4];
-        }
-        // Side dishes
-        foreach ([40, 92] as $id) {
-            $pivotData[$id]['food_types'] = [5];
-        }
-        // Salads
-        foreach ([12, 62, 65] as $id) {
-            $pivotData[$id]['food_types'] = [6];
-        }
-        // Multi-type: Main Course + Side Dish
-        foreach ([3, 76, 83, 93] as $id) {
-            $pivotData[$id]['food_types'] = [2, 5];
-        }
-        // Multi-type: Dessert + Appetizer
-        foreach ([17, 27, 56, 80] as $id) {
-            $pivotData[$id]['food_types'] = [3, 4];
-        }
-
-        // --- Meal times ---
-        // Breakfast
-        foreach ([6, 43, 56, 60, 66, 70, 73, 80, 83, 90, 94, 99, 100] as $id) {
-            $pivotData[$id]['meal_times'] = [1, 2, 3, 4];
-        }
-        // Breakfast + Snack
-        foreach ([17, 27] as $id) {
-            $pivotData[$id]['meal_times'] = [1, 4];
-        }
-        // All day
-        foreach ([7, 10, 16, 19, 24, 32, 48, 58, 77, 87, 104] as $id) {
-            $pivotData[$id]['meal_times'] = [2, 3, 4];
-        }
-
-        // --- Diets ---
-        // Vegetarian
-        $vegetarian = [3, 6, 7, 10, 14, 15, 16, 17, 19, 20, 22, 24, 25, 27, 28, 30, 31, 32, 36, 37, 39, 40, 43, 46, 48, 51, 54, 56, 58, 60, 65, 66, 67, 68, 70, 73, 74, 76, 77, 78, 80, 83, 87, 89, 90, 92, 93, 94, 96, 97, 99, 100, 104];
-        foreach ($vegetarian as $id) {
-            $pivotData[$id]['diets'] = [2];
-        }
-        // Vegan
-        foreach ([22, 30, 39, 51, 54, 60, 68, 74, 89, 92, 96] as $id) {
-            $pivotData[$id]['diets'] = [3];
-        }
-
-        // --- Cuisines ---
-        // Italian
-        foreach ([11, 78, 89, 97, 99] as $id) {
-            $pivotData[$id]['cuisines'] = [2];
-        }
-        // Asian
-        foreach ([71, 95] as $id) {
-            $pivotData[$id]['cuisines'] = [4];
-        }
-        // American
-        foreach ([58, 60, 75] as $id) {
-            $pivotData[$id]['cuisines'] = [5];
-        }
-        // Mexican
-        foreach ([79, 86, 88] as $id) {
-            $pivotData[$id]['cuisines'] = [6];
-        }
-        // French
-        foreach ([83, 87] as $id) {
-            $pivotData[$id]['cuisines'] = [3];
-        }
-        // American + Mexican
-        $pivotData[79]['cuisines'] = [5, 6];
-        // Italian + American
-        $pivotData[97]['cuisines'] = [2, 5];
-
-        // Insert pivot records
-        foreach ($pivotData as $recipeId => $data) {
-            foreach ($data['meal_times'] as $mealTimeId) {
-                DB::table('meal_time_recipe')->insert(['meal_time_id' => $mealTimeId, 'recipe_id' => $recipeId]);
-            }
-            foreach ($data['food_types'] as $foodTypeId) {
-                DB::table('food_type_recipe')->insert(['food_type_id' => $foodTypeId, 'recipe_id' => $recipeId]);
-            }
-            foreach ($data['diets'] as $dietId) {
-                DB::table('diet_recipe')->insert(['diet_id' => $dietId, 'recipe_id' => $recipeId]);
-            }
-            foreach ($data['allergens'] as $allergenId) {
-                DB::table('allergen_recipe')->insert(['allergen_id' => $allergenId, 'recipe_id' => $recipeId]);
-            }
-            foreach ($data['cuisines'] as $cuisineId) {
-                DB::table('cuisine_recipe')->insert(['cuisine_id' => $cuisineId, 'recipe_id' => $recipeId]);
-            }
-        }
-
-        // Thumbnail hozzárendelése food_type alapján
-        $thumbnailMap = [
-            1 => 'images/recipes/default/soup_thumbnail.svg',        // leves
-            2 => 'images/recipes/default/main_course_thumbnail.svg', // főétel
-            3 => 'images/recipes/default/dessert_thumbnail.svg',     // desszert
-            4 => 'images/recipes/default/starter_thumbnail.svg',     // előétel
-            5 => 'images/recipes/default/side_dish_thumbnail.svg',   // köret
-            6 => 'images/recipes/default/salad_thumbnail.svg',       // saláta
-            7 => 'images/recipes/default/starter_thumbnail.svg',     // nasi
-            8 => 'images/recipes/default/pasta_thumbnail.svg',       // tészta
-            9 => 'images/recipes/default/bakery_thumbnail.svg',      // pékáru
-            10 => 'images/recipes/default/drink_thumbnail.svg',      // ital
-            11 => 'images/recipes/default/preserve_thumbnail.svg',   // befőtt
-            12 => 'images/recipes/default/fruit_thumbnail.svg',      // gyümölcs
+        // Kategóriák receptenként, névvel megadva (olvashatóbb, mint az ID-k):
+        // recept ID => [ételtípus(ok), étkezés(ek), étrend(ek), konyha(k)]
+        // Az első ételtípus határozza meg az alapértelmezett képet.
+        // Az allergéneket az IngredientRecipeSeeder számolja ki a hozzávalókból.
+        $categories = [
+            1   => [['Leves'],               ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Gulyásleves
+            2   => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Csirkepörkölt
+            3   => [['Tészta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Túrós csusza
+            4   => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Rakott krumpli
+            5   => [['Leves'],               ['Ebéd'],                           ['Pescetáriánus'],                    ['Magyar']],  // Halászlé
+            6   => [['Nasi'],                ['Tízórai', 'Uzsonna'],             ['Vegetáriánus'],                     ['Magyar']],  // Lángos
+            7   => [['Desszert'],            ['Uzsonna'],                        ['Vegetáriánus'],                     ['Magyar']],  // Palacsinta
+            8   => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Székelykáposzta
+            9   => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Paprikás csirke
+            10  => [['Desszert'],            ['Tízórai', 'Uzsonna'],             ['Vegetáriánus'],                     ['Magyar']],  // Meggyes pite
+            11  => [['Tészta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Olasz']],   // Bolognai spagetti
+            12  => [['Saláta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Mindenevő', 'Keto', 'Low-carb'],    []],          // Csirkemell saláta
+            13  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Töltött paprika
+            14  => [['Leves'],               ['Ebéd'],                           ['Vegetáriánus'],                     ['Magyar']],  // Borsóleves
+            15  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Magyar']],  // Rántott sajt
+            16  => [['Desszert'],            ['Uzsonna'],                        ['Vegetáriánus'],                     ['Magyar']],  // Zserbó
+            17  => [['Leves'],               ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Magyar']],  // Fokhagymakrémleves
+            18  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Marhapörkölt
+            19  => [['Desszert'],            ['Uzsonna'],                        ['Vegetáriánus'],                     ['Magyar']],  // Dobos torta
+            20  => [['Tészta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Magyar']],  // Káposztás tészta
+            21  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Sertésborda rántva
+            22  => [['Leves'],               ['Ebéd'],                           ['Vegetáriánus'],                     ['Magyar']],  // Paradicsomleves
+            23  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Töltött káposzta
+            24  => [['Desszert'],            ['Uzsonna', 'Vacsora'],             ['Vegetáriánus'],                     ['Magyar']],  // Mákos guba
+            25  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Zöldborsófőzelék
+            26  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Csirkepaprikás
+            27  => [['Desszert'],            ['Tízórai', 'Uzsonna'],             ['Vegetáriánus'],                     ['Magyar']],  // Almás rétes
+            28  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Magyar']],  // Spenótfőzelék
+            29  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Bakonyi sertésborda
+            30  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Vegetáriánus', 'Vegán'],            ['Magyar']],  // Krumplifőzelék
+            31  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Magyar']],  // Gombapörkölt
+            32  => [['Desszert'],            ['Uzsonna', 'Vacsora'],             ['Vegetáriánus'],                     ['Magyar']],  // Túrógombóc
+            33  => [['Leves'],               ['Ebéd'],                           ['Mindenevő'],                        ['Magyar']],  // Húsleves
+            34  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Rakott palacsinta
+            35  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Fasírt
+            36  => [['Leves'],               ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Magyar']],  // Karfiolleves
+            37  => [['Előétel'],             ['Reggeli', 'Tízórai', 'Uzsonna'],  ['Vegetáriánus', 'Keto', 'Low-carb'], ['Magyar']],  // Töltött tojás
+            38  => [['Főétel'],              ['Ebéd'],                           ['Mindenevő'],                        ['Magyar']],  // Sólet
+            39  => [['Leves', 'Desszert'],   ['Ebéd'],                           ['Vegetáriánus'],                     ['Magyar']],  // Gyümölcsleves
+            40  => [['Főétel', 'Köret'],     ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Magyar']],  // Puliszka
+            41  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő', 'Low-carb'],            ['Magyar']],  // Sertésszelet paradicsommal
+            42  => [['Leves'],               ['Ebéd'],                           ['Mindenevő'],                        ['Magyar']],  // Babgulyás
+            43  => [['Pékáru', 'Desszert'],  ['Reggeli', 'Tízórai', 'Uzsonna'],  ['Vegetáriánus'],                     ['Magyar']],  // Kakaós csiga
+            44  => [['Leves'],               ['Ebéd'],                           ['Mindenevő'],                        ['Magyar']],  // Savanyú krumplileves
+            45  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Rántott csirkemell
+            46  => [['Leves'],               ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Magyar']],  // Brokkoli krémleves
+            47  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Tarhonyás hús
+            48  => [['Desszert'],            ['Uzsonna'],                        ['Vegetáriánus'],                     ['Magyar', 'Francia']], // Madártej
+            49  => [['Leves'],               ['Ebéd'],                           ['Mindenevő'],                        ['Magyar']],  // Csülkös bableves
+            50  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő', 'Flexitáriánus'],       ['Magyar']],  // Lecsó
+            51  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Magyar']],  // Burgonyafőzelék
+            52  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Csirkemell rolád
+            53  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő', 'Low-carb'],            ['Olasz']],   // Paradicsomos csirkemell
+            54  => [['Leves'],               ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Magyar']],  // Sütőtök krémleves
+            55  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Rizses hús
+            56  => [['Desszert', 'Pékáru'],  ['Reggeli', 'Tízórai', 'Uzsonna'],  ['Vegetáriánus'],                     ['Amerikai']], // Málnás muffin
+            57  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő', 'Flexitáriánus'],       ['Magyar']],  // Sárgaborsó főzelék
+            58  => [['Desszert'],            ['Uzsonna'],                        ['Vegetáriánus'],                     ['Amerikai']], // Csokis brownie
+            59  => [['Tészta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Kolbászos lecsós tészta
+            60  => [['Főétel'],              ['Reggeli'],                        ['Vegetáriánus'],                     []],          // Zabkása
+            61  => [['Leves'],               ['Ebéd'],                           ['Mindenevő'],                        ['Magyar']],  // Sertésragu leves
+            62  => [['Saláta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Amerikai']], // Csirkés Caesar saláta
+            63  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő', 'Low-carb'],            ['Magyar']],  // Rakott cukkini
+            64  => [['Leves'],               ['Ebéd'],                           ['Mindenevő'],                        ['Magyar']],  // Tárkonyos csirkeraguleves
+            65  => [['Saláta', 'Előétel'],   ['Ebéd', 'Vacsora'],                ['Vegetáriánus', 'Keto', 'Low-carb'], ['Görög']],   // Görög saláta
+            66  => [['Pékáru', 'Nasi'],      ['Reggeli', 'Tízórai', 'Uzsonna'],  ['Vegetáriánus'],                     ['Magyar']],  // Burgonyás pogácsa
+            67  => [['Tészta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Olasz']],   // Spenótos-tejfölös tészta
+            68  => [['Leves'],               ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Magyar']],  // Céklaleves
+            69  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Mártásos csirkemell
+            70  => [['Pékáru', 'Desszert'],  ['Reggeli', 'Tízórai', 'Uzsonna'],  ['Vegetáriánus'],                     ['Magyar']],  // Diós kalács
+            71  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő', 'Flexitáriánus'],       ['Ázsiai']],  // Zöldséges csirke stir fry
+            72  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő', 'Flexitáriánus'],       ['Magyar']],  // Paradicsomos bab
+            73  => [['Nasi'],                ['Reggeli', 'Uzsonna', 'Vacsora'],  ['Vegetáriánus'],                     ['Magyar']],  // Sajtos-tejfölös melegszendvics
+            74  => [['Leves'],               ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Magyar']],  // Zöldségkrémleves
+            75  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Amerikai', 'Mexikói']], // Csirkés wrap
+            76  => [['Tészta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Magyar']],  // Krumplis tészta
+            77  => [['Desszert'],            ['Uzsonna'],                        ['Vegetáriánus'],                     []],          // Csokoládé torta
+            78  => [['Tészta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Olasz']],   // Zöldséges lasagne
+            79  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Mexikói', 'Amerikai']], // Chilis bab
+            80  => [['Desszert'],            ['Uzsonna', 'Vacsora'],             ['Vegetáriánus'],                     ['Magyar']],  // Túrós palacsinta
+            81  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Borsos tokány
+            82  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Sütőben sült csirkecomb
+            83  => [['Főétel', 'Köret'],     ['Ebéd', 'Vacsora'],                ['Vegetáriánus', 'Low-carb'],         ['Francia']], // Karfiol gratin
+            84  => [['Leves'],               ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Burgonyaleves
+            85  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő', 'Low-carb'],            ['Magyar']],  // Töltött cukkini
+            86  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Görög']],   // Gyros tál
+            87  => [['Desszert'],            ['Uzsonna'],                        ['Vegetáriánus'],                     []],          // Vanília puding
+            88  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Mexikói']], // Csirkés quesadilla
+            89  => [['Tészta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Olasz']],   // Paradicsomos tészta
+            90  => [['Desszert'],            ['Tízórai', 'Uzsonna'],             ['Vegetáriánus'],                     ['Magyar']],  // Diós sütemény
+            91  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Sertésszűz pecsenye
+            92  => [['Köret'],               ['Ebéd', 'Vacsora'],                ['Vegetáriánus', 'Vegán'],            ['Magyar']],  // Zöldborsós rizs
+            93  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Magyar']],  // Tojásos nokedli
+            94  => [['Pékáru', 'Nasi'],      ['Reggeli', 'Tízórai', 'Uzsonna'],  ['Vegetáriánus'],                     ['Magyar']],  // Sajtos pogácsa
+            95  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Ázsiai']],  // Csirke curry
+            96  => [['Leves', 'Desszert'],   ['Ebéd'],                           ['Vegetáriánus'],                     ['Magyar']],  // Meggyleves
+            97  => [['Tészta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Amerikai']], // Sajtos makaróni
+            98  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Hagymás rostélyos
+            99  => [['Desszert'],            ['Uzsonna'],                        ['Vegetáriánus'],                     ['Olasz']],   // Epres tiramisu
+            100 => [['Főétel'],              ['Reggeli', 'Vacsora'],             ['Vegetáriánus', 'Keto', 'Low-carb'], ['Francia']], // Zöldséges omlett
+            101 => [['Előétel', 'Főétel'],   ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Hortobágyi palacsinta
+            102 => [['Leves'],               ['Ebéd'],                           ['Mindenevő'],                        ['Magyar']],  // Újházy-tyúkhúsleves
+            103 => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Brassói aprópecsenye
+            104 => [['Desszert'],            ['Uzsonna'],                        ['Vegetáriánus'],                     ['Magyar']],  // Somlói galuska
+            105 => [['Leves'],               ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Debreceni gulyás
+            106 => [['Tészta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Pescetáriánus'],                    ['Ázsiai']],  // Garnélás pad thai
+            107 => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Pescetáriánus'],                    ['Ázsiai']],  // Teriyaki lazac szezámmaggal
+            108 => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Vegetáriánus', 'Vegán'],            ['Ázsiai']],  // Szezámos-mogyorós tofu tál
+            109 => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Pescetáriánus', 'Low-carb'],        ['Francia']], // Mustáros-mézes lazac
+            110 => [['Tészta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Pescetáriánus'],                    ['Olasz']],   // Fokhagymás garnélás spagetti
+            111 => [['Előétel'],             ['Tízórai', 'Uzsonna', 'Vacsora'],  ['Vegetáriánus', 'Keto', 'Low-carb'], ['Görög']],   // Tzatziki
+            112 => [['Ital'],                ['Tízórai', 'Uzsonna'],             ['Vegetáriánus', 'Vegán'],            []],          // Házi limonádé
+            113 => [['Ital'],                ['Reggeli', 'Tízórai', 'Uzsonna'],  ['Vegetáriánus'],                     []],          // Epres-banános smoothie
+            114 => [['Ital'],                ['Reggeli', 'Uzsonna'],             ['Vegetáriánus'],                     []],          // Mézes-gyömbéres citromos tea
+            115 => [['Befőtt'],              ['Tízórai', 'Uzsonna'],             ['Vegetáriánus', 'Vegán'],            ['Magyar']],  // Meggybefőtt
+            116 => [['Befőtt'],              ['Tízórai', 'Uzsonna'],             ['Vegetáriánus', 'Vegán'],            ['Magyar']],  // Almabefőtt fahéjjal
+            117 => [['Befőtt'],              ['Reggeli', 'Uzsonna'],             ['Vegetáriánus', 'Vegán'],            ['Magyar']],  // Eperlekvár
+            118 => [['Gyümölcs', 'Desszert'], ['Reggeli', 'Tízórai', 'Uzsonna'], ['Vegetáriánus'],                     []],          // Gyümölcssaláta
+            119 => [['Gyümölcs', 'Desszert'], ['Uzsonna'],                       ['Vegetáriánus'],                     ['Magyar']],  // Sült alma dióval
+            120 => [['Gyümölcs', 'Desszert'], ['Uzsonna'],                       ['Vegetáriánus'],                     []],          // Csokoládés eper
+            121 => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Pescetáriánus'],                    ['Ázsiai']],  // Garnélás sült rizs
         ];
 
-        foreach ($pivotData as $recipeId => $data) {
-            $foodTypeId = $data['food_types'][0]; // elsődleges food_type
-            if (isset($thumbnailMap[$foodTypeId])) {
-                DB::table('recipe')->where('id', $recipeId)->update(['thumbnail' => $thumbnailMap[$foodTypeId]]);
+        // Név => ID párosok a kategória táblákból
+        $foodTypeIds = DB::table('food_type')->pluck('id', 'name');
+        $mealTimeIds = DB::table('meal_time')->pluck('id', 'name');
+        $dietIds = DB::table('diet')->pluck('id', 'name');
+        $cuisineIds = DB::table('cuisine')->pluck('id', 'name');
+
+        // Alapértelmezett kép az első ételtípus alapján
+        $thumbnailMap = [
+            'Leves'    => 'images/recipes/default/soup_thumbnail.svg',
+            'Főétel'   => 'images/recipes/default/main_course_thumbnail.svg',
+            'Desszert' => 'images/recipes/default/dessert_thumbnail.svg',
+            'Előétel'  => 'images/recipes/default/starter_thumbnail.svg',
+            'Köret'    => 'images/recipes/default/side_dish_thumbnail.svg',
+            'Saláta'   => 'images/recipes/default/salad_thumbnail.svg',
+            'Nasi'     => 'images/recipes/default/starter_thumbnail.svg',
+            'Tészta'   => 'images/recipes/default/pasta_thumbnail.svg',
+            'Pékáru'   => 'images/recipes/default/bakery_thumbnail.svg',
+            'Ital'     => 'images/recipes/default/drink_thumbnail.svg',
+            'Befőtt'   => 'images/recipes/default/preserve_thumbnail.svg',
+            'Gyümölcs' => 'images/recipes/default/fruit_thumbnail.svg',
+        ];
+
+        foreach ($categories as $recipeId => [$foodTypes, $mealTimes, $diets, $cuisines]) {
+            foreach ($foodTypes as $name) {
+                DB::table('food_type_recipe')->insert(['food_type_id' => $foodTypeIds[$name], 'recipe_id' => $recipeId]);
             }
+            foreach ($mealTimes as $name) {
+                DB::table('meal_time_recipe')->insert(['meal_time_id' => $mealTimeIds[$name], 'recipe_id' => $recipeId]);
+            }
+            foreach ($diets as $name) {
+                DB::table('diet_recipe')->insert(['diet_id' => $dietIds[$name], 'recipe_id' => $recipeId]);
+            }
+            foreach ($cuisines as $name) {
+                DB::table('cuisine_recipe')->insert(['cuisine_id' => $cuisineIds[$name], 'recipe_id' => $recipeId]);
+            }
+
+            DB::table('recipe')->where('id', $recipeId)->update(['thumbnail' => $thumbnailMap[$foodTypes[0]]]);
         }
     }
 }

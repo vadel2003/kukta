@@ -16,6 +16,7 @@ class CuisineSeeder extends Seeder
             ['name' => 'Ázsiai',   'thumbnail' => null],
             ['name' => 'Amerikai', 'thumbnail' => null],
             ['name' => 'Mexikói',  'thumbnail' => null],
+            ['name' => 'Görög',    'thumbnail' => null],
         ];
 
         foreach ($cuisines as $cuisine) {

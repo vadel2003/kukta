@@ -1328,6 +1328,63 @@ select.is-invalid:focus {
     text-align: center;
 }
 
+/* Linkek a form-kártyán (pl. "Jelentkezz be!", szabályzatok) - a böngésző alap kékje
+   helyett az oldal narancs kiemelő színe */
+.form-card a {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.form-card a:hover {
+    color: var(--color-primary-hover);
+    text-decoration: underline;
+}
+
+/* Új lapon nyíló link jelzése: kis "kifelé mutató nyíl" ikon a szöveg után */
+.external-link svg {
+    width: 0.85em;
+    height: 0.85em;
+    margin-left: 0.2em;
+    vertical-align: -0.05em;
+}
+
+/* Csak képernyőolvasónak szóló szöveg: a képernyőn nem látszik, de a felolvasó
+   program felolvassa (display:none-nal a felolvasó sem "látná"). Szabványos minta. */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Jelölőnégyzet + hosszabb szöveg egy sorban (pl. ÁSZF elfogadása).
+   A .form-group label félkövér stílusát itt visszaállítjuk normálra, mert ez
+   egy egész mondat, nem egy rövid mezőcímke. */
+.form-group label.checkbox-inline {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-weight: 400;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    cursor: pointer;
+}
+
+.checkbox-inline input[type="checkbox"] {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin: 1px 0 0;
+    accent-color: var(--color-primary); /* a pipa/doboz színe narancs a böngésző alap kékje helyett */
+    cursor: pointer;
+}
+
 /* Egymás alatti kártyák (pl. külön cím-kártya + tartalom-kártya) egységes függőleges
    térköze és a header/footer-től való távolsága - minden aloldalon ezt használjuk */
 .card-stack {
@@ -1335,6 +1392,13 @@ select.is-invalid:focus {
     flex-direction: column;
     gap: 1.5rem;
     margin: 3rem auto;
+}
+
+/* Keskeny változat (bejelentkezés, regisztráció): az egész oszlop olyan széles, mint
+   a .form-card (440px), így a vissza link és a cím a kártya bal széléhez igazodik,
+   nem a képernyő bal széléhez. A margin: auto (fent) középre teszi az oszlopot. */
+.card-stack--narrow {
+    max-width: 440px;
 }
 
 /* Recept form kártyáinak (content-card szekciók) függőleges térköze */
