@@ -104,6 +104,7 @@ class Recipe extends Model
 
     /**
      * Kulcsszavas keresés + kategória szűrők (étkezés, ételtípus, diéta, érzékenység, konyha).
+     * Egy csoporton belül VAGY (pl. Leves vagy Desszert), csoportok között ÉS a kapcsolat.
      * Ezt a főoldal, a Saját receptek és a Kedvenc receptek oldal is használja,
      * hogy ne kelljen 3x ugyanazt a kódot írni. A rendezést szándékosan NEM ez csinálja,
      * mert az oldalanként eltérhet (l. Kedvenc receptek: alapból a kedvencnek jelölés
@@ -130,8 +131,10 @@ class Recipe extends Model
         if ($request->filled('diet')) {
             $query->whereHas('diets', fn ($q) => $q->whereIn('diet.id', (array) $request->input('diet')));
         }
+        // Érzékenység: fordított logika - aki pl. a "Glutén"-t jelöli be, az glutént NEM
+        // tartalmazó recepteket keres, ezért whereDoesntHave ("nincs ilyen allergénje")
         if ($request->filled('allergen')) {
-            $query->whereHas('allergens', fn ($q) => $q->whereIn('allergen.id', (array) $request->input('allergen')));
+            $query->whereDoesntHave('allergens', fn ($q) => $q->whereIn('allergen.id', (array) $request->input('allergen')));
         }
         if ($request->filled('cuisine')) {
             $query->whereHas('cuisines', fn ($q) => $q->whereIn('cuisine.id', (array) $request->input('cuisine')));

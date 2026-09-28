@@ -27,7 +27,7 @@
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Keresés..." class="search-input">
                 </div>
                 <span class="search-divider"></span>
-                <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők</button>
+                <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők <span class="filter-count" hidden></span></button>
                 <span class="search-divider"></span>
                 <button type="button" class="btn-sort" onclick="openModal('sortModal')"><i data-lucide="arrow-up-down"></i> Rendezés</button>
                 <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
@@ -134,11 +134,77 @@
     <script>
         // Modal kezelő függvények
         function openModal(modalId) {
-            document.getElementById(modalId).classList.add('active');
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.add('active');
         }
 
         function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.remove('active');
+        }
+
+        // ===== SZŰRŐK: számláló a Szűrők gombokon + aktív szűrő címkék =====
+        // A bepipált checkboxokból rajzoljuk ki, így oldalbetöltéskor és AJAX-os
+        // szűrés után is mindig azt mutatja, ami épp be van kapcsolva.
+        function updateFilterSummary() {
+            const form = document.getElementById('searchForm');
+            const box = document.getElementById('activeFilters');
+            if (!form || !box) return;
+
+            const checked = form.querySelectorAll('#filtersModal input[type="checkbox"]:checked');
+
+            document.querySelectorAll('.btn-filters').forEach(function (btn) {
+                const badge = btn.querySelector('.filter-count');
+                if (badge) {
+                    badge.textContent = checked.length;
+                    badge.hidden = checked.length === 0;
+                }
+                btn.classList.toggle('has-filters', checked.length > 0);
+            });
+
+            box.innerHTML = '';
+            checked.forEach(function (input) {
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = 'active-filter';
+                chip.title = 'Szűrő eltávolítása';
+                // textContent: a szöveg sima szövegként kerül be, nem HTML-ként
+                chip.textContent = input.dataset.label + ' ✕';
+                chip.addEventListener('click', function () {
+                    input.checked = false;
+                    form.requestSubmit();
+                });
+                box.appendChild(chip);
+            });
+
+            if (checked.length > 1) {
+                const clearBtn = document.createElement('button');
+                clearBtn.type = 'button';
+                clearBtn.className = 'active-filters-clear';
+                clearBtn.textContent = 'Összes törlése';
+                clearBtn.addEventListener('click', function () {
+                    clearFilterCheckboxes();
+                    form.requestSubmit();
+                });
+                box.appendChild(clearBtn);
+            }
+        }
+
+        // A Szűrők modal összes pipájának kivétele (a modal "Szűrők törlése" gombja is ezt hívja)
+        function clearFilterCheckboxes() {
+            document.querySelectorAll('#filtersModal input[type="checkbox"]').forEach(function (input) {
+                input.checked = false;
+            });
+        }
+
+        updateFilterSummary();
+
+        // Ahol nincs Szűrők/Rendezés modal (pl. recept oldal), ott a fejléc Szűrők és Rendezés
+        // gombja (és az elválasztó vonalak) nem csinálnának semmit - elrejtjük őket
+        if (!document.getElementById('filtersModal')) {
+            document.querySelectorAll('.header-search .btn-filters, .header-search .btn-sort, .header-search .search-divider').forEach(function (el) {
+                el.style.display = 'none';
+            });
         }
 
         // Modal bezárása ha a háttérre (overlay-re) kattintunk
@@ -220,6 +286,16 @@
 
                 e.preventDefault();
 
+                // A fejléc és a mobil hero keresője csak a keresőszót tartalmazza. Ha az oldalon
+                // van fő kereső űrlap (#searchForm - benne a szűrők és a rendezés), azon keresztül
+                // küldjük el a keresést, hogy a bekapcsolt szűrők ne vesszenek el.
+                const mainForm = document.getElementById('searchForm');
+                if (mainForm && form !== mainForm) {
+                    mainForm.querySelector('input[name="search"]').value = form.querySelector('input[name="search"]').value;
+                    mainForm.requestSubmit();
+                    return;
+                }
+
                 const spinner = document.getElementById('loading-spinner');
                 const loadMoreBtn = document.getElementById('load-more-btn');
 
@@ -248,6 +324,19 @@
                     .then(data => {
                         gallery.innerHTML = data.html;
                         if (window.lucide) lucide.createIcons();
+
+                        // A címsor (URL) frissítése a szűrőkkel együtt, oldal-újratöltés nélkül:
+                        // így a "További receptek" gomb és a böngészős frissítés is a szűrt listát adja
+                        history.replaceState(null, '', targetUrl + '?' + params.toString() + '#recipes');
+
+                        // Modal bezárása, címkék/számláló frissítése, és minden kereső mező
+                        // (fejléc, mobil, fő kereső) ugyanazt a keresőszót mutassa
+                        closeModal('filtersModal');
+                        closeModal('sortModal');
+                        updateFilterSummary();
+                        document.querySelectorAll('input[name="search"]').forEach(function (input) {
+                            input.value = params.get('search') || '';
+                        });
 
                         // "Load more" gomb frissítése
                         if (data.hasMore) {

@@ -248,25 +248,117 @@ header.scrolled ~ main .recipes-section .search-bar {
     padding-bottom: 0.5rem;
 }
 
-.checkbox-label,
-.radio-label {
+.filter-hint {
+    margin: -0.25rem 0 0.75rem;
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+}
+
+/* Az opciók "kapszulák" egymás mellett, sorba törve - rövidebb modal, kevesebb görgetés */
+.filter-options {
     display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* position: relative - a benne lévő, abszolút pozicionált (rejtett) checkbox ehhez
+   igazodik, nem valamelyik távoli szülőhöz (különben fókuszáláskor ugrálhat a modal) */
+.filter-chip {
+    position: relative;
+    cursor: pointer;
+}
+
+/* A valódi checkbox láthatatlan, de a helyén marad: így billentyűzettel (Tab + Szóköz)
+   továbbra is kezelhető, és a képernyőolvasó is checkboxként olvassa fel.
+   (display: none-nal ezek elvesznének.) */
+.filter-chip input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+.filter-chip span {
+    display: inline-block;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-white);
+    color: var(--color-text);
+    font-size: 0.95rem;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.filter-chip:hover span {
+    border-color: var(--color-primary);
+}
+
+/* "+" = szomszéd-kombinátor: a bepipált input UTÁN KÖZVETLENÜL következő span-t
+   színezi ki. Ezért kell az inputnak a span előtt lennie a HTML-ben. */
+.filter-chip input:checked + span {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+/* Kiegészítő megjegyzés a kapszulán belül, pl. "(alapértelmezett)" - kisebb és halványabb,
+   hogy ne vonja el a figyelmet a fő szövegről. Kijelölt (narancs) kapszulán is olvasható marad,
+   mert a színt a szülő span-től örökli, csak áttetszőbb. */
+.chip-note {
+    font-size: 0.8em;
+    opacity: 0.75;
+}
+
+/* Billentyűzetes fókusz jelzése (egérkattintásra nem jelenik meg) */
+.filter-chip input:focus-visible + span {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* ===== AKTÍV SZŰRŐK (a kereső alatt, a kártyák felett) ===== */
+.active-filters {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 0;
+}
+
+/* :empty = nincs benne semmi (nincs aktív szűrő) - ilyenkor ne foglaljon helyet az alsó margó */
+.active-filters:not(:empty) {
+    margin-bottom: 1.5rem;
+}
+
+.active-filter {
+    padding: 0.3rem 0.75rem;
+    border: none;
+    border-radius: 999px;
+    background: var(--color-primary-soft);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.active-filter:hover {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+.active-filters-clear {
+    background: none;
+    border: none;
+    padding: 0.3rem 0.25rem;
+    color: var(--color-text-light);
+    font: inherit;
+    font-size: 0.9rem;
+    text-decoration: underline;
     cursor: pointer;
 }
 
-.checkbox-label:hover,
-.radio-label:hover {
-    background-color: var(--color-bg-hover);
-}
-
-.checkbox-label input,
-.radio-label input {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
+.active-filters-clear:hover {
+    color: var(--color-text);
 }
 
 /* ===== GOMBOK A MODALBAN / a modal alatti "Összes recept" link ===== */
