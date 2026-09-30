@@ -56,7 +56,9 @@ class RecipeController extends Controller
             'cuisines' => ['nullable', 'array'],
             'cuisines.*' => ['exists:cuisine,id'],
             // kép kötelező: vagy feltöltött saját kép, vagy kiválasztott alapkép
-            'thumbnail_image' => ['nullable', 'required_without:default_image', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            // A böngésző a feltöltés előtt 1240x800-as JPEG-re vágja a képet (recipes/create.blade.php).
+            // A JS megkerülhető, ezért itt is ellenőrizzük: más méret/formátum nem jöhet be.
+            'thumbnail_image' => ['nullable', 'required_without:default_image', 'image', 'mimes:jpeg', 'dimensions:width=1240,height=800', 'max:2048'],
             'default_image' => ['nullable', 'string'],
         ], [
             'food_types.required' => 'Válassz legalább egy ételtípust!',
@@ -139,9 +141,11 @@ class RecipeController extends Controller
 
         // Saját kép feltöltése
         if ($request->hasFile('thumbnail_image')) {
-            $file = $request->file('thumbnail_image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('images/recipes'), $filename);
+            // A fájlnév saját generált név fix .jpg kiterjesztéssel (a validáció csak JPEG-et
+            // enged), nem a feltöltő által megadott névből vesszük. uniqid(): egyedi azonosító,
+            // hogy két egyszerre feltöltött kép ne írja felül egymást.
+            $filename = time() . '_' . uniqid() . '.jpg';
+            $request->file('thumbnail_image')->move(public_path('images/recipes'), $filename);
             $thumbnail = 'images/recipes/' . $filename;
         }
         // Előre definiált kép választása
@@ -545,7 +549,7 @@ class RecipeController extends Controller
             'cuisines' => ['nullable', 'array'],
             'cuisines.*' => ['exists:cuisine,id'],
             // kép csak akkor kötelező, ha a receptnek még nincs képe és alapképet sem választott
-            'thumbnail_image' => ['nullable', Rule::requiredIf(empty($recipe->thumbnail) && !$request->filled('default_image')), 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'thumbnail_image' => ['nullable', Rule::requiredIf(empty($recipe->thumbnail) && !$request->filled('default_image')), 'image', 'mimes:jpeg', 'dimensions:width=1240,height=800', 'max:2048'],
             'default_image' => ['nullable', 'string'],
         ], [
             'food_types.required' => 'Válassz legalább egy ételtípust!',
@@ -625,9 +629,8 @@ class RecipeController extends Controller
         $thumbnail = $recipe->thumbnail;
 
         if ($request->hasFile('thumbnail_image')) {
-            $file = $request->file('thumbnail_image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('images/recipes'), $filename);
+            $filename = time() . '_' . uniqid() . '.jpg';
+            $request->file('thumbnail_image')->move(public_path('images/recipes'), $filename);
             $thumbnail = 'images/recipes/' . $filename;
         } elseif (!empty($validated['default_image'])) {
             $thumbnail = $validated['default_image'];

@@ -193,13 +193,28 @@
 /* A keret szándékosan egy árnyalattal világosabb a Keresés gomb narancsánál (#e67e22):
    a vékony vonal fehér alapon sötétebbnek hat, mint ugyanaz a szín a nagy, kitöltött
    gombon - így a kettő szemre egyforma */
+/* Az app.css-ben a sor align-items: center - úgy minden elem a saját tartalma szerinti
+   magasságot kapja, és a keresőmező (keret + más sormagasság) eltért a gomboktól.
+   A stretch a sor legmagasabb eleméhez nyújtja mindet, így biztosan egyformák */
+.recipes-section .search-bar .search-row {
+    align-items: stretch;
+}
+
 .recipes-section .search-bar .search-input-group {
     border: 2px solid #ec9243;
     border-radius: 4px;
-    margin: 0.25rem;
+    /* csak oldalt van margó: a függőleges margó a stretch mellett alacsonyabbá
+       tenné a mezőt a gomboknál */
+    margin: 0 0.25rem;
     /* nem tölti ki a teljes sort (app.css-ben flex: 1), csak ~480px széles,
        de keskeny képernyőn tud ennél kisebb is lenni (a flex-shrink 1) */
     flex: 0 1 480px;
+}
+
+/* A mező nagyítója akkora legyen, mint a gombok ikonja (app.css-ben 1.1em, a gomboké 1em) */
+.recipes-section .search-bar .search-input-icon {
+    width: 1em;
+    height: 1em;
 }
 
 /* A margin-left: auto flexboxban "elnyeli" az összes szabad helyet a gomb bal oldalán,
@@ -208,8 +223,13 @@
     margin-left: auto;
 }
 
-/* A Szűrők és Rendezés között ugyanakkora rés legyen, mint a keresőmező és a Keresés
-   gomb között (ott a mező 0.25rem-es margója adja). Az elválasztó vonal itt nem kell,
+/* Nagyobb rés a keresőmező és a Keresés gomb között: a mező 0.25rem-es margójához
+   ez még 0.25rem-et ad, így összesen 0.5rem */
+.recipes-section .search-bar .btn-search {
+    margin-left: 0.25rem;
+}
+
+/* A Szűrők és Rendezés között 0.25rem rés van. Az elválasztó vonal itt nem kell,
    mert a két gomb saját szürke háttere már elválasztja őket */
 .recipes-section .search-bar .search-divider {
     display: none;
@@ -219,12 +239,21 @@
     margin-left: 0.25rem;
 }
 
-.recipes-section .search-bar .search-input-group,
+.recipes-section .search-bar .search-input-group {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+/* A gombok belső szegélye (padding) mind a négy irányban azonos. A line-height is kell
+   hozzá: az örökölt 1.6-os sormagasság a szöveg fölé/alá még kb. 5-5px üres helyet tenne,
+   így fent/lent szemre nagyobb lenne a szegély, mint oldalt. Az 1.25 (= 20px) a legkisebb
+   érték, amibe a Szűrők gomb számláló buborékja (1.25rem) még belefér - kisebbnél a gomb
+   megnőne, amikor a buborék megjelenik */
 .recipes-section .search-bar .btn-search,
 .recipes-section .search-bar .btn-filters,
 .recipes-section .search-bar .btn-sort {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding: 0.75rem;
+    line-height: 1.25;
 }
 
 /* a gombok kerekítése egyezzen a keresőmezőével (4px) - az app.css közös

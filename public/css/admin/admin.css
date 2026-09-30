@@ -66,6 +66,9 @@
 .toolbar-actions {
     display: flex;
     gap: 0.5rem;
+    /* a táblázat celláinak 0.8rem jobb paddingje miatt a sorok Törlés gombja ennyivel
+       beljebb van a panel szélétől - ezzel a felső gombok jobb széle pont fölé kerül */
+    margin-right: 0.8rem;
 }
 
 /* Kijelölő checkbox oszlop - ne nyúljon szét, középre igazítva a sorban */

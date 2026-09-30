@@ -422,6 +422,16 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     border-radius: 4px;
 }
 
+/* A gombok belső szegélye minden irányban azonos legyen (mint a kártyák feletti keresőben).
+   Itt a magasság kötött (38px, hogy a fejléc ne legyen vastagabb), ezért a függőleges
+   szegély adott: a 20px-es szövegsor (1.25rem, a számláló buborék magassága) fölött/alatt
+   (38 - 20) / 2 = 9px marad - az oldalsó paddinget igazítjuk ehhez */
+.header-search .btn-search,
+.header-search .btn-filters,
+.header-search .btn-sort {
+    padding: 0 0.5625rem;
+}
+
 /* A Szűrők/Rendezés gomb szövege eddig a fehér dobozra volt tervezve (szürke szín) -
    most hogy a hátterük átlátszó és a narancs fejlécen ülnek, fehér szöveg kell a
    olvashatósághoz, ugyanúgy ahogy a Keresés gomb is fordított színezésű itt */
@@ -475,7 +485,9 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     header.scrolled .header-search .btn-filters,
     header.scrolled .header-search .btn-sort {
         flex: 0 0 auto;
-        padding: 0 0.6rem;
+        /* csak ikon (16px) van a gombban: (38 - 16) / 2 = 11px marad fent/lent,
+           oldalt is ennyi kell, így a gomb négyzet alakú */
+        padding: 0 0.6875rem;
         font-size: 0;
     }
 
@@ -1089,8 +1101,11 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
 .upload-box {
     position: relative;
     display: block;
-    width: 220px;
-    height: 220px;
+    /* Ugyanakkora, mint a kép a recept kártyán (.recipe-image), így az előnézet
+       pontosan azt mutatja, ami a kártyán látszani fog */
+    width: 308px;
+    max-width: 100%;
+    height: 200px;
     border: 2px dashed var(--color-border);
     border-radius: 8px;
     overflow: hidden;
@@ -1740,6 +1755,94 @@ select.is-invalid:focus {
 .field-hint {
     font-size: 0.85rem;
     color: var(--color-text-light);
+}
+
+/* ===== KÉPVÁGÓ ABLAK (partials/image-cropper.blade.php - Profil és recept űrlap) ===== */
+/* A vágó ablakban ne legyen görgetősáv: a közös .modal-content 80vh-nál magasabb
+   tartalomnál görgetne (overflow-y: auto), itt ezt kikapcsoljuk, és inkább a
+   vágóterület megy össze alacsony képernyőn (lásd .crop-stage max-width). */
+.modal-crop {
+    max-height: none;
+    overflow: visible;
+}
+
+/* A két gomb pontosan egyforma: grid 1fr 1fr = két egyenlő széles oszlop, a közös
+   padding/betűméret pedig a magasságot egyenlíti ki (a .btn-outline és a .btn-cook
+   alapból más méretű, és a .btn-cook-nak felső margója is van). */
+.modal-crop .modal-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.modal-crop .modal-footer button {
+    margin: 0;
+    padding: 8px 16px;
+    font: inherit;
+    font-weight: 600;
+    border-radius: 4px;
+    justify-content: center;
+}
+
+/* Az "ablak", amin át a képet látjuk: ami kilóg belőle, azt az overflow: hidden
+   levágja. touch-action: none = érintőképernyőn a húzás a képet mozgassa, ne az
+   oldalt görgesse. Az alakját (aspect-ratio) a JS állítja a kész kép arányára.
+   min(100%, 50vh): kitölti az ablak szélességét, de alacsony képernyőn a magasság
+   felénél nem szélesebb - így az egész ablak kifér görgetés nélkül. */
+.crop-stage {
+    position: relative;
+    width: 100%;
+    max-width: min(100%, 50vh);
+    aspect-ratio: 1;
+    margin: 0 auto 1rem;
+    overflow: hidden;
+    background: var(--color-bg-hover);
+    cursor: grab;
+    touch-action: none;
+}
+
+.crop-stage:active {
+    cursor: grabbing;
+}
+
+/* A kép méretét és helyét a JS állítja (width + transform). max-width: none, hogy
+   nagyításkor túlnőhessen a kereten; pointer-events: none, hogy a húzást a keret
+   kapja meg, és a böngésző ne kezdje el "kihúzni" a képet az oldalból. */
+.crop-stage img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: none;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Kör alakú maszk, csak a profilképnél (a JS teszi rá a --round osztályt): egy
+   átlátszó kör, aminek óriási (9999px) árnyéka van. Az árnyék a körön KÍVÜL
+   sötétít, a keret overflow: hidden-je pedig levágja a fölösleget - így látszik,
+   mi esik majd a kerek profilképbe. */
+.crop-stage--round {
+    max-width: min(260px, 40vh);
+}
+
+.crop-stage--round::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow: 0 0 0 9999px var(--color-shadow-dark);
+    pointer-events: none;
+}
+
+.crop-zoom-label {
+    display: block;
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+}
+
+.crop-zoom {
+    width: 100%;
+    margin-bottom: 0.75rem;
+    accent-color: var(--color-primary);
 }
 
 .btn-link-danger {

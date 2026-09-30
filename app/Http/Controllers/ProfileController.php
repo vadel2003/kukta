@@ -19,7 +19,9 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:30', 'unique:user,name,' . $user->id . ',id'],
             'email' => ['required', 'string', 'email', 'max:50', 'unique:user,email,' . $user->id . ',id'],
-            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
+            // A böngésző a feltöltés előtt 100x100-as JPEG-re vágja a képet (profile/index.blade.php).
+            // A JS megkerülhető, ezért itt is ellenőrizzük: más méret/formátum nem jöhet be.
+            'avatar' => ['nullable', 'image', 'mimes:jpeg', 'dimensions:width=100,height=100', 'max:2048'],
         ]);
 
         $user->name = $validated['name'];
@@ -31,10 +33,10 @@ class ProfileController extends Controller
                 unlink(public_path($user->avatar));
             }
 
-            // Új kép mentése
-            $file = $request->file('avatar');
-            $filename = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('avatars'), $filename);
+            // Új kép mentése - a kiterjesztés fixen .jpg (a validáció csak JPEG-et enged),
+            // nem a feltöltő által megadott fájlnévből vesszük
+            $filename = $user->id . '_' . time() . '.jpg';
+            $request->file('avatar')->move(public_path('avatars'), $filename);
             $user->avatar = 'avatars/' . $filename;
         } elseif ($request->boolean('remove_avatar') && $user->avatar) {
             // "Eltávolítás" link - visszaáll az alapértelmezett avatarra

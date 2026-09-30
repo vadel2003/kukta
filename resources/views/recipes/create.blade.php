@@ -376,6 +376,8 @@
     </form>
     </div>
 
+    @include('partials.image-cropper')
+
     <script>
         // A cím textarea, de egysoros adat: Enterre ne törjön sort,
         // beillesztett sortörés helyett pedig szóköz kerüljön bele
@@ -392,22 +394,29 @@
         const thumbnailPreview = document.querySelector('.upload-placeholder');
         const defaultImageRadios = document.querySelectorAll('.image-option-input');
         const hadUploadInput = document.querySelector('.had-upload');
-        if (thumbnailInput) {
-            thumbnailInput.addEventListener('change', function () {
-                if (this.files && this.files[0]) {
-                    thumbnailPreview.src = URL.createObjectURL(this.files[0]);
-                    thumbnailPreview.style.opacity = '1';
-                    hadUploadInput.value = '1';
-                    // saját kép választásakor az alapkép-választás törlődik (a szerver úgyis a feltöltöttet menti)
-                    defaultImageRadios.forEach(radio => radio.checked = false);
-                }
-            });
-        }
+        // Fájl kiválasztása után a közös vágó ablak nyílik meg, és egy 1240x800-as,
+        // tömörített JPEG kerül a file inputba (partials/image-cropper.blade.php).
+        // Az arány (1.55 : 1) a recept kártyák képéhez igazodik (.recipe-image: kb. 308x200 px),
+        // és megegyezik az alapképek arányával (.image-option-card img: aspect-ratio 1.55).
+        // A méretet a RecipeController validációja is ellenőrzi - ha itt változik, ott is kell!
+        const thumbnailCropper = setupImageCropper({
+            input: thumbnailInput,
+            width: 1240,
+            height: 800,
+            quality: 0.85,
+            onApply: function (blob) {
+                thumbnailPreview.src = URL.createObjectURL(blob);
+                thumbnailPreview.style.opacity = '1';
+                hadUploadInput.value = '1';
+                // saját kép választásakor az alapkép-választás törlődik (a szerver úgyis a feltöltöttet menti)
+                defaultImageRadios.forEach(radio => radio.checked = false);
+            },
+        });
 
         // alapkép választásakor a feltöltött saját kép törlődik, hogy egyértelmű legyen, melyik lesz mentve
         defaultImageRadios.forEach(radio => {
             radio.addEventListener('change', function () {
-                thumbnailInput.value = '';
+                thumbnailCropper.clear();
                 thumbnailPreview.style.opacity = '0';
                 hadUploadInput.value = '0';
             });

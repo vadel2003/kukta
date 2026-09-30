@@ -36,7 +36,7 @@
                     <div class="avatar-row-actions">
                         <label for="avatar" class="btn-outline">Kép cseréje</label>
                         <input type="file" name="avatar" id="avatar" accept="image/*" class="upload-input" aria-describedby="avatar-hint">
-                        <p class="field-hint" id="avatar-hint">JPG, PNG, GIF vagy WEBP, legfeljebb 2 MB.</p>
+                        <p class="field-hint" id="avatar-hint">Kiválasztás után körbevághatod a képet.</p>
                         @if (Auth::user()->avatar)
                             <button type="button" class="btn-link-danger" id="avatar-remove">Eltávolítás</button>
                         @endif
@@ -160,29 +160,37 @@
                 </div>
             </form>
         </div>
+
     </div>
 
+    @include('partials.image-cropper')
+
     <script>
-        // Profilkép élő előnézete kiválasztás után (ua. minta, mint a recept-form
-        // saját kép feltöltőjénél: recipes/create.blade.php)
         const avatarInput = document.getElementById('avatar');
         const avatarPreview = document.getElementById('avatar-preview');
         const removeAvatarField = document.getElementById('remove_avatar');
-        if (avatarInput) {
-            avatarInput.addEventListener('change', function () {
-                if (this.files && this.files[0]) {
-                    avatarPreview.src = URL.createObjectURL(this.files[0]);
-                    removeAvatarField.value = '0';
-                }
-            });
-        }
+
+        // Profilkép: fájl kiválasztása után a közös vágó ablak nyílik meg, és egy
+        // 100x100-as, tömörített JPEG kerül a file inputba (partials/image-cropper.blade.php).
+        // A méretet a ProfileController validációja is ellenőrzi - ha itt változik, ott is kell!
+        const avatarCropper = setupImageCropper({
+            input: avatarInput,
+            width: 100,
+            height: 100,
+            quality: 0.85,
+            round: true,
+            onApply: function (blob) {
+                avatarPreview.src = URL.createObjectURL(blob);
+                removeAvatarField.value = '0';
+            },
+        });
 
         // "Eltávolítás" link - visszaállítja az alapértelmezett képet, és jelzi
         // a szervernek, hogy a mentéskor törölje a jelenlegi avatart
         const avatarRemoveBtn = document.getElementById('avatar-remove');
         if (avatarRemoveBtn) {
             avatarRemoveBtn.addEventListener('click', function () {
-                avatarInput.value = '';
+                avatarCropper.clear();
                 avatarPreview.src = "{{ asset('images/default_avatar.svg') }}";
                 removeAvatarField.value = '1';
                 avatarRemoveBtn.remove();
