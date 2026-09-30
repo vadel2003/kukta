@@ -26,11 +26,10 @@
                     <i data-lucide="search" class="search-input-icon"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Keresés..." class="search-input">
                 </div>
-                <span class="search-divider"></span>
+                <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
                 <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők <span class="filter-count" hidden></span></button>
                 <span class="search-divider"></span>
                 <button type="button" class="btn-sort" onclick="openModal('sortModal')"><i data-lucide="arrow-up-down"></i> Rendezés</button>
-                <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
             </div>
         </form>
 
@@ -549,12 +548,14 @@
             const checkboxes = table.querySelectorAll('.row-checkbox');
             const bulkForm = document.querySelector('.bulk-delete-form');
             const bulkBtn = bulkForm ? bulkForm.querySelector('.bulk-delete-btn') : null;
+            // A gomb eredeti felirata (pl. "Kijelöltek törlése") - ehhez fűzzük a számlálót, így minden oldal a saját szövegét tartja meg
+            const bulkLabel = bulkBtn ? bulkBtn.textContent : '';
 
             function updateBulkButton() {
                 const checkedCount = table.querySelectorAll('.row-checkbox:checked').length;
                 if (bulkBtn) {
                     bulkBtn.disabled = checkedCount === 0;
-                    bulkBtn.textContent = checkedCount > 0 ? 'Törlés (' + checkedCount + ')' : 'Törlés';
+                    bulkBtn.textContent = checkedCount > 0 ? bulkLabel + ' (' + checkedCount + ')' : bulkLabel;
                 }
                 selectAll.checked = checkboxes.length > 0 && checkedCount === checkboxes.length;
             }

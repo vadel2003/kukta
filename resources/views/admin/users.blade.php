@@ -32,7 +32,7 @@
             <form id="bulk-delete-form" method="POST" action="{{ route('admin.users.bulkDestroy') }}" class="bulk-delete-form">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn-delete bulk-delete-btn" disabled>Törlés</button>
+                <button type="submit" class="btn-delete bulk-delete-btn" disabled>Kijelöltek törlése</button>
             </form>
         </div>
 
@@ -66,7 +66,7 @@
                             <th></th> {{-- profilkép oszlop, nem rendezhető --}}
                         @endif
                     @endforeach
-                    <th></th> {{-- műveletek oszlop --}}
+                    <th class="admin-table-actions">Műveletek</th>
                 </tr>
             </thead>
             <tbody>
@@ -84,7 +84,7 @@
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->isAdmin() ? 'Superadmin' : 'Regisztrált felhasználó' }}</td>
-                        <td>
+                        <td class="admin-table-actions">
                             @if (!$user->isAdmin() && $user->id !== Auth::id())
                                 <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display: inline;" data-confirm-title="Biztosan törlöd a felhasználót?" data-confirm="„{{ $user->name }}” receptjei megmaradnak, de a kedvencei és értékelései véglegesen törlődnek. Ez a művelet nem visszavonható.">
                                     @csrf

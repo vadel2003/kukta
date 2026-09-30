@@ -26,11 +26,10 @@
                 <i data-lucide="search" class="search-input-icon"></i>
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ $searchPlaceholder ?? 'Receptek keresése kulcsszó szerint...' }}" class="search-input" autofocus>
             </div>
-            <span class="search-divider"></span>
+            <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
             <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők <span class="filter-count" hidden></span></button>
             <span class="search-divider"></span>
             <button type="button" class="btn-sort" onclick="openModal('sortModal')"><i data-lucide="arrow-up-down"></i> Rendezés</button>
-            <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
         </div>
     </div>
 

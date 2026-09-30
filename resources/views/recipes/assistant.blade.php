@@ -76,7 +76,7 @@
                     </p>
                 </form>
 
-                <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-cook">Vissza a recepthez</a>
+                <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-cook btn-cook-primary">Vissza a recepthez</a>
             </div>
         </div>
     </section>

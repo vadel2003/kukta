@@ -180,8 +180,11 @@
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-/* A kártyák feletti kereső (recipes-section) vékonyabb, mint a fejléc/hero-beli változat */
+/* A kártyák feletti kereső (recipes-section) vékonyabb, mint a fejléc/hero-beli változat,
+   és olyan széles, mint a receptkártyák sora (a 720px-es korlátot feloldjuk, így a szekció
+   teljes szélességét kitölti - ugyanazt, amit a .recipe-gallery is) */
 .recipes-section .search-bar {
+    max-width: none;
     padding: 0.5rem;
 }
 
@@ -194,6 +197,26 @@
     border: 2px solid #ec9243;
     border-radius: 4px;
     margin: 0.25rem;
+    /* nem tölti ki a teljes sort (app.css-ben flex: 1), csak ~480px széles,
+       de keskeny képernyőn tud ennél kisebb is lenni (a flex-shrink 1) */
+    flex: 0 1 480px;
+}
+
+/* A margin-left: auto flexboxban "elnyeli" az összes szabad helyet a gomb bal oldalán,
+   így a Szűrők (és utána a Rendezés) a sor jobb szélére tolódik */
+.recipes-section .search-bar .btn-filters {
+    margin-left: auto;
+}
+
+/* A Szűrők és Rendezés között ugyanakkora rés legyen, mint a keresőmező és a Keresés
+   gomb között (ott a mező 0.25rem-es margója adja). Az elválasztó vonal itt nem kell,
+   mert a két gomb saját szürke háttere már elválasztja őket */
+.recipes-section .search-bar .search-divider {
+    display: none;
+}
+
+.recipes-section .search-bar .btn-sort {
+    margin-left: 0.25rem;
 }
 
 .recipes-section .search-bar .search-input-group,

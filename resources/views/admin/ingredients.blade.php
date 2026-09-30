@@ -41,7 +41,7 @@
                 <form id="bulk-delete-form" method="POST" action="{{ route('admin.ingredients.bulkDestroy') }}" class="bulk-delete-form">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn-delete bulk-delete-btn" disabled>Törlés</button>
+                    <button type="submit" class="btn-delete bulk-delete-btn" disabled>Kijelöltek törlése</button>
                 </form>
                 <button type="button" class="btn-edit btn-edit-primary" onclick="toggleNewIngredientForm()">Új alapanyag</button>
             </div>
@@ -98,7 +98,7 @@
                             </a>
                         </th>
                     @endforeach
-                    <th></th>
+                    <th class="admin-table-actions">Műveletek</th>
                 </tr>
             </thead>
             <tbody>
@@ -110,7 +110,7 @@
                         <td>{{ $ingredient->carbohydrate }}</td>
                         <td>{{ $ingredient->protein }}</td>
                         <td>{{ $ingredient->fat }}</td>
-                        <td>
+                        <td class="admin-table-actions">
                             <button type="button" class="btn-edit btn-edit-primary" onclick="toggleIngredientEdit({{ $ingredient->id }})">Módosítás</button>
                             <form action="{{ route('admin.ingredients.destroy', $ingredient->id) }}" method="POST" style="display: inline;" data-confirm-title="Biztosan törlöd az alapanyagot?" data-confirm="A(z) „{{ $ingredient->name }}” alapanyag minden receptből eltűnik. Ez a művelet nem visszavonható.">
                                 @csrf

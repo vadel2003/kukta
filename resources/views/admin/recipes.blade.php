@@ -29,11 +29,14 @@
                 @endif
             </form>
 
-            <form id="bulk-delete-form" method="POST" action="{{ route('admin.recipes.bulkDestroy') }}" class="bulk-delete-form">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn-delete bulk-delete-btn" disabled>Törlés</button>
-            </form>
+            <div class="toolbar-actions">
+                <form id="bulk-delete-form" method="POST" action="{{ route('admin.recipes.bulkDestroy') }}" class="bulk-delete-form">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn-delete bulk-delete-btn" disabled>Kijelöltek törlése</button>
+                </form>
+                <a href="{{ route('recipes.create') }}" class="btn-edit btn-edit-primary">Új recept</a>
+            </div>
         </div>
 
         @if ($recipes->isEmpty())
@@ -63,7 +66,7 @@
                         </th>
                     @endforeach
                     <th>Leírás</th>
-                    <th></th>
+                    <th class="admin-table-actions">Műveletek</th>
                 </tr>
             </thead>
             <tbody>

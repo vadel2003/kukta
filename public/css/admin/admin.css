@@ -132,6 +132,18 @@
     white-space: nowrap;
 }
 
+/* A művelet-oszlop (fejléc + gombok) jobbra igazítva. Két osztályos szelektor kell,
+   mert az .admin-table th/td { text-align: left } erősebb lenne egy sima .admin-table-actions-nél */
+.admin-table .admin-table-actions {
+    text-align: right;
+    width: 1%; /* az oszlop csak a gombok szélességéig tart, így a középre tett felirat pont felettük van */
+}
+
+/* A "Műveletek" felirat a gombok felett középen */
+.admin-table th.admin-table-actions {
+    text-align: center;
+}
+
 /* A "Részletek" és "Törlés" gomb azonos méretű legyen, a hosszabb szöveghez
    (Részletek) igazítva, ne a szöveg hossza határozza meg egyenként */
 .admin-table-actions .btn-edit,
