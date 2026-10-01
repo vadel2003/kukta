@@ -4,6 +4,8 @@
 @section('bodyClass', 'assistant-page')
 
 @push('styles')
+    {{-- Az asszisztens szóbuborékának betűtípusa (a demo.html-ből) --}}
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/assistant/assistant.css') }}?v={{ filemtime(public_path('css/assistant/assistant.css')) }}">
 @endpush
 
@@ -17,9 +19,15 @@
         <div class="assistant-intro" style="background-image: url('{{ $recipe->thumbnail_url }}');">
             <div class="assistant-intro-content">
                 <div class="assistant-intro-card assistant-greeting-card">
-                    {{-- Ide kerül majd egy gif a kabalafiguráról --}}
-                    <div class="assistant-mascot"><i data-lucide="bot"></i></div>
-                    <p class="assistant-greeting-text">Szia! Én vagyok a Kukta asszisztensed, lépésről lépésre végigvezetlek a recepten.</p>
+                    {{-- Asszisztens figura (Lottie). Egyetlen példány: a JS a nyitó és a záró képernyő
+                         .assistant-figure-slot helyőrzője között mozgatja (lásd showScreen). --}}
+                    <div class="assistant-figure-slot">
+                        <div class="assistant-figure" id="assistantFigure"
+                             data-src="{{ asset('lottie/asszisztens.json') }}?v={{ filemtime(public_path('lottie/asszisztens.json')) }}">
+                            <div class="assistant-figure-anim" role="img" aria-label="Kukta asszisztens, a borsó főzősegéd"></div>
+                            <div class="assistant-figure-bubble" aria-live="polite"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="assistant-intro-card assistant-intro-overlay">
                     <h1>{{ $recipe->title }}</h1>
@@ -46,6 +54,7 @@
             <div class="assistant-step">
                 <div class="content-card assistant-step-card">
                     <div class="assistant-step-number">{{ $loop->iteration }}</div>
+                    <x-step-animation :category="$step->stepCategory" />
                     <p class="assistant-step-text">{{ $step->description }}</p>
                 </div>
             </div>
@@ -56,10 +65,9 @@
     <section class="assistant-screen">
         <div class="assistant-finish">
             <div class="content-card assistant-finish-card">
-                <div class="assistant-mascot"><i data-lucide="bot"></i></div>
                 <h2 class="assistant-heading">Gratulálunk!</h2>
                 <p>Sikeresen elkészítetted a(z) <strong>{{ $recipe->title }}</strong> receptet!</p>
-                <h2 class="assistant-heading assistant-heading-spaced">Jó étvágyat!</h2>
+                <div class="assistant-figure-slot"></div>
 
                 <form id="assistantRatingForm" data-authenticated="{{ auth()->check() ? '1' : '0' }}" data-rate-link="{{ route('recipes.rate.link', $recipe->id) }}" action="{{ route('recipes.score', $recipe->id) }}" method="POST" class="assistant-rating">
                     @csrf
@@ -103,6 +111,9 @@
     </ul>
 </div>
 
+{{-- Lottie lejátszó (a lépés-animációkhoz) - csak ezen az oldalon kell, ezért itt töltjük be --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js" integrity="sha512-jEnuDt6jfecCjthQAJ+ed0MTVA++5ZKmlUcmDGBv2vUI/REn6FuIdixLNnQT+vKusE2hhTk2is3cFvv5wA+Sgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{{ asset('js/assistant-figure.js') }}?v={{ filemtime(public_path('js/assistant-figure.js')) }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     // ===== 0. Hosszú lépés-szövegek szétosztása, ha nem férnének ki egy képernyőn =====
@@ -177,6 +188,29 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // ===== Lépés-animációk (Lottie) =====
+    // A felosztás (repaginateLongSteps) UTÁN töltjük be, hogy a klónozott képernyők is saját animációt kapjanak.
+    // Mindet előre betöltjük, de nem indítjuk el - a showScreen() indítja mindig csak az aktuálisat.
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const stepAnimations = []; // { screen, anim } párok
+
+    if (window.lottie) {
+        document.querySelectorAll('.step-animation').forEach(function (el) {
+            const anim = lottie.loadAnimation({
+                container: el,
+                renderer: 'svg',
+                loop: true,
+                autoplay: false,
+                path: el.dataset.src,
+            });
+            // Csökkentett mozgás: lejátszás helyett egy beszédes állóképet mutatunk
+            if (reduceMotion) {
+                anim.addEventListener('DOMLoaded', function () { anim.goToAndStop(50, true); });
+            }
+            stepAnimations.push({ screen: el.closest('.assistant-screen'), anim: anim });
+        });
+    }
+
     // ===== 1. Képernyők közötti navigáció =====
     const screens = Array.from(document.querySelectorAll('.assistant-screen'));
     const prevBtn = document.getElementById('assistantPrev');
@@ -185,13 +219,48 @@ document.addEventListener('DOMContentLoaded', function () {
     const progress = document.getElementById('assistantProgress');
     let current = 0;
 
+    // ===== Asszisztens figura (nyitó + záró képernyő) =====
+    // Betöltjük a JSON-t, és létrehozzuk a figurát. A hello() egyszer, betöltéskor fut le
+    // (ekkor a nyitó képernyő látszik) - lapozáskor nem indul újra.
+    const figureEl = document.getElementById('assistantFigure');
+    let figure = null;
+    if (window.lottie && figureEl) {
+        fetch(figureEl.dataset.src)
+            .then(r => r.json())
+            .then(data => {
+                figure = createAssistant(figureEl, data);
+                setTimeout(() => figure.hello(), 300);
+            })
+            .catch(error => console.error('Hiba:', error));
+    }
+
     function showScreen(index) {
+        const previous = current;
         current = index;
         screens.forEach((s, i) => s.classList.toggle('is-active', i === index));
         prevBtn.disabled = (current === 0);
         const isLast = current === screens.length - 1;
         nextZone.style.visibility = isLast ? 'hidden' : 'visible';
         progress.textContent = (current + 1) + ' / ' + screens.length;
+
+        // Az új képernyő animációja elölről indul, a többi megáll (csökkentett mozgásnál nem nyúlunk hozzájuk)
+        if (!reduceMotion) {
+            stepAnimations.forEach(function (item) {
+                if (item.screen === screens[index]) {
+                    item.anim.goToAndPlay(0, true);
+                } else {
+                    item.anim.stop();
+                }
+            });
+        }
+
+        // A figura átkerül az új képernyő helyőrzőjébe (ha van benne ilyen)
+        const figureSlot = screens[index].querySelector('.assistant-figure-slot');
+        if (figureSlot && figureEl) figureSlot.appendChild(figureEl);
+
+        // Az utolsó lépésről a záró képernyőre lépve elköszön
+        if (figure && isLast && previous === index - 1) figure.goodbye();
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 

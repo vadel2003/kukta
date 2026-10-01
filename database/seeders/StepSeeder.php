@@ -957,11 +957,12 @@ class StepSeeder extends Seeder
 
         $records = [];
         foreach ($recipeSteps as $recipeId => $steps) {
+            $categoryIds = $this->categorizeSteps($steps);
             foreach ($steps as $order => $description) {
                 $records[] = [
                     'description' => $description,
                     'recipe_id' => $recipeId,
-                    'step_category_id' => $this->guessCategoryId($description),
+                    'step_category_id' => $categoryIds[$order],
                     'order' => $order + 1,
                 ];
             }
@@ -972,24 +973,45 @@ class StepSeeder extends Seeder
         }
     }
 
-    private function guessCategoryId(string $description): ?int
+    // Egy recept lépéseit szakaszokra bontja, a recept "menete" szerint:
+    // Előkészítés (az eleje) -> Elkészítés / Főzés / Sütés (a közepe) -> Tálalás (az utolsó lépés).
+    // Visszaadja a lépések kategória-azonosítóit, ugyanabban a sorrendben.
+    private function categorizeSteps(array $steps): array
     {
-        $categories = DB::table('step_category')->pluck('id', 'name');
-        $d = mb_strtolower($description, 'UTF-8');
+        $categories = DB::table('step_category')->pluck('id', 'slug');
 
-        if (preg_match('/tálal|tányér|köret/u', $d)) {
-            return $categories['Tálalás'] ?? null;
-        }
-        if (preg_match('/sütő|tepsi|°C/u', $d)) {
-            return $categories['Sütés'] ?? null;
-        }
-        if (preg_match('/főz|forral|párol|pirít|dinsztel|lassú tűz|felöntjük|habará|serpenyő|sütjük/u', $d)) {
-            return $categories['Főzés'] ?? null;
-        }
-        if (preg_match('/megmos|vág|apró|kocká|hámoz|tisztít|szeletel|darabol|aprít|felfuttat|szitál|dagaszt|keleszt|nyújt|felver/u', $d)) {
-            return $categories['Előkészítés'] ?? null;
+        // Sütőben sütés ("sütőpapír" nem számít). A mb_strtolower miatt a °C itt már °c.
+        $ovenPattern = '/sütő(?!papír)|°c/u';
+        // Tűzhelyen végzett hőkezelés. A (?!ött) / (?!ott) kizárja a mellékneveket,
+        // pl. "kifőzött nokedlivel", "pirított szezámmaggal" (ezek nem főzést jelentenek abban a lépésben).
+        $stovePattern = '/főz(?!ött)|forr|pirít(?!ott)|dinsztel|párol|serpenyő|wok|olajon|vajon|lassú tűz|megolvaszt|süt(?!ő)/u';
+        // Tipikus előkészítő műveletek
+        $prepPattern = '/megmos|mossuk|vág|apró|kocká|karikáz|hámoz|tisztít|szeletel|darabol|aprít|reszel|kimagoz|klopfol|felfuttat|szitál|felver|beáztat|áztat/u';
+
+        $result = [];
+        $inPrepPhase = true;
+        $lastIndex = count($steps) - 1;
+
+        foreach (array_values($steps) as $i => $description) {
+            $d = mb_strtolower($description, 'UTF-8');
+            $isOven = preg_match($ovenPattern, $d);
+            $isStove = preg_match($stovePattern, $d);
+
+            if ($i === $lastIndex && str_contains($d, 'tálal')) {
+                // Tálalás csak az utolsó lépés lehet
+                $slug = 'talalas';
+            } elseif ($inPrepPhase && ! $isOven && ! $isStove && preg_match($prepPattern, $d)) {
+                // Az elejéről az egymást követő előkészítő lépések, amíg nincs hőkezelés
+                $slug = 'elokeszites';
+            } else {
+                // Innentől már nem lehet újra Előkészítés
+                $inPrepPhase = false;
+                $slug = $isOven ? 'sutes' : ($isStove ? 'fozes' : 'elkeszites');
+            }
+
+            $result[] = $categories[$slug] ?? null;
         }
 
-        return $categories['Elkészítés'] ?? null;
+        return $result;
     }
 }

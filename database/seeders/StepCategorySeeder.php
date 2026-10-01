@@ -10,11 +10,11 @@ class StepCategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['name' => 'Előkészítés', 'gif_filename' => null],
-            ['name' => 'Elkészítés', 'gif_filename' => null],
-            ['name' => 'Főzés', 'gif_filename' => null],
-            ['name' => 'Sütés', 'gif_filename' => null],
-            ['name' => 'Tálalás', 'gif_filename' => null],
+            ['name' => 'Előkészítés', 'slug' => 'elokeszites', 'gif_filename' => null],
+            ['name' => 'Elkészítés', 'slug' => 'elkeszites', 'gif_filename' => null],
+            ['name' => 'Főzés', 'slug' => 'fozes', 'gif_filename' => null],
+            ['name' => 'Sütés', 'slug' => 'sutes', 'gif_filename' => null],
+            ['name' => 'Tálalás', 'slug' => 'talalas', 'gif_filename' => null],
         ];
 
         foreach ($categories as $category) {

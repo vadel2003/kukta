@@ -418,7 +418,8 @@ class RecipeController extends Controller
     public function assistant($id)
     {
         $recipe = Recipe::with([
-            'steps' => fn ($q) => $q->orderBy('order'),
+            // a lépések kategóriáját is egyben betöltjük (az animációhoz kell)
+            'steps' => fn ($q) => $q->orderBy('order')->with('stepCategory'),
             'ingredients',
         ])->findOrFail($id);
 

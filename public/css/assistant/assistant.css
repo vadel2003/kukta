@@ -118,7 +118,8 @@ body.assistant-page::-webkit-scrollbar {
     align-items: center;
     gap: 1.5rem;
     width: 100%;
-    max-width: 640px;
+    /* 760px: így a kártyák belseje kb. 600px, és a figura melletti szóbuborék nem lóg ki */
+    max-width: 760px;
     padding: 3rem;
     box-sizing: border-box;
 }
@@ -160,28 +161,59 @@ body.assistant-page::-webkit-scrollbar {
     animation-delay: 0.1s;
 }
 
-.assistant-mascot {
+/* Asszisztens figura helye a nyitó és a záró kártyán: teljes szélességű flex sor,
+   a justify-content: center a figurát vízszintesen a kártya közepére teszi.
+   A buborék abszolút pozíciós, ezért nem számít bele a középre igazításba, csak "ráúszik" jobbra. */
+.assistant-figure-slot {
     display: flex;
-    align-items: center;
     justify-content: center;
-    width: 88px;
-    height: 88px;
-    margin: 0 auto 0.8rem;
-    border-radius: 50%;
-    background: var(--color-cta);
-    color: #fff;
+    width: 100%;
+    margin-bottom: 0.8rem;
 }
 
-.assistant-mascot svg {
-    width: 44px;
-    height: 44px;
+/* Ha a figura a kártya utolsó eleme (nyitó kártya), ne maradjon alatta plusz üres hely */
+.assistant-figure-slot:last-child {
+    margin-bottom: 0;
 }
 
-.assistant-greeting-text {
-    margin: 0;
-    max-width: 420px;
-    font-weight: 600;
-    color: var(--color-heading);
+/* Az aspect-ratio az animáció saját arányát (280×240) tartja: a magasság a szélességből jön */
+.assistant-figure {
+    position: relative;
+    width: 252px;
+    aspect-ratio: 280 / 240;
+}
+
+.assistant-figure-anim {
+    width: 100%;
+    height: 100%;
+}
+
+/* Szóbuborék (a demo.html stílusa). Abszolút pozíció: a figura fejétől jobbra-fent lebeg.
+   A bal alsó sarok kisebb lekerekítése adja a "buborék csücskét" a figura felé.
+   white-space: pre-line -> a szövegben lévő \n sortörésként jelenik meg. */
+.assistant-figure-bubble {
+    position: absolute;
+    left: 71%;
+    top: 6%;
+    width: max-content;
+    max-width: 220px;
+    padding: .55em .85em;
+    background: #fff;
+    border: 2px solid #7CBF4F;
+    border-radius: 14px 14px 14px 4px;
+    font: 600 1.1rem/1.3 "Cormorant Garamond", Georgia, serif;
+    color: #2A2A28;
+    white-space: pre-line;
+    text-align: left;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity .25s, transform .25s;
+    pointer-events: none;
+}
+
+.assistant-figure-bubble.is-visible {
+    opacity: 1;
+    transform: none;
 }
 
 .assistant-intro-overlay h1 {
@@ -202,10 +234,6 @@ body.assistant-page::-webkit-scrollbar {
     margin: 0 0 1.5rem;
     box-sizing: border-box;
     font-size: 2rem;
-}
-
-.assistant-heading-spaced {
-    margin: 1.5rem 0 0.5rem;
 }
 
 .assistant-ingredients {
@@ -320,6 +348,21 @@ body.assistant-page::-webkit-scrollbar {
     padding: 32px;
     text-align: center;
     animation: assistantCardSlideIn 0.6s ease both;
+    /* Magasabb kártya, a tartalom (szám, animáció, szöveg) függőlegesen középen.
+       A min() miatt alacsony képernyőn sem lesz magasabb a képernyő 70%-ánál. */
+    min-height: min(480px, 70vh);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Lépéskategória Lottie animációja a lépés száma alatt, a szövege fölött.
+   Fix négyzet, így a hely már a betöltés előtt le van foglalva (nem ugrál a tartalom). */
+.step-animation {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 1rem;
 }
 
 .assistant-step-number {
@@ -474,6 +517,22 @@ body.assistant-page::-webkit-scrollbar {
     .assistant-step,
     .assistant-finish {
         padding: 1.5rem 3.5rem;
+    }
+
+    .step-animation {
+        width: 140px;
+        height: 140px;
+    }
+
+    /* Keskeny képernyőn kisebb figura és keskenyebb buborék, hogy a kártyába beférjen */
+    .assistant-figure {
+        width: 190px;
+    }
+
+    /* A buborék a képernyő közepétől kb. 40 px-re kezdődik (a középre tett figura 71%-ánál),
+       ezért legfeljebb a képernyő fele mínusz 3rem széles lehet, hogy keskeny telefonon se lógjon ki */
+    .assistant-figure-bubble {
+        max-width: min(140px, calc(50vw - 3rem));
     }
 
     .assistant-intro-content {
