@@ -76,6 +76,12 @@ class ProfileController extends Controller
 
         Auth::logout();
 
+        // A profilkép fájlját is töröljük (az adatbázis-sor törlése a fájlt magától nem
+        // viszi magával) - az adatkezelési tájékoztató szerint a fiókkal együtt törlődik
+        if ($user->avatar && file_exists(public_path($user->avatar))) {
+            unlink(public_path($user->avatar));
+        }
+
         $user->delete();
 
         return redirect()->route('home');

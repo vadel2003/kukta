@@ -18,4 +18,9 @@ class PageController extends Controller
     {
         return view('pages.terms');
     }
+
+    public function imprint()
+    {
+        return view('pages.imprint');
+    }
 }

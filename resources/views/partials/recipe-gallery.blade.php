@@ -29,7 +29,7 @@
         <div class="card-actions">
             <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-view">Részletek</a>
             <a href="{{ route('recipes.assistant', $recipe->id) }}" class="btn-spoon" title="Kukta asszisztens" aria-label="Kukta asszisztens">
-                <i data-lucide="bot"></i>
+                <span class="icon-assistant" aria-hidden="true"></span>
             </a>
             @if (!empty($showOwnerActions))
                 {{-- Saját receptek: külön sorban, a kártya stílusához illő keretes gombok --}}

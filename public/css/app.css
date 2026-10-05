@@ -1,4 +1,6 @@
 :root {
+    /* Az asszisztens ikon (images/asszisztens-ikon.svg) sötétebb zöldje - az ikonhoz tartozó szövegekhez */
+    --color-assistant: #4F8A32;
     --color-bg: #FAF6F0;
     --color-text: #333;
     --color-text-light: #666;
@@ -592,6 +594,23 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     margin-top: auto;
 }
 
+/* A kártya két gombja (Részletek + kerek asszisztens gomb) egyforma árnyékot kap, hogy
+   kiemelkedjenek a kártyából és "megnyomhatónak" tűnjenek; hoverre picit erősebb lesz */
+.card-actions .btn-view,
+.card-actions .btn-spoon {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.card-actions .btn-view:hover,
+.card-actions .btn-spoon:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* A Részletek gomb alapból is halvány narancs, ezért hoverre egy árnyalattal erősebb narancs lesz */
+.card-actions .btn-view:hover {
+    background: var(--color-primary-soft);
+}
+
 .btn-view {
     display: block;
     padding: 8px 24px;
@@ -609,6 +628,11 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
 .card-actions .btn-view {
     flex: 1;
     margin-top: 0;
+    /* Alapból is a hover-es halvány narancs háttér (hoverre már csak az árnyék erősödik) */
+    background: var(--color-search-bg);
+    /* A sor a nagyobb kerek asszisztens gomb miatt 48px magas; így a Részletek
+       gomb nem nyúlik meg vele, hanem a saját magasságában középen marad */
+    align-self: center;
 }
 
 .btn-spoon {
@@ -617,25 +641,38 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     justify-content: center;
     position: relative;
     z-index: 2;
-    padding: 8px 16px;
+    /* Kerek ikongomb: fix 48px-es négyzet + border-radius: 50% -> kör. A flex-shrink: 0 miatt keskeny kártyán sem nyomódik össze oválissá,
+       az align-self: center pedig függőlegesen a sor közepére teszi (nem nyújtja meg). */
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    align-self: center;
+    padding: 0;
     appearance: none;
     -webkit-appearance: none;
-    background: rgba(74, 124, 47, 0.4);
+    background: rgba(74, 124, 47, 0.2);
     color: var(--color-cta-hover);
-    border: 2px solid transparent;
-    border-radius: 4px;
+    /* Vékony keret az asszisztens zöldjével */
+    border: 1px solid var(--color-assistant);
+    border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .btn-spoon:hover {
-    background: rgba(74, 124, 47, 0.55);
+    background: rgba(74, 124, 47, 0.32);
     color: var(--color-cta-hover);
 }
 
 .btn-spoon svg {
     width: 20px;
     height: 20px;
+}
+
+/* A körben több hely jut az ikonnak (28px × 1.3-as nagyítás ≈ 36px) */
+.btn-spoon .icon-assistant {
+    width: 28px;
+    height: 28px;
 }
 
 .btn-view:hover {
@@ -783,9 +820,27 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     color: #fff;
 }
 
-.btn-cook svg {
+.btn-cook svg,
+.btn-cook .icon-assistant {
     width: 1.2em;
     height: 1.2em;
+}
+
+/* Kukta asszisztens ikon (images/asszisztens-ikon.svg).
+   Az ikon saját színeivel jelenik meg, háttérképként (a span csak a helyét és méretét adja).
+   A ?v=2: ha lecseréled a fájlt ugyanezen a néven, növeld meg, hogy a böngésző ne a régit mutassa a cache-ből.
+   transform: scale -> az ikon nagyobbnak látszik, de a helye (és így a gomb mérete) nem nő,
+   mert a transform nem hat az elrendezésre, csak a kirajzolásra. */
+.icon-assistant {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 1.2em;
+    height: 1.2em;
+    transform: scale(1.3);
+    /* A drop-shadow az ikon alakját követi (nem a span négyzetét, mint a box-shadow),
+       így a fehér sapka körvonala halvány háttéren is kirajzolódik */
+    filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.25));
+    background: url('../images/asszisztens-ikon.svg?v=2') center / contain no-repeat;
 }
 
 /* .btn-cook, ha egy sima <form> (nem flex konténer, pl. login/register kártya)
@@ -1908,10 +1963,14 @@ select.is-invalid:focus {
 }
 
 /* ===== FOOTER ===== */
+/* Két oszlop: az oszlopok csak a tartalmuk szélességét kapják (nincs flex: 1), a
+   space-between pedig az elsőt a bal, a másodikat a jobb szélre tolja - így nem marad
+   céltalan üres tér középen. flex-wrap: ha nem férnek el egymás mellett (mobil), az
+   "Információk" oszlop automatikusan az "Elérhetőség" alá törik. */
 .site-footer {
     background-color: var(--color-footer-bg);
     color: #fff;
-    padding: 1.5rem 2rem 0.5rem;
+    padding: 2rem 2rem 0.75rem;
     margin-top: 2rem;
     box-shadow: 0 -4px 12px rgba(70,50,35,0.18);
 }
@@ -1921,22 +1980,21 @@ select.is-invalid:focus {
     margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
     justify-content: space-between;
-}
-
-.footer-section {
-    flex: 1;
-    min-width: 250px;
+    gap: 1.5rem 3rem;
 }
 
 .footer-section h4 {
     color: var(--color-white);
-    margin-bottom: 1rem;
+    margin: 0 0 1rem;
     font-size: 1.1rem;
     border-bottom: 2px solid var(--color-primary);
     padding-bottom: 0.5rem;
     display: inline-block;
+}
+
+.footer-section p {
+    margin: 0;
 }
 
 .footer-section ul {
@@ -1945,17 +2003,17 @@ select.is-invalid:focus {
     padding: 0;
 }
 
-.footer-section ul li {
+.footer-section li {
     padding: 0.25rem 0;
 }
 
-.footer-section a {
+.site-footer a {
     color: #fff;
     text-decoration: none;
-    transition: all 0.2s;
+    transition: color 0.2s;
 }
 
-.footer-section a:hover {
+.site-footer a:hover {
     color: rgba(255, 255, 255, 0.7);
     text-decoration: underline;
 }
@@ -1967,11 +2025,16 @@ select.is-invalid:focus {
 }
 
 .footer-bottom {
-    text-align: center;
-    margin-top: 1rem;
-    padding-top: 0.5rem;
+    max-width: 1100px;
+    margin: 1.5rem auto 0;
+    padding-top: 0.75rem;
     border-top: 1px solid var(--color-footer-border);
+    text-align: center;
     font-size: 0.9rem;
+}
+
+.footer-bottom p {
+    margin: 0;
 }
 
 /* ===== SCROLL TO TOP GOMB ===== */
@@ -2179,4 +2242,129 @@ select.is-invalid:focus {
         width: 100%;
         max-width: 400px;
     }
+}
+
+/* ===== Süti tájékoztató sáv (partials/cookie-notice) =====
+   position: fixed -> görgetéskor is az ablak alján marad.
+   z-index 900: a többi elem fölött, de a modalok (1000) alatt. */
+.cookie-notice {
+    position: fixed;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1rem 1.25rem;
+    background: var(--color-white);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: 0 6px 24px var(--color-shadow);
+}
+
+/* A display: flex felülírná a HTML hidden attribútumát, ezért külön ki kell mondani */
+.cookie-notice[hidden] {
+    display: none;
+}
+
+.cookie-notice p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.cookie-notice a {
+    color: var(--color-primary);
+}
+
+.btn-cookie-ok {
+    flex-shrink: 0;
+    padding: 0.6rem 1.5rem;
+    background: var(--color-cta);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.25s ease;
+}
+
+.btn-cookie-ok:hover {
+    background: var(--color-cta-hover);
+}
+
+/* Mobilon a gomb a szöveg alá kerül, teljes szélességben */
+@media (max-width: 600px) {
+    .cookie-notice {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+/* ===== Jogi szövegek (adatkezelési tájékoztató, süti tájékoztató, ÁSZF) =====
+   Hosszú, folyó szöveg: nagyobb sortáv és a címsorok előtt több hely, hogy tagolt legyen.
+   A "> * + *" (lobotomizált bagoly) minden elemnek ad felső margót, ami előtt van testvér. */
+.legal-text {
+    line-height: 1.65;
+}
+
+.legal-text > * + * {
+    margin-top: 0.9rem;
+}
+
+.legal-text h2 {
+    margin-top: 2rem;
+    font-size: 1.2rem;
+    color: var(--color-heading);
+}
+
+/* Ha a kártya címsorral kezdődik (pl. impresszum), ne legyen fölötte üres sáv */
+.legal-text > :first-child {
+    margin-top: 0;
+}
+
+.legal-text h3 {
+    margin-top: 1.4rem;
+    font-size: 1.05rem;
+}
+
+.legal-text ul {
+    padding-left: 1.4rem;
+}
+
+.legal-text a {
+    color: var(--color-primary);
+}
+
+.legal-text .legal-meta {
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+}
+
+/* A táblázat mobilon vízszintesen görgethető, ne lógjon ki az oldalból */
+.legal-table-wrap {
+    overflow-x: auto;
+}
+
+.legal-text table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.legal-text th,
+.legal-text td {
+    padding: 0.6rem;
+    border: 1px solid var(--color-border);
+    text-align: left;
+    vertical-align: top;
+}
+
+.legal-text th {
+    background: var(--color-bg);
 }

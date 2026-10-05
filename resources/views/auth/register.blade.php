@@ -55,8 +55,10 @@
                     <label class="checkbox-inline">
                         <input type="checkbox" name="terms" required>
                         <span>
-                            Elfogadom az <a href="{{ route('page.privacy') }}" target="_blank" class="external-link">Adatkezelési tájékoztatót<i data-lucide="external-link" aria-hidden="true"></i><span class="sr-only"> (új lapon nyílik)</span></a>
-                            és az <a href="{{ route('page.terms') }}" target="_blank" class="external-link">Általános szerződési feltételeket<i data-lucide="external-link" aria-hidden="true"></i><span class="sr-only"> (új lapon nyílik)</span></a>.
+                            {{-- Az ÁSZF-et elfogadni kell (ez a szerződés), az adatkezelési tájékoztatót
+                                 viszont csak megismerni - az adatkezelés jogalapja nem ez a pipa, hanem a szerződés --}}
+                            Elfogadom az <a href="{{ route('page.terms') }}" target="_blank" class="external-link">Általános szerződési feltételeket<i data-lucide="external-link" aria-hidden="true"></i><span class="sr-only"> (új lapon nyílik)</span></a>,
+                            és megismertem az <a href="{{ route('page.privacy') }}" target="_blank" class="external-link">Adatkezelési tájékoztatót<i data-lucide="external-link" aria-hidden="true"></i><span class="sr-only"> (új lapon nyílik)</span></a>.
                         </span>
                     </label>
                     @error('terms')

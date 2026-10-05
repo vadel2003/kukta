@@ -89,9 +89,9 @@
     display: inline-flex;
     align-items: center;
     gap: 0.3em;
-    color: var(--color-cta);
+    color: var(--color-assistant);
     font-weight: 700;
-    background: rgba(74, 124, 47, 0.4);
+    background: rgba(74, 124, 47, 0.2);
     padding: 0.15em 0.6em;
     border-radius: 999px;
 }
@@ -229,14 +229,14 @@
     margin-left: 0.25rem;
 }
 
-/* A Szűrők és Rendezés között 0.25rem rés van. Az elválasztó vonal itt nem kell,
-   mert a két gomb saját szürke háttere már elválasztja őket */
+/* A Szűrők és Rendezés között 0.5rem rés van (ugyanannyi, mint a mező és a Keresés gomb
+   között). Az elválasztó vonal itt nem kell, mert a két gomb saját szürke háttere már elválasztja őket */
 .recipes-section .search-bar .search-divider {
     display: none;
 }
 
 .recipes-section .search-bar .btn-sort {
-    margin-left: 0.25rem;
+    margin-left: 0.5rem;
 }
 
 .recipes-section .search-bar .search-input-group {
@@ -267,6 +267,22 @@
 .recipes-section .search-bar .btn-search,
 .mobile-search-sticky .search-bar .btn-search {
     background: var(--color-primary);
+}
+
+/* Ugyanaz az árnyék, mint a receptkártyák gombjain (app.css, .card-actions): így "megnyomható"
+   gombnak hatnak, hoverre picit erősebb. A transition-be a box-shadow is bekerül, hogy az
+   árnyék is fokozatosan váltson, ne csak a háttérszín. */
+.recipes-section .search-bar .btn-search,
+.recipes-section .search-bar .btn-filters,
+.recipes-section .search-bar .btn-sort {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+}
+
+.recipes-section .search-bar .btn-search:hover,
+.recipes-section .search-bar .btn-filters:hover,
+.recipes-section .search-bar .btn-sort:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .recipes-section .search-bar .btn-search:hover,

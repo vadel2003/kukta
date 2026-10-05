@@ -28,7 +28,7 @@
                     </form>
                 @endauth
                 <div class="banner-cook-overlay">
-                    <a href="{{ route('recipes.assistant', $recipe->id) }}" class="btn-cook btn-cook-banner"><i data-lucide="bot"></i> Elkészítem</a>
+                    <a href="{{ route('recipes.assistant', $recipe->id) }}" class="btn-cook btn-cook-banner"><span class="icon-assistant" aria-hidden="true"></span> Elkészítem</a>
                 </div>
             </div>
 

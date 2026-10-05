@@ -107,6 +107,8 @@
 
     @include('partials.footer')
 
+    @include('partials.cookie-notice')
+
     <button id="scrollToTop" class="scroll-to-top" title="Vissza a tetejére">
         <i data-lucide="arrow-up"></i>
     </button>

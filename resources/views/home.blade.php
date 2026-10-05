@@ -12,7 +12,7 @@
         <div class="hero-container">
             <div class="hero-text">
                 <h1 class="hero-title">Tapasztald meg<br>az <span class="hero-highlight">ételkészítés</span><br class="mobile-break"> új élményét!</h1>
-                <p class="hero-subtitle">Próbáld ki receptjeinket a <span class="hero-assistant-badge">Kukta asszisztens <i data-lucide="bot" class="hero-subtitle-icon"></i></span> segítségével!</p>
+                <p class="hero-subtitle">Próbáld ki receptjeinket a <span class="hero-assistant-badge">Kukta asszisztens <span class="icon-assistant hero-subtitle-icon" aria-hidden="true"></span></span> segítségével!</p>
 
                 <div class="mobile-search-sticky">
                     <div class="search-bar">

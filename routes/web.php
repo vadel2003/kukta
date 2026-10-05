@@ -62,3 +62,4 @@ Route::delete('/admin/felhasznalok/{id}', [AdminController::class, 'destroyUser'
 Route::get('/adatkezelesi-tajekoztato', [PageController::class, 'privacy'])->name('page.privacy');
 Route::get('/suti-kezeles', [PageController::class, 'cookies'])->name('page.cookies');
 Route::get('/aszf', [PageController::class, 'terms'])->name('page.terms');
+Route::get('/impresszum', [PageController::class, 'imprint'])->name('page.imprint');

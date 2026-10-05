@@ -4,8 +4,7 @@
 @section('bodyClass', 'assistant-page')
 
 @push('styles')
-    {{-- Az asszisztens szóbuborékának betűtípusa (a demo.html-ből) --}}
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
+    {{-- A szóbuborék betűtípusa (Cormorant Garamond) az assistant.css elején van, helyi fájlból --}}
     <link rel="stylesheet" href="{{ asset('css/assistant/assistant.css') }}?v={{ filemtime(public_path('css/assistant/assistant.css')) }}">
 @endpush
 
@@ -111,8 +110,9 @@
     </ul>
 </div>
 
-{{-- Lottie lejátszó (a lépés-animációkhoz) - csak ezen az oldalon kell, ezért itt töltjük be --}}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js" integrity="sha512-jEnuDt6jfecCjthQAJ+ed0MTVA++5ZKmlUcmDGBv2vUI/REn6FuIdixLNnQT+vKusE2hhTk2is3cFvv5wA+Sgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{{-- Lottie lejátszó (v5.12.2, a lépés-animációkhoz) - csak ezen az oldalon kell, ezért itt töltjük be.
+     Helyben tárolva (public/js), hogy ne menjen kérés külső szerverre (GDPR) --}}
+<script src="{{ asset('js/lottie.min.js') }}"></script>
 <script src="{{ asset('js/assistant-figure.js') }}?v={{ filemtime(public_path('js/assistant-figure.js')) }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {

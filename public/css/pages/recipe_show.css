@@ -201,6 +201,20 @@
     padding: 1rem 2.2rem;
     border: 2px solid transparent;
     box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    /* Halványzöld háttér, hogy a színes asszisztens ikon kiemelkedjen; a szöveg az ikon zöldje */
+    background: var(--color-cta-soft);
+    color: var(--color-assistant);
+}
+
+/* Itt nagyobb az ikon; a scale csak a kirajzolást nagyítja, a gomb mérete nem nő */
+.btn-cook-banner .icon-assistant {
+    transform: scale(1.6);
+}
+
+/* Felülírja az általános .btn-cook:hover-t (sötétzöld háttér + fehér szöveg) */
+.btn-cook-banner:hover {
+    background: #d6eacb;
+    color: var(--color-assistant);
 }
 
 .btn-favorite-banner {
