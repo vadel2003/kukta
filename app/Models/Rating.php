@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Score extends Model
+class Rating extends Model
 {
-    protected $table = 'score';
+    protected $table = 'rating';
 
     public $timestamps = false;
 

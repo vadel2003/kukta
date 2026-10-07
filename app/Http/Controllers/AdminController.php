@@ -32,7 +32,10 @@ class AdminController extends Controller
             $direction = 'asc';
         }
 
-        $ingredients = Ingredient::when($search, function ($query) use ($search) {
+        // withCount('recipes'): minden alapanyaghoz egy recipes_count mezőt is lekér (hány recept
+        // használja) - ebből tudja a lista, melyiknél kell letiltani a törlést
+        $ingredients = Ingredient::withCount('recipes')
+            ->when($search, function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })
             ->orderBy($sort, $direction)
@@ -88,6 +91,13 @@ class AdminController extends Controller
         }
 
         $ingredient = Ingredient::findOrFail($id);
+
+        // A listában a gomb le van tiltva, de a kérés kézzel is elküldhető, ezért itt is ellenőrizzük
+        if ($ingredient->recipes()->exists()) {
+            return redirect()->route('admin.ingredients')
+                ->withErrors('A(z) „' . $ingredient->name . '” alapanyag nem törölhető, mert receptekben használatban van.');
+        }
+
         $ingredient->delete();
 
         return redirect()->route('admin.ingredients')->with('success', 'Alapanyag sikeresen törölve!');
@@ -104,7 +114,9 @@ class AdminController extends Controller
             'ids.*' => ['integer', 'exists:ingredient,id'],
         ]);
 
-        Ingredient::whereIn('id', $validated['ids'])->delete();
+        // doesntHave('recipes'): csak azokat töröljük, amelyeket egy recept sem használ
+        // (a használatban lévőket a lista amúgy sem engedi kijelölni)
+        Ingredient::whereIn('id', $validated['ids'])->doesntHave('recipes')->delete();
 
         return redirect()->route('admin.ingredients')->with('success', 'A kijelölt alapanyagok sikeresen törölve!');
     }

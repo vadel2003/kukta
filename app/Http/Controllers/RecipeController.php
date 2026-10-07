@@ -15,7 +15,7 @@ use App\Models\Diet;
 use App\Models\Allergen;
 use App\Models\Cuisine;
 use App\Models\Favorite;
-use App\Models\Score;
+use App\Models\Rating;
 
 class RecipeController extends Controller
 {
@@ -51,8 +51,8 @@ class RecipeController extends Controller
             'food_types' => ['required', 'array', 'min:1'],
             'food_types.*' => ['exists:food_type,id'],
             'diet' => ['nullable', 'integer', 'exists:diet,id'],
-            'allergens' => ['nullable', 'array'],
-            'allergens.*' => ['exists:allergen,id'],
+            'allergen_free' => ['nullable', 'array'],
+            'allergen_free.*' => ['exists:allergen,id'],
             'cuisines' => ['nullable', 'array'],
             'cuisines.*' => ['exists:cuisine,id'],
             // kép kötelező: vagy feltöltött saját kép, vagy kiválasztott alapkép
@@ -171,7 +171,7 @@ class RecipeController extends Controller
                 'description' => $stepData['description'],
                 'step_category_id' => $stepData['step_category_id'],
                 'recipe_id' => $recipe->id,
-                'order' => $stepNumber,
+                'position' => $stepNumber,
             ]);
             $stepNumber++;
         }
@@ -195,9 +195,7 @@ class RecipeController extends Controller
         if (!empty($validated['diet'])) {
             $recipe->diets()->attach($validated['diet']);
         }
-        if (!empty($validated['allergens'])) {
-            $recipe->allergens()->attach($validated['allergens']);
-        }
+        $recipe->allergens()->attach($this->containedAllergens($validated['allergen_free'] ?? []));
         if (!empty($validated['cuisines'])) {
             $recipe->cuisines()->attach($validated['cuisines']);
         }
@@ -211,8 +209,8 @@ class RecipeController extends Controller
 
         $query = Recipe::where('user_id', Auth::id())
             ->withCount('favorites')
-            ->withCount('scores')
-            ->withAvg('scores', 'score')
+            ->withCount('ratings')
+            ->withAvg('ratings', 'score')
             ->searchAndFilter($request);
 
         $sort = $request->input('sort', 'relevance');
@@ -287,8 +285,8 @@ class RecipeController extends Controller
             ->select('recipe.*', 'favorites.created_at as favorited_at')
             ->with('user')
             ->withCount('favorites')
-            ->withCount('scores')
-            ->withAvg('scores', 'score')
+            ->withCount('ratings')
+            ->withAvg('ratings', 'score')
             ->searchAndFilter($request);
 
         $sort = $request->input('sort', 'relevance');
@@ -382,8 +380,8 @@ class RecipeController extends Controller
     public function show($id)
     {
         $recipe = Recipe::with(['user', 'steps' => function($query) {
-            $query->orderBy('order');
-        }, 'ingredients', 'scores.user'])->findOrFail($id);
+            $query->orderBy('position');
+        }, 'ingredients', 'ratings.user'])->findOrFail($id);
 
         $isFavorited = Auth::check() && Favorite::where('user_id', Auth::id())
             ->where('recipe_id', $recipe->id)
@@ -391,12 +389,12 @@ class RecipeController extends Controller
 
         $favoriteCount = $recipe->favorites()->count();
 
-        $averageScore = round($recipe->averageScore() ?? 0, 1);
-        $scoreCount = $recipe->scores()->count();
-        $userScore = Auth::check() ? $recipe->scores()->where('user_id', Auth::id())->first() : null;
+        $averageRating = round($recipe->averageRating() ?? 0, 1);
+        $ratingCount = $recipe->ratings()->count();
+        $userRating = Auth::check() ? $recipe->ratings()->where('user_id', Auth::id())->first() : null;
 
         // Eloszlás számítása
-        $distribution = $recipe->scores()
+        $distribution = $recipe->ratings()
             ->selectRaw('score, COUNT(*) as count')
             ->groupBy('score')
             ->pluck('count', 'score')
@@ -405,33 +403,33 @@ class RecipeController extends Controller
         $distributionPercentages = [];
         for ($i = 5; $i >= 1; $i--) {
             $count = $distribution[$i] ?? 0;
-            $percentage = $scoreCount > 0 ? round(($count / $scoreCount) * 100) : 0;
+            $percentage = $ratingCount > 0 ? round(($count / $ratingCount) * 100) : 0;
             $distributionPercentages[$i] = [
                 'count' => $count,
                 'percentage' => $percentage,
             ];
         }
 
-        return view('recipes.show', compact('recipe', 'isFavorited', 'favoriteCount', 'averageScore', 'scoreCount', 'userScore', 'distributionPercentages'));
+        return view('recipes.show', compact('recipe', 'isFavorited', 'favoriteCount', 'averageRating', 'ratingCount', 'userRating', 'distributionPercentages'));
     }
 
     public function assistant($id)
     {
         $recipe = Recipe::with([
             // a lépések kategóriáját is egyben betöltjük (az animációhoz kell)
-            'steps' => fn ($q) => $q->orderBy('order')->with('stepCategory'),
+            'steps' => fn ($q) => $q->orderBy('position')->with('stepCategory'),
             'ingredients',
         ])->findOrFail($id);
 
-        $averageScore = round($recipe->averageScore() ?? 0, 1);
-        $userScore = Auth::check()
-            ? $recipe->scores()->where('user_id', Auth::id())->first()
+        $averageRating = round($recipe->averageRating() ?? 0, 1);
+        $userRating = Auth::check()
+            ? $recipe->ratings()->where('user_id', Auth::id())->first()
             : null;
 
-        return view('recipes.assistant', compact('recipe', 'averageScore', 'userScore'));
+        return view('recipes.assistant', compact('recipe', 'averageRating', 'userRating'));
     }
 
-    public function storeScore(Request $request, $id)
+    public function storeRating(Request $request, $id)
     {
         $request->validate([
             'score' => 'required|integer|min:1|max:5',
@@ -439,7 +437,7 @@ class RecipeController extends Controller
 
         $recipe = Recipe::findOrFail($id);
 
-        Score::updateOrCreate(
+        Rating::updateOrCreate(
             [
                 'user_id' => Auth::id(),
                 'recipe_id' => $recipe->id,
@@ -451,10 +449,10 @@ class RecipeController extends Controller
 
         // AJAX válasz
         if ($request->ajax()) {
-            $averageScore = round($recipe->averageScore(), 1);
-            $scoreCount = $recipe->scores()->count();
+            $averageRating = round($recipe->averageRating(), 1);
+            $ratingCount = $recipe->ratings()->count();
 
-            $distribution = $recipe->scores()
+            $distribution = $recipe->ratings()
                 ->selectRaw('score, COUNT(*) as count')
                 ->groupBy('score')
                 ->pluck('count', 'score')
@@ -463,7 +461,7 @@ class RecipeController extends Controller
             $distributionPercentages = [];
             for ($i = 5; $i >= 1; $i--) {
                 $count = $distribution[$i] ?? 0;
-                $percentage = $scoreCount > 0 ? round(($count / $scoreCount) * 100) : 0;
+                $percentage = $ratingCount > 0 ? round(($count / $ratingCount) * 100) : 0;
                 $distributionPercentages[$i] = [
                     'count' => $count,
                     'percentage' => $percentage,
@@ -472,8 +470,8 @@ class RecipeController extends Controller
 
             return response()->json([
                 'success' => true,
-                'averageScore' => $averageScore,
-                'scoreCount' => $scoreCount,
+                'averageRating' => $averageRating,
+                'ratingCount' => $ratingCount,
                 'distribution' => $distributionPercentages,
             ]);
         }
@@ -497,7 +495,7 @@ class RecipeController extends Controller
             return redirect()->guest(route('login'));
         }
 
-        Score::updateOrCreate(
+        Rating::updateOrCreate(
             ['user_id' => Auth::id(), 'recipe_id' => $recipe->id],
             ['score' => $score]
         );
@@ -545,8 +543,8 @@ class RecipeController extends Controller
             'food_types' => ['required', 'array', 'min:1'],
             'food_types.*' => ['exists:food_type,id'],
             'diet' => ['nullable', 'integer', 'exists:diet,id'],
-            'allergens' => ['nullable', 'array'],
-            'allergens.*' => ['exists:allergen,id'],
+            'allergen_free' => ['nullable', 'array'],
+            'allergen_free.*' => ['exists:allergen,id'],
             'cuisines' => ['nullable', 'array'],
             'cuisines.*' => ['exists:cuisine,id'],
             // kép csak akkor kötelező, ha a receptnek még nincs képe és alapképet sem választott
@@ -656,7 +654,7 @@ class RecipeController extends Controller
                 'description' => $stepData['description'],
                 'step_category_id' => $stepData['step_category_id'],
                 'recipe_id' => $recipe->id,
-                'order' => $stepNumber,
+                'position' => $stepNumber,
             ]);
             $stepNumber++;
         }
@@ -676,7 +674,7 @@ class RecipeController extends Controller
         $recipe->mealTimes()->sync($validated['meal_times'] ?? []);
         $recipe->foodTypes()->sync($validated['food_types'] ?? []);
         $recipe->diets()->sync($validated['diet'] ?? []);
-        $recipe->allergens()->sync($validated['allergens'] ?? []);
+        $recipe->allergens()->sync($this->containedAllergens($validated['allergen_free'] ?? []));
         $recipe->cuisines()->sync($validated['cuisines'] ?? []);
 
         return redirect()->route('recipes.my')->with('success', 'Recept sikeresen módosítva!');
@@ -693,6 +691,16 @@ class RecipeController extends Controller
         $recipe->delete();
 
         return redirect()->back()->with('success', 'Recept sikeresen törölve!');
+    }
+
+    /**
+     * A form azt kérdezi, mitől MENTES a recept, az adatbázis viszont azt tárolja, mit
+     * TARTALMAZ (erre épül a kereső szűrője is). Ez a függvény fordít a kettő között:
+     * az összes allergén közül azokat adja vissza, amelyek NINCSENEK bepipálva.
+     */
+    private function containedAllergens(array $freeIds): array
+    {
+        return Allergen::whereNotIn('id', $freeIds)->pluck('id')->all();
     }
 }
 

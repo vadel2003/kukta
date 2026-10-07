@@ -67,14 +67,14 @@ class Recipe extends Model
         return $this->hasMany(Favorite::class);
     }
 
-    public function scores()
+    public function ratings()
     {
-        return $this->hasMany(Score::class);
+        return $this->hasMany(Rating::class);
     }
 
-    public function averageScore()
+    public function averageRating()
     {
-        return $this->scores()->avg('score');
+        return $this->ratings()->avg('score');
     }
 
     public function mealTimes()

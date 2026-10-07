@@ -5,7 +5,8 @@
 @section('content')
     <section class="page-section">
         <div class="card-stack">
-            <div class="content-card">
+            <div>
+                <a href="{{ route('home') }}" class="back-link"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
                 <h1>Adatkezelési tájékoztató</h1>
             </div>
             <div class="content-card legal-text">
@@ -20,8 +21,7 @@
 
                 <h2>1. Az adatkezelő</h2>
                 <ul>
-                    <li>Név: [Üzemeltető neve]</li>
-                    <li>Postacím: [Postacím]</li>
+                    <li>Név: Völgyi Adél</li>
                     <li>E-mail: <a href="mailto:info@kukta.hu">info@kukta.hu</a></li>
                 </ul>
                 <p>Adatvédelmi kérdésekben a fenti e-mail címen tudsz kapcsolatba lépni velünk.</p>
@@ -76,12 +76,10 @@
                     látogatói számára nyilvánosan láthatók. Az e-mail címedet és a jelszavadat nem tesszük közzé.
                 </p>
                 <p>
-                    Az adatokat az Oldal tárhelyszolgáltatójának szerverein tároljuk, aki adatfeldolgozóként
-                    kizárólag a tárolást végzi, az adatokat más célra nem használhatja:
+                    Az adatokat az Oldal tárhelyszolgáltatójának szerverein, az Európai Unión belül tároljuk.
+                    A tárhelyszolgáltató adatfeldolgozóként kizárólag a tárolást végzi, az adatokat más célra
+                    nem használhatja.
                 </p>
-                <ul>
-                    <li>[Tárhelyszolgáltató neve, székhelye, e-mail címe]</li>
-                </ul>
                 <p>
                     Az adatokat nem adjuk el, nem adjuk át harmadik félnek marketing célra, és nem továbbítjuk
                     az Európai Unión kívülre. Az Oldal nem használ külső analitikai, hirdetési vagy közösségi

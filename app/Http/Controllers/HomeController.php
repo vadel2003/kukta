@@ -19,8 +19,8 @@ class HomeController extends Controller
         // 1. Recept-lekérdezés építése + keresés/szűrés (megosztott scope a Recipe modellben)
         $query = Recipe::with('user')
             ->withCount('favorites')
-            ->withCount('scores')
-            ->withAvg('scores', 'score')
+            ->withCount('ratings')
+            ->withAvg('ratings', 'score')
             ->searchAndFilter($request);
 
         // 2. Rendezés

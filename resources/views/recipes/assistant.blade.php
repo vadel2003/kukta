@@ -68,18 +68,18 @@
                 <p>Sikeresen elkészítetted a(z) <strong>{{ $recipe->title }}</strong> receptet!</p>
                 <div class="assistant-figure-slot"></div>
 
-                <form id="assistantRatingForm" data-authenticated="{{ auth()->check() ? '1' : '0' }}" data-rate-link="{{ route('recipes.rate.link', $recipe->id) }}" action="{{ route('recipes.score', $recipe->id) }}" method="POST" class="assistant-rating">
+                <form id="assistantRatingForm" data-authenticated="{{ auth()->check() ? '1' : '0' }}" data-rate-link="{{ route('recipes.rate.link', $recipe->id) }}" action="{{ route('recipes.rate', $recipe->id) }}" method="POST" class="assistant-rating">
                     @csrf
                     <div class="assistant-stars">
                         @for ($i = 1; $i <= 5; $i++)
                             <label class="assistant-star">
-                                <input type="radio" name="score" value="{{ $i }}" {{ $userScore && $userScore->score == $i ? 'checked' : '' }}>
-                                <span class="assistant-star-icon {{ $userScore && $i <= $userScore->score ? 'filled' : '' }}">★</span>
+                                <input type="radio" name="score" value="{{ $i }}" {{ $userRating && $userRating->score == $i ? 'checked' : '' }}>
+                                <span class="assistant-star-icon {{ $userRating && $i <= $userRating->score ? 'filled' : '' }}">★</span>
                             </label>
                         @endfor
                     </div>
                     <p class="assistant-rating-status" id="assistantRatingStatus">
-                        {{ $userScore ? 'A te értékelésed: ' . $userScore->score . ' csillag' : 'Értékeld a receptet!' }}
+                        {{ $userRating ? 'A te értékelésed: ' . $userRating->score . ' csillag' : 'Értékeld a receptet!' }}
                     </p>
                 </form>
 
@@ -103,7 +103,7 @@
     <ul id="ingredientList" hidden>
         @foreach ($recipe->ingredients as $ingredient)
             <li class="ai-ingredient">
-                <span class="ai-ingredient-qty">{{ $ingredient->pivot->quantity }} {{ $ingredient->pivot->unit }}</span>
+                <span class="ai-ingredient-qty">{{ str_replace('.', ',', (float) $ingredient->pivot->quantity) }} {{ $ingredient->pivot->unit }}</span>
                 <span class="ai-ingredient-name">{{ $ingredient->name }}</span>
             </li>
         @endforeach

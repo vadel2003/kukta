@@ -218,8 +218,8 @@ return [
         'food_types' => 'ételtípus',
         'food_types.*' => 'ételtípus',
         'diet' => 'diéta',
-        'allergens' => 'érzékenység',
-        'allergens.*' => 'érzékenység',
+        'allergen_free' => 'mentesség',
+        'allergen_free.*' => 'mentesség',
         'cuisines' => 'konyha',
         'cuisines.*' => 'konyha',
 

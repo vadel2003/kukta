@@ -78,7 +78,8 @@
     text-align: center;
 }
 
-.bulk-delete-btn:disabled {
+.bulk-delete-btn:disabled,
+.btn-delete:disabled {
     background-color: var(--color-text-lighter);
     cursor: not-allowed;
 }

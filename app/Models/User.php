@@ -46,9 +46,9 @@ class User extends Authenticatable
         return $this->hasMany(Favorite::class);
     }
 
-    public function scores()
+    public function ratings()
     {
-        return $this->hasMany(Score::class);
+        return $this->hasMany(Rating::class);
     }
 
     public function isAdmin(): bool

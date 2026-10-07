@@ -5,7 +5,8 @@
 @section('content')
     <section class="page-section">
         <div class="card-stack">
-            <div class="content-card">
+            <div>
+                <a href="{{ route('home') }}" class="back-link"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
                 <h1>Általános szerződési feltételek</h1>
             </div>
             <div class="content-card legal-text">
@@ -18,7 +19,7 @@
 
                 <h2>1. Az üzemeltető</h2>
                 <p>
-                    Az Oldal üzemeltetőjének és tárhelyszolgáltatójának adatai az
+                    Az Oldal üzemeltetőjének adatai az
                     <a href="{{ route('page.imprint') }}">Impresszumban</a> találhatók.
                 </p>
 

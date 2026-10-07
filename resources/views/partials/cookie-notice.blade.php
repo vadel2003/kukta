@@ -4,9 +4,7 @@
      nem nyomta meg a gombot (azaz nincs meg a cookie_notice_seen süti). --}}
 <div id="cookieNotice" class="cookie-notice" hidden>
     <p>
-        Az oldal csak a működéshez szükséges sütiket használja (pl. bejelentkezés, biztonság).
-        Részletek: <a href="{{ route('page.cookies') }}">Süti tájékoztató</a> ·
-        <a href="{{ route('page.privacy') }}">Adatkezelési tájékoztató</a>
+        Az oldal használatával elfogadod a <a href="{{ route('page.cookies') }}">Süti tájékoztatóban</a> foglaltakat.
     </p>
     <button type="button" class="btn-cookie-ok">Rendben</button>
 </div>

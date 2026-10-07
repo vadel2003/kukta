@@ -15,7 +15,7 @@ class Step extends Model
      protected $fillable = [
         'description',
         'recipe_id',
-        'order',
+        'position',
         'step_category_id',
     ];
 
@@ -23,7 +23,7 @@ class Step extends Model
     {
         return [
             'recipe_id' => 'integer',
-            'order' => 'integer',
+            'position' => 'integer',
             'step_category_id' => 'integer',
         ];
     }

@@ -120,14 +120,23 @@
     margin: 0;
 }
 
+/* Mennyiség balra, név jobbra: a space-between a sor két szélére tolja a két elemet.
+   Csak a .ingredients-list-en belül, mert az .ingredient-item-et az űrlap is használja. */
+.ingredients-list .ingredient-item {
+    justify-content: space-between;
+    gap: 1rem;
+}
+
 .ingredient-quantity {
     font-weight: 600;
     color: var(--color-primary);
     min-width: 100px;
 }
 
+/* text-align: right -> ha egy hosszú név két sorba törik, a második sor is jobbra igazodjon */
 .ingredient-name {
     color: var(--color-text);
+    text-align: right;
 }
 
 /* Lépések listája */

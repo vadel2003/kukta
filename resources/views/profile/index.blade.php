@@ -116,7 +116,10 @@
         </div>
         </div>
 
-        {{-- 3. Fiók törlése - semleges panel piros címmel/bal éllel, modal megerősítéssel --}}
+        {{-- 3. Fiók törlése - semleges panel piros címmel/bal éllel, modal megerősítéssel.
+             A szuperadmin fiókja nem törölhető (különben nem maradna, aki kezeli az oldalt),
+             ezért neki meg sem jelenik a panel. --}}
+        @unless (Auth::user()->isAdmin())
         <div class="content-card profile-panel profile-panel--danger">
             <h2 class="content-title">
                 <span class="title-icon"><i data-lucide="trash-2"></i></span>
@@ -160,6 +163,7 @@
                 </div>
             </form>
         </div>
+        @endunless
 
     </div>
 

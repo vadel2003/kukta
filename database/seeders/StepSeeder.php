@@ -963,7 +963,7 @@ class StepSeeder extends Seeder
                     'description' => $description,
                     'recipe_id' => $recipeId,
                     'step_category_id' => $categoryIds[$order],
-                    'order' => $order + 1,
+                    'position' => $order + 1,
                 ];
             }
         }

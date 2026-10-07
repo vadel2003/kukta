@@ -10,10 +10,10 @@
     @php
         $isEdit = isset($recipe);
 
-        // Lépések előkészítése szerkesztéshez (order szerint rendezve)
+        // Lépések előkészítése szerkesztéshez (position szerint rendezve)
         $stepValues = [];
         if ($isEdit) {
-            foreach ($recipe->steps->sortBy('order') as $step) {
+            foreach ($recipe->steps->sortBy('position') as $step) {
                 $stepValues[] = [
                     'description' => $step->description,
                     'step_category_id' => $step->step_category_id,
@@ -340,17 +340,26 @@
             </div>
 
             <div style="margin-top: 1rem;">
-                <h3 style="margin-bottom: 0.25rem;">Érzékenység</h3>
+                <h3 style="margin-bottom: 0.25rem;">Mentesség</h3>
+                <p class="field-hint">Jelöld be, amitől a recept mentes.</p>
+                {{-- Fordított logika: az adatbázis azt tárolja, mit TARTALMAZ a recept, a form viszont
+                     azt kérdezi, mitől MENTES. Ezért szerkesztésnél azok vannak bepipálva, amelyeket
+                     a recept NEM tartalmaz (a controller mentéskor visszafordítja). Ha a form hibával
+                     tér vissza, az old() értékek (a felhasználó legutóbbi pipái) élveznek elsőbbséget. --}}
                 <div class="checkbox-group">
                     @foreach ($allergens as $allergen)
+                        @php
+                            $isFree = is_array(old('allergen_free'))
+                                ? in_array($allergen->id, old('allergen_free'))
+                                : $isEdit && !$recipe->allergens->contains($allergen->id);
+                        @endphp
                         <label>
-                            <input type="checkbox" name="allergens[]" value="{{ $allergen->id }}"
-                                {{ (is_array(old('allergens')) && in_array($allergen->id, old('allergens'))) || ($isEdit && $recipe->allergens->contains($allergen->id)) ? 'checked' : '' }}>
+                            <input type="checkbox" name="allergen_free[]" value="{{ $allergen->id }}" {{ $isFree ? 'checked' : '' }}>
                             {{ $allergen->name }}
                         </label>
                     @endforeach
                 </div>
-                @error('allergens')
+                @error('allergen_free')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>

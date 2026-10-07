@@ -74,6 +74,12 @@ class ProfileController extends Controller
 
         $user = Auth::user();
 
+        // A szuperadmin fiókja nem törölhető. A panel neki meg sem jelenik, de a kérés
+        // kézzel is elküldhető, ezért itt is ellenőrizzük.
+        if ($user->isAdmin()) {
+            abort(403);
+        }
+
         Auth::logout();
 
         // A profilkép fájlját is töröljük (az adatbázis-sor törlése a fájlt magától nem

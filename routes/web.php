@@ -36,7 +36,7 @@ Route::post('/recept/uj', [RecipeController::class, 'store'])->name('recipes.sto
 Route::get('/sajat-receptek', [RecipeController::class, 'myRecipes'])->name('recipes.my');
 Route::get('/kedvenc-receptek', [RecipeController::class, 'favorites'])->name('recipes.favorites');
 Route::post('/recept/{id}/favorite', [RecipeController::class, 'toggleFavorite'])->name('recipes.favorite');
-Route::post('/recept/{id}/score', [RecipeController::class, 'storeScore'])->name('recipes.score');
+Route::post('/recept/{id}/ertekeles', [RecipeController::class, 'storeRating'])->name('recipes.rate');
 Route::get('/recept/{id}/ertekeles', [RecipeController::class, 'rateViaLink'])->name('recipes.rate.link');
 Route::get('/recept/{id}', [RecipeController::class, 'show'])->name('recipes.show');
 Route::get('/recept/{id}/asszisztens', [RecipeController::class, 'assistant'])->name('recipes.assistant');

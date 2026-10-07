@@ -18,11 +18,11 @@
         <div class="star-rating">
             <span class="stars">
                 @for ($i = 1; $i <= 5; $i++)
-                    <span class="{{ $i <= round($recipe->scores_avg_score ?? 0) ? 'filled' : '' }}">★</span>
+                    <span class="{{ $i <= round($recipe->ratings_avg_score ?? 0) ? 'filled' : '' }}">★</span>
                 @endfor
             </span>
-            <span class="rating-number">{{ number_format($recipe->scores_avg_score ?? 0, 1) }}</span>
-            <span class="review-count">({{ $recipe->scores_count ?? 0 }})</span>
+            <span class="rating-number">{{ number_format($recipe->ratings_avg_score ?? 0, 1) }}</span>
+            <span class="review-count">({{ $recipe->ratings_count ?? 0 }})</span>
         </div>
 
         <p class="recipe-description">{{ Str::limit($recipe->description, 100) }}</p>

@@ -49,8 +49,11 @@
                         <span>{{ $recipe->servings }} adag</span>
                     </div>
                     <div class="meta-author">
-                        <img src="{{ $recipe->user->avatar ? asset($recipe->user->avatar) : asset('images/default_avatar.svg') }}" alt="Profilkép" class="author-avatar">
-                        <span>{{ $recipe->user->name }}</span>
+                        {{-- Ha a szerző fiókja törölve lett, a recept user_id-ja NULL, így $recipe->user is null.
+                             A ?-> (nullsafe operátor) ilyenkor nem hibát dob, hanem null-t ad vissza,
+                             a ?? pedig ilyenkor az alapértelmezett értéket (alap avatar, "Törölt felhasználó") használja. --}}
+                        <img src="{{ $recipe->user?->avatar ? asset($recipe->user->avatar) : asset('images/default_avatar.svg') }}" alt="Profilkép" class="author-avatar">
+                        <span>{{ $recipe->user?->name ?? 'Törölt felhasználó' }}</span>
                     </div>
                     <div class="meta-date">
                         <span class="meta-icon"><i data-lucide="calendar"></i></span>
@@ -60,9 +63,9 @@
 
                 {{-- ⭐ Csillagos értékelés szekció --}}
                 <a href="#reviews" class="star-rating-section">
-                    <span class="stars">{{ str_repeat('★', round($averageScore ?? 0)) }}{{ str_repeat('☆', 5 - round($averageScore ?? 0)) }}</span>
-                    <span class="rating-number">{{ number_format($averageScore ?? 0, 1) }}</span>
-                    <span class="review-count">({{ $scoreCount }} értékelés)</span>
+                    <span class="stars">{{ str_repeat('★', round($averageRating ?? 0)) }}{{ str_repeat('☆', 5 - round($averageRating ?? 0)) }}</span>
+                    <span class="rating-number">{{ number_format($averageRating ?? 0, 1) }}</span>
+                    <span class="review-count">({{ $ratingCount }} értékelés)</span>
                 </a>
             </div>
 
@@ -84,7 +87,7 @@
             <ul class="ingredients-list">
                 @foreach ($recipe->ingredients as $ingredient)
                     <li class="ingredient-item">
-                        <span class="ingredient-quantity">{{ $ingredient->pivot->quantity }} {{ $ingredient->pivot->unit }}</span>
+                        <span class="ingredient-quantity">{{ str_replace('.', ',', (float) $ingredient->pivot->quantity) }} {{ $ingredient->pivot->unit }}</span>
                         <span class="ingredient-name">{{ $ingredient->name }}</span>
                     </li>
                 @endforeach
@@ -117,13 +120,13 @@
         <div class="rating-summary">
             <!-- Bal oldal: átlag + csillagok + darabszám -->
             <div class="rating-summary-left">
-                <div class="rating-average">{{ number_format($averageScore, 1) }}</div>
+                <div class="rating-average">{{ number_format($averageRating, 1) }}</div>
                 <div class="rating-stars-display">
                     @for ($i = 1; $i <= 5; $i++)
-                        <span class="star {{ $i <= round($averageScore) ? 'filled' : '' }}">★</span>
+                        <span class="star {{ $i <= round($averageRating) ? 'filled' : '' }}">★</span>
                     @endfor
                 </div>
-                <div class="rating-count">{{ $scoreCount }} értékelés</div>
+                <div class="rating-count">{{ $ratingCount }} értékelés</div>
             </div>
 
             <!-- Jobb oldal: eloszlás sávok -->
@@ -146,20 +149,20 @@
         @auth
             <div class="rating-personal">
                 <h3 class="rating-personal-title">Értékeld a receptet!</h3>
-                <form id="ratingForm" action="{{ route('recipes.score', $recipe->id) }}" method="POST">
+                <form id="ratingForm" action="{{ route('recipes.rate', $recipe->id) }}" method="POST">
                     @csrf
                     <div class="rating-stars-interactive">
                         @for ($i = 1; $i <= 5; $i++)
                             <label class="star-label">
                                 <input type="radio" name="score" value="{{ $i }}" 
-                                       {{ $userScore && $userScore->score == $i ? 'checked' : '' }} 
+                                       {{ $userRating && $userRating->score == $i ? 'checked' : '' }} 
                                        class="star-input">
-                                <span class="star-icon {{ $userScore && $i <= $userScore->score ? 'filled' : '' }}">★</span>
+                                <span class="star-icon {{ $userRating && $i <= $userRating->score ? 'filled' : '' }}">★</span>
                             </label>
                         @endfor
                     </div>
-                    @if ($userScore)
-                        <p class="rating-personal-status" id="ratingStatus">A te értékelésed: {{ $userScore->score }} csillag</p>
+                    @if ($userRating)
+                        <p class="rating-personal-status" id="ratingStatus">A te értékelésed: {{ $userRating->score }} csillag</p>
                     @else
                         <p class="rating-personal-status" id="ratingStatus">Kattints egy csillagra az értékeléshez</p>
                     @endif
@@ -231,12 +234,12 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     // Átlag frissítése
-                    document.querySelector('.rating-average').textContent = data.averageScore.toFixed(1);
+                    document.querySelector('.rating-average').textContent = data.averageRating.toFixed(1);
 
                     // Csillagok frissítése (összesítő)
                     const starsDisplay = document.querySelectorAll('.rating-stars-display .star');
                     starsDisplay.forEach((star, index) => {
-                        if (index < Math.round(data.averageScore)) {
+                        if (index < Math.round(data.averageRating)) {
                             star.classList.add('filled');
                         } else {
                             star.classList.remove('filled');
@@ -244,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
 
                     // Darabszám frissítése
-                    document.querySelector('.rating-count').textContent = data.scoreCount + ' értékelés';
+                    document.querySelector('.rating-count').textContent = data.ratingCount + ' értékelés';
 
                     // Eloszlás sávok frissítése
                     for (let i = 5; i >= 1; i--) {

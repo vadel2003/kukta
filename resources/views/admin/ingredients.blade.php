@@ -104,7 +104,15 @@
             <tbody>
                 @foreach ($ingredients as $ingredient)
                     <tr id="ingredient-row-{{ $ingredient->id }}">
-                        <td><input type="checkbox" name="ids[]" value="{{ $ingredient->id }}" class="row-checkbox" form="bulk-delete-form"></td>
+                        {{-- Használatban lévő alapanyag: letiltott jelölőnégyzet row-checkbox osztály nélkül,
+                             így a "mind kijelölése" sem jelöli ki (az csak a .row-checkbox elemeket nézi) --}}
+                        <td>
+                            @if ($ingredient->recipes_count > 0)
+                                <input type="checkbox" disabled title="Receptekben használatban van, nem törölhető">
+                            @else
+                                <input type="checkbox" name="ids[]" value="{{ $ingredient->id }}" class="row-checkbox" form="bulk-delete-form">
+                            @endif
+                        </td>
                         <td>{{ $ingredient->name }}</td>
                         <td>{{ $ingredient->calories }}</td>
                         <td>{{ $ingredient->carbohydrate }}</td>
@@ -112,11 +120,15 @@
                         <td>{{ $ingredient->fat }}</td>
                         <td class="admin-table-actions">
                             <button type="button" class="btn-edit btn-edit-primary" onclick="toggleIngredientEdit({{ $ingredient->id }})">Módosítás</button>
-                            <form action="{{ route('admin.ingredients.destroy', $ingredient->id) }}" method="POST" style="display: inline;" data-confirm-title="Biztosan törlöd az alapanyagot?" data-confirm="A(z) „{{ $ingredient->name }}” alapanyag minden receptből eltűnik. Ez a művelet nem visszavonható.">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn-delete">Törlés</button>
-                            </form>
+                            @if ($ingredient->recipes_count > 0)
+                                <button type="button" class="btn-delete" disabled title="{{ $ingredient->recipes_count }} receptben használatban van, nem törölhető">Törlés</button>
+                            @else
+                                <form action="{{ route('admin.ingredients.destroy', $ingredient->id) }}" method="POST" style="display: inline;" data-confirm-title="Biztosan törlöd az alapanyagot?" data-confirm="A(z) „{{ $ingredient->name }}” alapanyag véglegesen törlődik. Ez a művelet nem visszavonható.">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-delete">Törlés</button>
+                                </form>
+                            @endif
                         </td>
                     </tr>
                     <tr id="ingredient-edit-{{ $ingredient->id }}" class="edit-row hidden-row">

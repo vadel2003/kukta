@@ -5,11 +5,11 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class ScoreSeeder extends Seeder
+class RatingSeeder extends Seeder
 {
     public function run(): void
     {
-        $scores = [];
+        $ratings = [];
 
         // User receptjeinek mappingje
         $userRecipes = [
@@ -27,7 +27,7 @@ class ScoreSeeder extends Seeder
 
         for ($userId = 1; $userId <= 10; $userId++) {
             // Minden user 3-10 receptet értékel
-            $scoreCount = 3 + ($userId % 8); // 3-10
+            $ratingCount = 3 + ($userId % 8); // 3-10
 
             // Az összes recept, kivéve a sajátját
             $allRecipes = range(1, 100);
@@ -37,10 +37,10 @@ class ScoreSeeder extends Seeder
             // Determinisztikus shuffle
             mt_srand($userId * 41);
             shuffle($otherRecipes);
-            $selectedRecipes = array_slice($otherRecipes, 0, $scoreCount);
+            $selectedRecipes = array_slice($otherRecipes, 0, $ratingCount);
 
             foreach ($selectedRecipes as $recipeId) {
-                $scores[] = [
+                $ratings[] = [
                     'user_id' => $userId,
                     'recipe_id' => $recipeId,
                     'score' => rand(1, 5),
@@ -48,6 +48,6 @@ class ScoreSeeder extends Seeder
             }
         }
 
-        DB::table('score')->insert($scores);
+        DB::table('rating')->insert($ratings);
     }
 }
