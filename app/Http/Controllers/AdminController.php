@@ -238,9 +238,13 @@ class AdminController extends Controller
 
         // Az admin és a saját fiók sosem törölhető így sem - ugyanaz a védelem,
         // mint az egyedi destroyUser-nél.
+        // ->get()->each->delete(): a felhasználókat betöltjük és egyenként töröljük, mert
+        // csak így fut le a User modell deleting eseménye (ami a profilképet is törli).
         User::whereIn('id', $validated['ids'])
             ->where('role', '!=', 1)
             ->where('id', '!=', Auth::id())
+            ->get()
+            ->each
             ->delete();
 
         return redirect()->route('admin.users')->with('success', 'A kijelölt felhasználók sikeresen törölve!');

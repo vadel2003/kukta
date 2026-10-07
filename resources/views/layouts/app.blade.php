@@ -43,19 +43,26 @@
                         <span class="dropdown-arrow">▾</span>
                     </div>
                     <div class="dropdown-menu">
-                        <a href="{{ route('profile.index') }}">Profil</a>
-                        <a href="{{ route('recipes.create') }}">Új recept</a>
-                        <a href="{{ route('recipes.my') }}">Saját receptek</a>
-                        <a href="{{ route('recipes.favorites') }}">Kedvenc receptek</a>
-                        @if (Auth::user()->isAdmin())
-                            <a href="{{ route('admin.ingredients') }}">Alapanyagok</a>
-                            <a href="{{ route('admin.recipes') }}">Receptek</a>
-                            <a href="{{ route('admin.users') }}">Felhasználók</a>
-                        @endif
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit">Kijelentkezés</button>
-                        </form>
+                        {{-- A fehér doboz külön elem, mert a .dropdown-menu felső paddingje átlátszó
+                             "híd" az avatar és a menü között (hogy az egér ne essen le a hoverről) --}}
+                        <div class="dropdown-panel">
+                            <a href="{{ route('profile.index') }}"><i data-lucide="user"></i> Profil</a>
+                            <a href="{{ route('recipes.create') }}"><i data-lucide="plus"></i> Új recept</a>
+                            <a href="{{ route('recipes.my') }}"><i data-lucide="book-open"></i> Saját receptek</a>
+                            <a href="{{ route('recipes.favorites') }}"><i data-lucide="heart"></i> Kedvenc receptek</a>
+                            @if (Auth::user()->isAdmin())
+                                <hr class="dropdown-divider">
+                                <span class="dropdown-label">Szuperadmin</span>
+                                <a href="{{ route('admin.ingredients') }}"><i data-lucide="carrot"></i> Alapanyagok</a>
+                                <a href="{{ route('admin.recipes') }}"><i data-lucide="utensils"></i> Receptek</a>
+                                <a href="{{ route('admin.users') }}"><i data-lucide="users"></i> Felhasználók</a>
+                            @endif
+                            <hr class="dropdown-divider">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit"><i data-lucide="log-out"></i> Kijelentkezés</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 <button type="button" class="mobile-menu-btn" aria-label="Menü">
@@ -68,8 +75,10 @@
                         <span class="dropdown-arrow">▾</span>
                     </div>
                     <div class="dropdown-menu">
-                        <a href="{{ route('login') }}">Bejelentkezés</a>
-                        <a href="{{ route('register') }}">Regisztráció</a>
+                        <div class="dropdown-panel">
+                            <a href="{{ route('login') }}"><i data-lucide="log-in"></i> Bejelentkezés</a>
+                            <a href="{{ route('register') }}"><i data-lucide="user-plus"></i> Regisztráció</a>
+                        </div>
                     </div>
                 </div>
             @endauth
@@ -79,24 +88,33 @@
 
     {{-- Mobil oldalsó menü panel --}}
     <div class="mobile-menu-overlay">
+        <div class="mobile-menu-header">
+            <span class="mobile-menu-title">Menü</span>
+            <button type="button" class="mobile-menu-close" aria-label="Menü bezárása">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
         <nav class="mobile-menu">
             @auth
-                <a href="{{ route('profile.index') }}">Profil</a>
-                <a href="{{ route('recipes.create') }}">Új recept</a>
-                <a href="{{ route('recipes.my') }}">Saját receptek</a>
-                <a href="{{ route('recipes.favorites') }}">Kedvenc receptek</a>
+                <a href="{{ route('profile.index') }}"><i data-lucide="user"></i> Profil</a>
+                <a href="{{ route('recipes.create') }}"><i data-lucide="plus"></i> Új recept</a>
+                <a href="{{ route('recipes.my') }}"><i data-lucide="book-open"></i> Saját receptek</a>
+                <a href="{{ route('recipes.favorites') }}"><i data-lucide="heart"></i> Kedvenc receptek</a>
                 @if (Auth::user()->isAdmin())
-                    <a href="{{ route('admin.ingredients') }}">Alapanyagok</a>
-                    <a href="{{ route('admin.recipes') }}">Receptek</a>
-                    <a href="{{ route('admin.users') }}">Felhasználók</a>
+                    <hr class="mobile-menu-divider">
+                    <span class="mobile-menu-label">Szuperadmin</span>
+                    <a href="{{ route('admin.ingredients') }}"><i data-lucide="carrot"></i> Alapanyagok</a>
+                    <a href="{{ route('admin.recipes') }}"><i data-lucide="utensils"></i> Receptek</a>
+                    <a href="{{ route('admin.users') }}"><i data-lucide="users"></i> Felhasználók</a>
                 @endif
+                <hr class="mobile-menu-divider">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit">Kijelentkezés</button>
+                    <button type="submit"><i data-lucide="log-out"></i> Kijelentkezés</button>
                 </form>
             @else
-                <a href="{{ route('login') }}">Bejelentkezés</a>
-                <a href="{{ route('register') }}">Regisztráció</a>
+                <a href="{{ route('login') }}"><i data-lucide="log-in"></i> Bejelentkezés</a>
+                <a href="{{ route('register') }}"><i data-lucide="user-plus"></i> Regisztráció</a>
             @endauth
         </nav>
     </div>
@@ -514,6 +532,14 @@
         if (mobileMenuBtn && mobileMenuOverlay) {
             mobileMenuBtn.addEventListener('click', function() {
                 mobileMenuOverlay.classList.toggle('open');
+            });
+        }
+
+        // A panel fejlécében lévő × gomb bezárja a menüt
+        const mobileMenuClose = document.querySelector('.mobile-menu-close');
+        if (mobileMenuClose && mobileMenuOverlay) {
+            mobileMenuClose.addEventListener('click', function() {
+                mobileMenuOverlay.classList.remove('open');
             });
         }
 

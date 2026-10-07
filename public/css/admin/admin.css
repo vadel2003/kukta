@@ -215,3 +215,57 @@
 .ingredient-edit-form input[type="number"] {
     width: 6rem;
 }
+
+/* ===== MOBIL NÉZET ===== */
+@media (max-width: 768px) {
+    /* Kisebb belső margó, hogy a táblázatnak több hely maradjon */
+    .admin-panel {
+        padding: 16px;
+    }
+
+    /* A kereső és a gombok egymás alá kerülnek: egy sorban nem fértek el,
+       ezért a keresőmező pár pixelesre nyomódott, a gombok pedig kilógtak */
+    .ingredient-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .ingredient-search {
+        max-width: none;
+    }
+
+    /* min-width: 0 nélkül a flex elem nem lehet keskenyebb a tartalmánál (placeholder) */
+    .ingredient-search input[type="text"] {
+        min-width: 0;
+    }
+
+    .toolbar-actions {
+        margin-right: 0;
+    }
+
+    /* A két gomb egyforma szélesen kitölti a sort */
+    .toolbar-actions > * {
+        flex: 1;
+    }
+
+    /* a tömeges törlés gomb egy formban van, ezért annak is ki kell töltenie a formot */
+    .toolbar-actions button {
+        width: 100%;
+    }
+
+    /* A táblázat oldalra görgethető lesz, ahelyett hogy a jobb szélét levágná a képernyő.
+       display: block kell, mert a <table> elemre az overflow nem hat - így a táblázat
+       egy blokk "doboz" lesz, a sorai pedig görgethetően benne maradnak. */
+    .admin-table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    /* Az új alapanyag űrlap mezői teljes szélességűek */
+    .ingredient-edit-form label,
+    .ingredient-edit-form input[name="name"],
+    .ingredient-edit-form input[type="number"] {
+        width: 100%;
+    }
+}

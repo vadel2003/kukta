@@ -145,11 +145,23 @@ header {
     display: block;
 }
 
+/* Egyetlen fehér doboz az összes menüpont körül (eddig minden menüpontnak saját
+   háttere és árnyéka volt) - így férnek el benne az elválasztók és a csoportcím */
+.dropdown-panel {
+    background-color: var(--color-white);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px var(--color-shadow);
+    padding: 0.35rem 0;
+}
+
+/* flex + gap: az ikon és a szöveg egy sorban, közöttük állandó távolsággal */
 .dropdown-menu a,
 .dropdown-menu form button {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
     white-space: nowrap;
-    background-color: var(--color-white);
+    background: none;
     padding: 0.6rem 1.2rem;
     text-decoration: none;
     color: var(--color-text);
@@ -158,7 +170,32 @@ header {
     text-align: left;
     width: 100%;
     cursor: pointer;
-    box-shadow: 0 2px 8px var(--color-shadow);
+}
+
+.dropdown-menu a svg,
+.dropdown-menu form button svg {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    color: var(--color-primary);
+}
+
+/* Csoportok közti elválasztó vonal */
+.dropdown-divider {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 0.35rem 0;
+}
+
+/* Kis szürke csoportcím (pl. "Szuperadmin") */
+.dropdown-label {
+    display: block;
+    padding: 0.4rem 1.2rem 0.2rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-light);
 }
 
 .dropdown-menu a:hover,
@@ -1152,6 +1189,64 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     border-bottom: none;
 }
 
+/* Mobilon egy sorba nem fért ki minden mező, ezért a szövegmezők pár pixelesre
+   szűkültek. Rács (grid) elrendezéssel a szövegmező kap egy saját, teljes sort,
+   alatta a lenyíló(k) és a × gomb. A "1 / -1" = az első oszlopvonaltól az
+   utolsóig, azaz teljes szélesség. */
+@media (max-width: 768px) {
+    #steps-container .step-item,
+    #ingredients .ingredient-item {
+        display: grid;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    /* lépés: [kategória lenyíló] [×] */
+    #steps-container .step-item {
+        grid-template-columns: 1fr auto;
+    }
+
+    /* alapanyag: [mennyiség] [mértékegység] [×] */
+    #ingredients .ingredient-item {
+        grid-template-columns: 1fr 1fr auto;
+    }
+
+    #steps-container .step-item label,
+    #steps-container .step-item input[type="text"],
+    #ingredients .ingredient-item input[type="text"] {
+        grid-column: 1 / -1;
+        min-width: 0;
+    }
+
+    #ingredients .ingredient-item input,
+    #ingredients .ingredient-item select,
+    #steps-container .step-item select {
+        width: 100%;
+        min-width: 0;
+    }
+
+    /* A hibaüzenet teljes szélességű, és az order: 1 a sor végére teszi
+       (a lépéseknél a HTML-ben a × gomb előtt van) */
+    #steps-container .form-error,
+    #ingredients .form-error {
+        grid-column: 1 / -1;
+        order: 1;
+    }
+
+    /* A rejtett (átlátszó) karakterszámláló is elfoglalná a helyét a rácsban,
+       ezért csak akkor kap helyet, amikor tényleg látszik */
+    #steps-container .char-counter:not(.char-counter--visible),
+    #ingredients .char-counter:not(.char-counter--visible) {
+        display: none;
+    }
+
+    #steps-container .char-counter,
+    #ingredients .char-counter {
+        grid-column: 1 / -1;
+        text-align: right;
+    }
+}
+
 /* ===== SAJÁT KÉP FELTÖLTŐ DOBOZ (recept űrlap) ===== */
 .upload-box {
     position: relative;
@@ -1242,6 +1337,21 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     text-align: center;
     font-size: 0.9rem;
     color: var(--color-text-light);
+}
+
+/* Mobilon a kártya belseje csak ~310px széles, ahová két 155px-es oszlop már nem fér
+   ki, így minden kép egyesével, óriásira nyújtva jelent meg. Kisebb minimummal
+   3 oszlop fér el, és a képválasztó nem lesz több képernyőnyi hosszú. */
+@media (max-width: 768px) {
+    .image-picker {
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        gap: 8px;
+    }
+
+    .image-option-label {
+        padding: 4px 2px;
+        font-size: 0.75rem;
+    }
 }
 
 .image-option:hover .image-option-card {
@@ -2110,10 +2220,6 @@ select.is-invalid:focus {
         gap: 0.5rem;
     }
 
-    .profile-icon {
-        height: 32px;
-    }
-
     .mobile-menu-btn {
         display: flex;
         align-items: center;
@@ -2150,10 +2256,20 @@ select.is-invalid:focus {
     header.scrolled .header-search .search-row > *:nth-child(5) { animation-delay: 0.2s; }
     header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0.25s; }
 
+    /* Fejléc kereső mobilon: [ fehér mező | keresés ikon ] [szűrők] [rendezés]
+       A keresés gomb ugyanolyan fehér, mint a mező, és csak a jobb sarkai kerekek,
+       így a mező részének látszik (nincs árnyék és "varrat" a kettő között).
+       A szűrők/rendezés áttetsző fehér négyzetet kap, hogy a narancs háttéren gombnak látszódjon. */
+    header .header-search .search-row {
+        gap: 0.3rem;
+    }
+
     header .header-search .search-input-group {
-        flex: 2;
+        flex: 1;
         min-width: 0;
+        height: 36px;
         padding: 0 0.7rem;
+        border-radius: 4px 0 0 4px;
     }
 
     header .header-search .search-input {
@@ -2164,10 +2280,25 @@ select.is-invalid:focus {
     header .header-search .btn-filters,
     header .header-search .btn-sort {
         flex: 0 0 auto;
-        padding: 0.5rem;
+        width: 36px;
+        height: 36px;
+        padding: 0;
         font-size: 0;
         justify-content: center;
         margin-left: 0 !important;
+        border-radius: 4px;
+    }
+
+    header .header-search .btn-search {
+        margin-left: -0.3rem !important; /* a sor gap-jét visszavesszük: a gomb a mezőhöz tapad */
+        border-radius: 0 4px 4px 0;
+        box-shadow: none;
+    }
+
+    header .header-search .btn-filters,
+    header .header-search .btn-sort {
+        background-color: rgba(255, 255, 255, 0.18);
+        opacity: 1;
     }
 
     header .header-search .btn-search svg,
@@ -2201,20 +2332,74 @@ select.is-invalid:focus {
         overflow-y: auto;
     }
 
+    /* A második árnyék egy óriási (100vmax), elmosás nélküli "keret" a panel körül:
+       ez sötétíti el az oldal többi részét, külön háttér-elem nélkül */
     .mobile-menu-overlay.open {
         right: 0 !important;
+        box-shadow: -4px 0 16px rgba(0,0,0,0.15), 0 0 0 100vmax rgba(0,0,0,0.35);
+    }
+
+    /* Panel fejléce: "Menü" cím balra, × gomb jobbra (space-between a két szélére tolja).
+       Narancs alap, mint az oldal fejléce, így egyből látszik, hogy ez egy menü. */
+    .mobile-menu-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.35rem 0.5rem 0.35rem 2rem;
+        min-height: 53px; /* ugyanolyan magas, mint az oldal fejléce */
+        background-color: var(--color-primary);
+        color: var(--color-white);
+    }
+
+    .mobile-menu-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .mobile-menu-close {
+        display: flex;
+        background: none;
+        border: none;
+        padding: 0.5rem;
+        color: var(--color-white);
+        cursor: pointer;
+    }
+
+    .mobile-menu-close svg {
+        width: 24px;
+        height: 24px;
     }
 
     .mobile-menu {
         display: flex;
         flex-direction: column;
-        padding: 1rem;
+        padding: 0.5rem 1rem 1rem;
     }
 
+    /* Csoportok közti elválasztó vonal */
+    .mobile-menu-divider {
+        border: none;
+        border-top: 1px solid var(--color-border);
+        margin: 0.5rem 0;
+    }
+
+    /* Kis szürke csoportcím (pl. "Szuperadmin") */
+    .mobile-menu-label {
+        padding: 0.5rem 1rem 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--color-text-light);
+    }
+
+    /* flex + gap: az ikon és a szöveg egy sorban, közöttük állandó távolsággal */
     .mobile-menu a,
     .mobile-menu form button {
-        display: block;
-        padding: 0.9rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.8rem 1rem;
         text-decoration: none;
         color: var(--color-text);
         font-size: 1rem;
@@ -2230,6 +2415,55 @@ select.is-invalid:focus {
     .mobile-menu form button:hover {
         background-color: var(--color-bg-hover);
         color: var(--color-primary);
+    }
+
+    .mobile-menu a svg,
+    .mobile-menu form button svg {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        color: var(--color-primary);
+    }
+
+    /* Mindkét mobil keresőben: a mező eleji nagyító ikon fölösleges (a keresés gombon
+       is az van), és az elválasztó vonalak helyett a gombok közti rés tagol */
+    .search-row .search-input-icon,
+    .search-row .search-divider {
+        display: none;
+    }
+
+    /* A szűrő-számláló a kis négyzetes gombban kiszorította az ikont, ezért mobilon
+       a gomb jobb felső sarkára kerül buborékként. position: absolute a legközelebbi
+       position: relative szülőhöz (itt a gombhoz) igazodik. */
+    .search-row .btn-filters {
+        position: relative;
+    }
+
+    /* Az alap .search-row overflow: hidden-je levágná a sorból kilógó buborékot.
+       Mobilon nincs rá szükség, mert a gombok maguk kerekítik a sarkaikat. */
+    .search-row {
+        overflow: visible;
+    }
+
+    .search-row .filter-count {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        margin-left: 0;
+        min-width: 1.1rem;
+        height: 1.1rem;
+        font-size: 0.7rem;
+    }
+
+    /* A fejléc keresője overflow: hidden (a be-/kicsúszó animáció miatt), ott a kilógó
+       buborék levágódna - ezért ott a gombon belül, a jobb felső sarokban van */
+    header .search-row .filter-count {
+        top: 1px;
+        right: 1px;
+        min-width: 0.95rem;
+        height: 0.95rem;
+        padding: 0 0.2rem;
+        font-size: 0.6rem;
     }
 
     /* Receptkártyák egymás alatt, középen (minden olyan oldalon, ahol a galéria komponens megjelenik) */

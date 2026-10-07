@@ -537,19 +537,34 @@ header.scrolled ~ main .recipes-section .search-bar {
         margin-top: 40px;
     }
 
+    /* A padding 0.5rem (az alap .search-bar 1rem-je helyett), mint a desktop kártyák
+       feletti keresőnél - így a fehér doboz nem lesz sokkal magasabb a keresősornál */
     .mobile-search-sticky .search-bar {
         max-width: none;
         width: 100%;
         margin: 0;
+        padding: 0.5rem;
         background-color: var(--color-white);
         border-radius: 4px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
+    /* Mobil kereső: [ mező | narancs keresés gomb ] [szűrők] [rendezés]
+       A mező és a keresés gomb egy egységnek látszik: a mezőnek csak a bal sarkai,
+       a gombnak csak a jobb sarkai kerekek, és nincs köztük rés. A sorrendet az
+       "order" adja (a HTML-ben a keresés gomb a sor végén van). */
+    .mobile-search-sticky .search-row {
+        gap: 0.4rem;
+    }
+
     .mobile-search-sticky .search-input-group {
-        flex: 2;
+        flex: 1;
         min-width: 0;
-        padding: 0.6rem 0.9rem;
+        height: 40px;
+        padding: 0 0.8rem;
+        border: 1.5px solid var(--color-border);
+        border-right: none;
+        border-radius: 4px 0 0 4px;
     }
 
     .mobile-search-sticky .search-input {
@@ -560,9 +575,26 @@ header.scrolled ~ main .recipes-section .search-bar {
     .mobile-search-sticky .btn-filters,
     .mobile-search-sticky .btn-sort {
         flex: 0 0 auto;
-        padding: 0.6rem 0.5rem;
-        font-size: 0;
         justify-content: center;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        font-size: 0;
+        border-radius: 4px;
+    }
+
+    .mobile-search-sticky .btn-search {
+        order: 1;
+        margin-left: -0.4rem; /* a sor gap-jét visszavesszük: a gomb a mezőhöz tapad */
+        border-radius: 0 4px 4px 0;
+    }
+
+    .mobile-search-sticky .btn-filters {
+        order: 2;
+    }
+
+    .mobile-search-sticky .btn-sort {
+        order: 3;
     }
 
     .mobile-search-sticky .btn-search svg,
@@ -580,8 +612,10 @@ header.scrolled ~ main .recipes-section .search-bar {
         width: auto;
         margin-left: -1rem;
         margin-right: -1rem;
-        padding: 2rem 1rem 0;
-        min-height: 62vh;
+        /* Nincs min-height: a hero csak akkora, amekkora a tartalma (szöveg + kereső),
+           különben magas telefonon nagy üres sáv maradt a kereső alatt.
+           Az alsó padding a halványító átmenetnek (::after) hagy helyet. */
+        padding: 2rem 1rem 4rem;
         display: flex;
         align-items: stretch;
         flex-direction: column;
@@ -608,7 +642,9 @@ header.scrolled ~ main .recipes-section .search-bar {
         flex-direction: column;
         align-items: stretch;
         gap: 1.5rem;
-        padding: 0 1rem;
+        /* 20px = a .recipes-section oldalsó paddingje, így a hero szövege és keresője
+           pontosan egy vonalba kerül az alatta lévő receptkártyák széleivel */
+        padding: 0 20px;
         justify-content: flex-start;
         order: 1;
     }
@@ -616,6 +652,7 @@ header.scrolled ~ main .recipes-section .search-bar {
     .hero-text {
         flex: 0 0 auto;
         text-align: left;
+        padding-left: 0; /* a desktopos bal padding mobilon aszimmetrikussá tette a keresőt */
     }
 
     .hero-title {

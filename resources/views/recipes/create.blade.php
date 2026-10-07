@@ -93,8 +93,11 @@
                 <label for="difficulty">Nehézség <span class="form-error">*</span></label>
                 <select name="difficulty" id="difficulty" required>
                     <option value="">-- Válassz --</option>
-                    @foreach (['könnyű', 'közepes', 'nehéz'] as $level)
-                        <option value="{{ $level }}" {{ old('difficulty', $recipe->difficulty ?? '') == $level ? 'selected' : '' }}>{{ ucfirst($level) }}</option>
+                    {{-- value = a szám (0/1/2), ez kerül az adatbázisba; a felirat a megnevezés.
+                         (string) összehasonlítás: az old() szöveget ad vissza ("0"), a modell számot (0) -
+                         így mindkettő ugyanúgy "0" lesz, és az üres "" sem egyezik a 0-val. --}}
+                    @foreach (\App\Models\Recipe::DIFFICULTIES as $value => $label)
+                        <option value="{{ $value }}" {{ (string) old('difficulty', $recipe->difficulty ?? '') === (string) $value ? 'selected' : '' }}>{{ ucfirst($label) }}</option>
                     @endforeach
                 </select>
                 @error('difficulty')

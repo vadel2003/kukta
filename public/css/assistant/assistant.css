@@ -552,9 +552,9 @@ body.assistant-page::-webkit-scrollbar {
     }
 
     /* A buborék a képernyő közepétől kb. 40 px-re kezdődik (a középre tett figura 71%-ánál),
-       ezért legfeljebb a képernyő fele mínusz 3rem széles lehet, hogy keskeny telefonon se lógjon ki */
+       ezért legfeljebb a képernyő fele mínusz 4rem széles lehet (a kártya margója + a buborék kerete), hogy keskeny telefonon se lógjon ki */
     .assistant-figure-bubble {
-        max-width: min(140px, calc(50vw - 3rem));
+        max-width: min(130px, calc(50vw - 4rem));
     }
 
     .assistant-intro-content {

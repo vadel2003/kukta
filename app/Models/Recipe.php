@@ -12,6 +12,14 @@ class Recipe extends Model
 
     public $timestamps = true;
 
+    // Nehézségi szintek: az adatbázisban a szám (0/1/2) van, ez adja hozzá a megnevezést.
+    // Az űrlap legördülője, a validáció és a megjelenítés is innen veszi, így egy helyen kell módosítani.
+    public const DIFFICULTIES = [
+        0 => 'könnyű',
+        1 => 'közepes',
+        2 => 'nehéz',
+    ];
+
     protected $fillable = [
         'title',
         'description',
@@ -29,8 +37,17 @@ class Recipe extends Model
             'creation_date' => 'date',
             'user_id' => 'integer',
             'prep_time' => 'integer',
+            'difficulty' => 'integer',
             'servings' => 'integer',
         ];
+    }
+
+    /**
+     * A nehézség megnevezése ($recipe->difficultyLabel()), pl. 1 -> "közepes"
+     */
+    public function difficultyLabel(): string
+    {
+        return self::DIFFICULTIES[$this->difficulty] ?? '';
     }
 
     /**

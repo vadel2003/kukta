@@ -36,6 +36,22 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * A booted() a modell "betöltésekor" egyszer lefut - itt lehet eseményekre feliratkozni.
+     * A deleting esemény minden $user->delete() ELŐTT lefut, akárhonnan indul a törlés
+     * (saját profil, admin egyenként, admin tömegesen), így a profilkép fájlját egy helyen töröljük.
+     * Figyelem: csak betöltött modellen hívott delete() indítja el, a lekérdezésen hívott
+     * (pl. User::whereIn(...)->delete()) nem - ezért a tömeges törlés is egyenként töröl.
+     */
+    protected static function booted(): void
+    {
+        static::deleting(function (User $user) {
+            if ($user->avatar && file_exists(public_path($user->avatar))) {
+                unlink(public_path($user->avatar));
+            }
+        });
+    }
+
     public function recipes()
     {
         return $this->hasMany(Recipe::class);

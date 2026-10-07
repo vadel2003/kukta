@@ -42,7 +42,7 @@
                     </div>
                     <div class="meta-date">
                         <span class="meta-icon"><i data-lucide="gauge"></i></span>
-                        <span>{{ ucfirst($recipe->difficulty) }}</span>
+                        <span>{{ ucfirst($recipe->difficultyLabel()) }}</span>
                     </div>
                     <div class="meta-date">
                         <span class="meta-icon"><i data-lucide="utensils"></i></span>
