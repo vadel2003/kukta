@@ -7,7 +7,7 @@ use App\Models\Favorite;
 use App\Models\MealTime;
 use App\Models\FoodType;
 use App\Models\Diet;
-use App\Models\Allergen;
+use App\Models\FreeFrom;
 use App\Models\Cuisine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -62,7 +62,7 @@ class HomeController extends Controller
         $mealTimes = MealTime::orderBy('id')->get();
         $foodTypes = FoodType::orderBy('id')->get();
         $diets = Diet::orderBy('id')->get();
-        $allergens = Allergen::orderBy('id')->get();
+        $freeFroms = FreeFrom::orderBy('id')->get();
         $cuisines = Cuisine::orderBy('id')->get();
 
         // Ha AJAX kérés, csak a galéria HTML-jét küldjük vissza
@@ -74,6 +74,6 @@ class HomeController extends Controller
             ]);
         }
 
-        return view('home', compact('recipes', 'favoriteIds', 'mealTimes', 'foodTypes', 'diets', 'allergens', 'cuisines'));
+        return view('home', compact('recipes', 'favoriteIds', 'mealTimes', 'foodTypes', 'diets', 'freeFroms', 'cuisines'));
     }
 }

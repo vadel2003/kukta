@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             MealTimeSeeder::class,
             FoodTypeSeeder::class,
             DietSeeder::class,
-            AllergenSeeder::class,
+            FreeFromSeeder::class,
             CuisineSeeder::class,
             RecipeSeeder::class,
             StepCategorySeeder::class,

@@ -20,7 +20,7 @@ class User extends Authenticatable
         'email',
         'name',
         'password',
-        'role',
+        'is_admin',
         'avatar',
     ];
 
@@ -32,7 +32,7 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
-            'role' => 'integer',
+            'is_admin' => 'boolean',
         ];
     }
 
@@ -69,6 +69,6 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === 1;
+        return $this->is_admin;
     }
 }

@@ -25,7 +25,7 @@ class DietSeeder extends Seeder
         foreach ($diets as $name) {
             DB::table('diet')->updateOrInsert(
                 ['name' => $name],
-                ['name' => $name, 'thumbnail' => null]
+                ['name' => $name]
             );
         }
     }

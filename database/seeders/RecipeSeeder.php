@@ -178,7 +178,7 @@ class RecipeSeeder extends Seeder
             9   => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Paprikás csirke
             10  => [['Desszert'],            ['Tízórai', 'Uzsonna'],             ['Vegetáriánus'],                     ['Magyar']],  // Meggyes pite
             11  => [['Tészta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Olasz']],   // Bolognai spagetti
-            12  => [['Saláta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Mindenevő', 'Keto', 'Low-carb'],    []],          // Csirkemell saláta
+            12  => [['Saláta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Mindenevő', 'Keto', 'Low-carb'],    ['Amerikai']], // Csirkemell saláta
             13  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Töltött paprika
             14  => [['Leves'],               ['Ebéd'],                           ['Vegetáriánus'],                     ['Magyar']],  // Borsóleves
             15  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Magyar']],  // Rántott sajt
@@ -226,7 +226,7 @@ class RecipeSeeder extends Seeder
             57  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő', 'Flexitáriánus'],       ['Magyar']],  // Sárgaborsó főzelék
             58  => [['Desszert'],            ['Uzsonna'],                        ['Vegetáriánus'],                     ['Amerikai']], // Csokis brownie
             59  => [['Tészta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Kolbászos lecsós tészta
-            60  => [['Főétel'],              ['Reggeli'],                        ['Vegetáriánus'],                     []],          // Zabkása
+            60  => [['Főétel'],              ['Reggeli'],                        ['Vegetáriánus'],                     ['Amerikai']], // Zabkása
             61  => [['Leves'],               ['Ebéd'],                           ['Mindenevő'],                        ['Magyar']],  // Sertésragu leves
             62  => [['Saláta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Amerikai']], // Csirkés Caesar saláta
             63  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő', 'Low-carb'],            ['Magyar']],  // Rakott cukkini
@@ -243,7 +243,7 @@ class RecipeSeeder extends Seeder
             74  => [['Leves'],               ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Magyar']],  // Zöldségkrémleves
             75  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Amerikai', 'Mexikói']], // Csirkés wrap
             76  => [['Tészta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Magyar']],  // Krumplis tészta
-            77  => [['Desszert'],            ['Uzsonna'],                        ['Vegetáriánus'],                     []],          // Csokoládé torta
+            77  => [['Desszert'],            ['Uzsonna'],                        ['Vegetáriánus'],                     ['Francia']], // Csokoládé torta
             78  => [['Tészta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Olasz']],   // Zöldséges lasagne
             79  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Mexikói', 'Amerikai']], // Chilis bab
             80  => [['Desszert'],            ['Uzsonna', 'Vacsora'],             ['Vegetáriánus'],                     ['Magyar']],  // Túrós palacsinta
@@ -253,7 +253,7 @@ class RecipeSeeder extends Seeder
             84  => [['Leves'],               ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Burgonyaleves
             85  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő', 'Low-carb'],            ['Magyar']],  // Töltött cukkini
             86  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Görög']],   // Gyros tál
-            87  => [['Desszert'],            ['Uzsonna'],                        ['Vegetáriánus'],                     []],          // Vanília puding
+            87  => [['Desszert'],            ['Uzsonna'],                        ['Vegetáriánus'],                     ['Magyar']],  // Vanília puding
             88  => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Mexikói']], // Csirkés quesadilla
             89  => [['Tészta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Vegetáriánus'],                     ['Olasz']],   // Paradicsomos tészta
             90  => [['Desszert'],            ['Tízórai', 'Uzsonna'],             ['Vegetáriánus'],                     ['Magyar']],  // Diós sütemény
@@ -278,15 +278,15 @@ class RecipeSeeder extends Seeder
             109 => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Pescetáriánus', 'Low-carb'],        ['Francia']], // Mustáros-mézes lazac
             110 => [['Tészta', 'Főétel'],    ['Ebéd', 'Vacsora'],                ['Pescetáriánus'],                    ['Olasz']],   // Fokhagymás garnélás spagetti
             111 => [['Előétel'],             ['Tízórai', 'Uzsonna', 'Vacsora'],  ['Vegetáriánus', 'Keto', 'Low-carb'], ['Görög']],   // Tzatziki
-            112 => [['Ital'],                ['Tízórai', 'Uzsonna'],             ['Vegetáriánus', 'Vegán'],            []],          // Házi limonádé
-            113 => [['Ital'],                ['Reggeli', 'Tízórai', 'Uzsonna'],  ['Vegetáriánus'],                     []],          // Epres-banános smoothie
-            114 => [['Ital'],                ['Reggeli', 'Uzsonna'],             ['Vegetáriánus'],                     []],          // Mézes-gyömbéres citromos tea
+            112 => [['Ital'],                ['Tízórai', 'Uzsonna'],             ['Vegetáriánus', 'Vegán'],            ['Magyar']],  // Házi limonádé
+            113 => [['Ital'],                ['Reggeli', 'Tízórai', 'Uzsonna'],  ['Vegetáriánus'],                     ['Amerikai']], // Epres-banános smoothie
+            114 => [['Ital'],                ['Reggeli', 'Uzsonna'],             ['Vegetáriánus'],                     ['Magyar']],  // Mézes-gyömbéres citromos tea
             115 => [['Befőtt'],              ['Tízórai', 'Uzsonna'],             ['Vegetáriánus', 'Vegán'],            ['Magyar']],  // Meggybefőtt
             116 => [['Befőtt'],              ['Tízórai', 'Uzsonna'],             ['Vegetáriánus', 'Vegán'],            ['Magyar']],  // Almabefőtt fahéjjal
             117 => [['Befőtt'],              ['Reggeli', 'Uzsonna'],             ['Vegetáriánus', 'Vegán'],            ['Magyar']],  // Eperlekvár
-            118 => [['Gyümölcs', 'Desszert'], ['Reggeli', 'Tízórai', 'Uzsonna'], ['Vegetáriánus'],                     []],          // Gyümölcssaláta
+            118 => [['Gyümölcs', 'Desszert'], ['Reggeli', 'Tízórai', 'Uzsonna'], ['Vegetáriánus'],                     ['Magyar']],  // Gyümölcssaláta
             119 => [['Gyümölcs', 'Desszert'], ['Uzsonna'],                       ['Vegetáriánus'],                     ['Magyar']],  // Sült alma dióval
-            120 => [['Gyümölcs', 'Desszert'], ['Uzsonna'],                       ['Vegetáriánus'],                     []],          // Csokoládés eper
+            120 => [['Gyümölcs', 'Desszert'], ['Uzsonna'],                       ['Vegetáriánus'],                     ['Amerikai']], // Csokoládés eper
             121 => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Pescetáriánus'],                    ['Ázsiai']],  // Garnélás sült rizs
         ];
 

@@ -14,7 +14,6 @@ class Diet extends Model
 
     protected $fillable = [
         'name',
-        'thumbnail',
     ];
 
     public function recipes()

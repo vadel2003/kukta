@@ -12,7 +12,7 @@ use App\Models\StepCategory;
 use App\Models\MealTime;
 use App\Models\FoodType;
 use App\Models\Diet;
-use App\Models\Allergen;
+use App\Models\FreeFrom;
 use App\Models\Cuisine;
 use App\Models\Favorite;
 use App\Models\Rating;
@@ -25,10 +25,10 @@ class RecipeController extends Controller
         $mealTimes = MealTime::orderBy('id')->get();
         $foodTypes = FoodType::orderBy('id')->get();
         $diets = Diet::orderBy('id')->get();
-        $allergens = Allergen::orderBy('id')->get();
+        $freeFroms = FreeFrom::orderBy('id')->get();
         $cuisines = Cuisine::orderBy('id')->get();
         $stepCategories = StepCategory::orderBy('id')->get();
-        return view('recipes.create', compact('ingredients', 'mealTimes', 'foodTypes', 'diets', 'allergens', 'cuisines', 'stepCategories'));
+        return view('recipes.create', compact('ingredients', 'mealTimes', 'foodTypes', 'diets', 'freeFroms', 'cuisines', 'stepCategories'));
     }
 
     public function store(Request $request)
@@ -46,14 +46,15 @@ class RecipeController extends Controller
             'ingredients.*.name' => ['nullable', 'string', 'max:50'],
             'ingredients.*.quantity' => ['nullable', 'numeric', 'min:0.1'],
             'ingredients.*.unit' => ['nullable', 'string', 'max:20'],
-            'meal_times' => ['nullable', 'array'],
+            'meal_times' => ['required', 'array', 'min:1'],
             'meal_times.*' => ['exists:meal_time,id'],
             'food_types' => ['required', 'array', 'min:1'],
             'food_types.*' => ['exists:food_type,id'],
-            'diet' => ['nullable', 'integer', 'exists:diet,id'],
-            'allergen_free' => ['nullable', 'array'],
-            'allergen_free.*' => ['exists:allergen,id'],
-            'cuisines' => ['nullable', 'array'],
+            'diets' => ['required', 'array', 'min:1'],
+            'diets.*' => ['exists:diet,id'],
+            'free_from' => ['nullable', 'array'],
+            'free_from.*' => ['exists:free_from,id'],
+            'cuisines' => ['required', 'array', 'min:1'],
             'cuisines.*' => ['exists:cuisine,id'],
             // kép kötelező: vagy feltöltött saját kép, vagy kiválasztott alapkép
             // A böngésző a feltöltés előtt 1240x800-as JPEG-re vágja a képet (recipes/create.blade.php).
@@ -61,8 +62,14 @@ class RecipeController extends Controller
             'thumbnail_image' => ['nullable', 'required_without:default_image', 'image', 'mimes:jpeg', 'dimensions:width=1240,height=800', 'max:2048'],
             'default_image' => ['nullable', 'string'],
         ], [
+            'meal_times.required' => 'Válassz legalább egy napszakot!',
+            'meal_times.min' => 'Válassz legalább egy napszakot!',
             'food_types.required' => 'Válassz legalább egy ételtípust!',
             'food_types.min' => 'Válassz legalább egy ételtípust!',
+            'diets.required' => 'Válassz legalább egy étrendet!',
+            'diets.min' => 'Válassz legalább egy étrendet!',
+            'cuisines.required' => 'Válassz legalább egy konyhát!',
+            'cuisines.min' => 'Válassz legalább egy konyhát!',
             'ingredients.*.quantity.min' => 'A mennyiség legalább 0,1 legyen!',
             'thumbnail_image.required_without' => 'Tölts fel saját képet, vagy válassz egy alapképet!',
             'thumbnail_image.required' => 'Tölts fel saját képet, vagy válassz egy alapképet!',
@@ -185,20 +192,14 @@ class RecipeController extends Controller
             ]);
         }
 
-        // 4. Kategóriák mentése
-        if (!empty($validated['meal_times'])) {
-            $recipe->mealTimes()->attach($validated['meal_times']);
+        // 4. Kategóriák mentése (a mentességen kívül mind kötelező, ezért csak ott kell üres-ellenőrzés)
+        $recipe->mealTimes()->attach($validated['meal_times']);
+        $recipe->foodTypes()->attach($validated['food_types']);
+        $recipe->diets()->attach($validated['diets']);
+        if (!empty($validated['free_from'])) {
+            $recipe->freeFroms()->attach($validated['free_from']);
         }
-        if (!empty($validated['food_types'])) {
-            $recipe->foodTypes()->attach($validated['food_types']);
-        }
-        if (!empty($validated['diet'])) {
-            $recipe->diets()->attach($validated['diet']);
-        }
-        $recipe->allergens()->attach($this->containedAllergens($validated['allergen_free'] ?? []));
-        if (!empty($validated['cuisines'])) {
-            $recipe->cuisines()->attach($validated['cuisines']);
-        }
+        $recipe->cuisines()->attach($validated['cuisines']);
 
         return redirect()->route('recipes.my')->with('success', 'Recept sikeresen feltöltve!');
     }
@@ -253,7 +254,7 @@ class RecipeController extends Controller
         $mealTimes = MealTime::orderBy('id')->get();
         $foodTypes = FoodType::orderBy('id')->get();
         $diets = Diet::orderBy('id')->get();
-        $allergens = Allergen::orderBy('id')->get();
+        $freeFroms = FreeFrom::orderBy('id')->get();
         $cuisines = Cuisine::orderBy('id')->get();
 
         return view('recipes.my', [
@@ -264,7 +265,7 @@ class RecipeController extends Controller
             'mealTimes' => $mealTimes,
             'foodTypes' => $foodTypes,
             'diets' => $diets,
-            'allergens' => $allergens,
+            'freeFroms' => $freeFroms,
             'cuisines' => $cuisines,
         ]);
     }
@@ -330,7 +331,7 @@ class RecipeController extends Controller
         $mealTimes = MealTime::orderBy('id')->get();
         $foodTypes = FoodType::orderBy('id')->get();
         $diets = Diet::orderBy('id')->get();
-        $allergens = Allergen::orderBy('id')->get();
+        $freeFroms = FreeFrom::orderBy('id')->get();
         $cuisines = Cuisine::orderBy('id')->get();
 
         return view('recipes.favorites', [
@@ -341,7 +342,7 @@ class RecipeController extends Controller
             'mealTimes' => $mealTimes,
             'foodTypes' => $foodTypes,
             'diets' => $diets,
-            'allergens' => $allergens,
+            'freeFroms' => $freeFroms,
             'cuisines' => $cuisines,
         ]);
     }
@@ -506,7 +507,7 @@ class RecipeController extends Controller
 
     public function edit($id)
     {
-        $recipe = Recipe::with(['steps', 'ingredients', 'mealTimes', 'foodTypes', 'diets', 'allergens', 'cuisines'])
+        $recipe = Recipe::with(['steps', 'ingredients', 'mealTimes', 'foodTypes', 'diets', 'freeFroms', 'cuisines'])
             ->where('user_id', Auth::id())
             ->findOrFail($id);
 
@@ -514,11 +515,11 @@ class RecipeController extends Controller
         $mealTimes = MealTime::orderBy('id')->get();
         $foodTypes = FoodType::orderBy('id')->get();
         $diets = Diet::orderBy('id')->get();
-        $allergens = Allergen::orderBy('id')->get();
+        $freeFroms = FreeFrom::orderBy('id')->get();
         $cuisines = Cuisine::orderBy('id')->get();
         $stepCategories = StepCategory::orderBy('id')->get();
 
-        return view('recipes.create', compact('recipe', 'ingredients', 'mealTimes', 'foodTypes', 'diets', 'allergens', 'cuisines', 'stepCategories'));
+        return view('recipes.create', compact('recipe', 'ingredients', 'mealTimes', 'foodTypes', 'diets', 'freeFroms', 'cuisines', 'stepCategories'));
     }
 
     public function update(Request $request, $id)
@@ -538,21 +539,28 @@ class RecipeController extends Controller
             'ingredients.*.name' => ['nullable', 'string', 'max:50'],
             'ingredients.*.quantity' => ['nullable', 'numeric', 'min:0.1'],
             'ingredients.*.unit' => ['nullable', 'string', 'max:20'],
-            'meal_times' => ['nullable', 'array'],
+            'meal_times' => ['required', 'array', 'min:1'],
             'meal_times.*' => ['exists:meal_time,id'],
             'food_types' => ['required', 'array', 'min:1'],
             'food_types.*' => ['exists:food_type,id'],
-            'diet' => ['nullable', 'integer', 'exists:diet,id'],
-            'allergen_free' => ['nullable', 'array'],
-            'allergen_free.*' => ['exists:allergen,id'],
-            'cuisines' => ['nullable', 'array'],
+            'diets' => ['required', 'array', 'min:1'],
+            'diets.*' => ['exists:diet,id'],
+            'free_from' => ['nullable', 'array'],
+            'free_from.*' => ['exists:free_from,id'],
+            'cuisines' => ['required', 'array', 'min:1'],
             'cuisines.*' => ['exists:cuisine,id'],
             // kép csak akkor kötelező, ha a receptnek még nincs képe és alapképet sem választott
             'thumbnail_image' => ['nullable', Rule::requiredIf(empty($recipe->thumbnail) && !$request->filled('default_image')), 'image', 'mimes:jpeg', 'dimensions:width=1240,height=800', 'max:2048'],
             'default_image' => ['nullable', 'string'],
         ], [
+            'meal_times.required' => 'Válassz legalább egy napszakot!',
+            'meal_times.min' => 'Válassz legalább egy napszakot!',
             'food_types.required' => 'Válassz legalább egy ételtípust!',
             'food_types.min' => 'Válassz legalább egy ételtípust!',
+            'diets.required' => 'Válassz legalább egy étrendet!',
+            'diets.min' => 'Válassz legalább egy étrendet!',
+            'cuisines.required' => 'Válassz legalább egy konyhát!',
+            'cuisines.min' => 'Válassz legalább egy konyhát!',
             'ingredients.*.quantity.min' => 'A mennyiség legalább 0,1 legyen!',
             'thumbnail_image.required_without' => 'Tölts fel saját képet, vagy válassz egy alapképet!',
             'thumbnail_image.required' => 'Tölts fel saját képet, vagy válassz egy alapképet!',
@@ -671,11 +679,11 @@ class RecipeController extends Controller
         $recipe->ingredients()->sync($ingredientData);
 
         // 5. Kategóriák frissítése
-        $recipe->mealTimes()->sync($validated['meal_times'] ?? []);
-        $recipe->foodTypes()->sync($validated['food_types'] ?? []);
-        $recipe->diets()->sync($validated['diet'] ?? []);
-        $recipe->allergens()->sync($this->containedAllergens($validated['allergen_free'] ?? []));
-        $recipe->cuisines()->sync($validated['cuisines'] ?? []);
+        $recipe->mealTimes()->sync($validated['meal_times']);
+        $recipe->foodTypes()->sync($validated['food_types']);
+        $recipe->diets()->sync($validated['diets']);
+        $recipe->freeFroms()->sync($validated['free_from'] ?? []);
+        $recipe->cuisines()->sync($validated['cuisines']);
 
         return redirect()->route('recipes.my')->with('success', 'Recept sikeresen módosítva!');
     }
@@ -691,16 +699,6 @@ class RecipeController extends Controller
         $recipe->delete();
 
         return redirect()->back()->with('success', 'Recept sikeresen törölve!');
-    }
-
-    /**
-     * A form azt kérdezi, mitől MENTES a recept, az adatbázis viszont azt tárolja, mit
-     * TARTALMAZ (erre épül a kereső szűrője is). Ez a függvény fordít a kettő között:
-     * az összes allergén közül azokat adja vissza, amelyek NINCSENEK bepipálva.
-     */
-    private function containedAllergens(array $freeIds): array
-    {
-        return Allergen::whereNotIn('id', $freeIds)->pluck('id')->all();
     }
 }
 

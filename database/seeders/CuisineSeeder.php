@@ -10,13 +10,13 @@ class CuisineSeeder extends Seeder
     public function run(): void
     {
         $cuisines = [
-            ['name' => 'Magyar',   'thumbnail' => null],
-            ['name' => 'Olasz',    'thumbnail' => null],
-            ['name' => 'Francia',  'thumbnail' => null],
-            ['name' => 'Ázsiai',   'thumbnail' => null],
-            ['name' => 'Amerikai', 'thumbnail' => null],
-            ['name' => 'Mexikói',  'thumbnail' => null],
-            ['name' => 'Görög',    'thumbnail' => null],
+            ['name' => 'Magyar'],
+            ['name' => 'Olasz'],
+            ['name' => 'Francia'],
+            ['name' => 'Ázsiai'],
+            ['name' => 'Amerikai'],
+            ['name' => 'Mexikói'],
+            ['name' => 'Görög'],
         ];
 
         foreach ($cuisines as $cuisine) {

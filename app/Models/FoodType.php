@@ -14,7 +14,6 @@ class FoodType extends Model
 
     protected $fillable = [
         'name',
-        'thumbnail',
     ];
 
     public function recipes()

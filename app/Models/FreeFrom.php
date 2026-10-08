@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Allergen extends Model
+class FreeFrom extends Model
 {
-    protected $table = 'allergen';
+    protected $table = 'free_from';
 
     protected $primaryKey = 'id';
 
@@ -19,6 +19,6 @@ class Allergen extends Model
 
     public function recipes()
     {
-        return $this->belongsToMany(Recipe::class, 'allergen_recipe', 'allergen_id', 'recipe_id');
+        return $this->belongsToMany(Recipe::class, 'free_from_recipe', 'free_from_id', 'recipe_id');
     }
 }

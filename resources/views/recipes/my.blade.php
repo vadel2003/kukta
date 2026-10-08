@@ -23,7 +23,7 @@
                 'mealTimes' => $mealTimes,
                 'foodTypes' => $foodTypes,
                 'diets' => $diets,
-                'allergens' => $allergens,
+                'freeFroms' => $freeFroms,
                 'cuisines' => $cuisines,
             ])
 

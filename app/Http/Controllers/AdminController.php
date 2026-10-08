@@ -187,7 +187,7 @@ class AdminController extends Controller
 
         $search = $request->query('search');
 
-        $allowedSorts = ['id', 'name', 'email', 'role'];
+        $allowedSorts = ['id', 'name', 'email', 'is_admin'];
         $sort = $request->query('sort', 'name');
         if (!in_array($sort, $allowedSorts)) {
             $sort = 'name';
@@ -241,7 +241,7 @@ class AdminController extends Controller
         // ->get()->each->delete(): a felhasználókat betöltjük és egyenként töröljük, mert
         // csak így fut le a User modell deleting eseménye (ami a profilképet is törli).
         User::whereIn('id', $validated['ids'])
-            ->where('role', '!=', 1)
+            ->where('is_admin', false)
             ->where('id', '!=', Auth::id())
             ->get()
             ->each

@@ -45,7 +45,7 @@
                 'id' => 'ID',
                 'name' => 'Név',
                 'email' => 'Email',
-                'role' => 'Szerepkör',
+                'is_admin' => 'Szerepkör',
             ];
         @endphp
         <table class="admin-table">

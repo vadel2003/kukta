@@ -348,7 +348,10 @@ header.scrolled ~ main .recipes-section .search-bar {
 }
 
 .filter-chip span {
-    display: inline-block;
+    /* inline-flex: az ikon és a szöveg egy sorban, függőlegesen középre igazítva */
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
     padding: 0.4rem 0.9rem;
     border: 1px solid var(--color-border);
     border-radius: 999px;
@@ -368,6 +371,13 @@ header.scrolled ~ main .recipes-section .search-bar {
     background: var(--color-primary);
     border-color: var(--color-primary);
     color: var(--color-white);
+}
+
+/* Bepipált (narancs hátterű) kapszulán a narancs ikon nem látszana, ezért fehérre színezzük:
+   brightness(0) előbb feketévé teszi, az invert(1) pedig megfordítja fehérre.
+   (Az <img>-ként betöltött SVG-re a CSS color nem hat, ezért kell a filter.) */
+.filter-chip input:checked + span .category-icon {
+    filter: brightness(0) invert(1);
 }
 
 /* Kiegészítő megjegyzés a kapszulán belül, pl. "(alapértelmezett)" - kisebb és halványabb,

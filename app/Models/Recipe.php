@@ -109,9 +109,9 @@ class Recipe extends Model
         return $this->belongsToMany(Diet::class, 'diet_recipe', 'recipe_id', 'diet_id');
     }
 
-    public function allergens()
+    public function freeFroms()
     {
-        return $this->belongsToMany(Allergen::class, 'allergen_recipe', 'recipe_id', 'allergen_id');
+        return $this->belongsToMany(FreeFrom::class, 'free_from_recipe', 'recipe_id', 'free_from_id');
     }
 
     public function cuisines()
@@ -148,10 +148,13 @@ class Recipe extends Model
         if ($request->filled('diet')) {
             $query->whereHas('diets', fn ($q) => $q->whereIn('diet.id', (array) $request->input('diet')));
         }
-        // Érzékenység: fordított logika - aki pl. a "Glutén"-t jelöli be, az glutént NEM
-        // tartalmazó recepteket keres, ezért whereDoesntHave ("nincs ilyen allergénje")
-        if ($request->filled('allergen')) {
-            $query->whereDoesntHave('allergens', fn ($q) => $q->whereIn('allergen.id', (array) $request->input('allergen')));
+        // Mentesség: itt csoporton belül is ÉS a kapcsolat - aki a "Glutén"-t és a "Laktóz"-t
+        // is bejelöli, annak olyan recept kell, ami MINDKETTŐTŐL mentes. Ezért minden
+        // bejelölt mentességre külön whereHas feltétel kerül (ezek között ÉS van)
+        if ($request->filled('free_from')) {
+            foreach ((array) $request->input('free_from') as $freeFromId) {
+                $query->whereHas('freeFroms', fn ($q) => $q->where('free_from.id', $freeFromId));
+            }
         }
         if ($request->filled('cuisine')) {
             $query->whereHas('cuisines', fn ($q) => $q->whereIn('cuisine.id', (array) $request->input('cuisine')));

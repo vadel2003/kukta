@@ -540,8 +540,8 @@ class IngredientRecipeSeeder extends Seeder
         ];
 
         // Melyik hozzávaló milyen allergént/érzékenységet tartalmaz.
-        // Ebből számoljuk ki a receptek allergénjeit, így nem kell kézzel karbantartani.
-        $allergenMap = [
+        // Ebből számoljuk ki, mitől mentesek a receptek, így nem kell kézzel karbantartani.
+        $containsMap = [
             'Glutén'   => ['Liszt', 'Tészta', 'Kenyér', 'Zsemlemorzsa', 'Spagetti', 'Nokedli', 'Csipetke', 'Tarhonya', 'Makaróni',
                            'Lasagne tészta', 'Csigatészta', 'Penne', 'Tortilla', 'Pita', 'Kifli', 'Babapiskóta', 'Zabpehely', 'Szójaszósz'],
             'Laktóz'   => ['Tej', 'Vaj', 'Tejföl', 'Tejszín', 'Sajt', 'Túró', 'Parmezán', 'Feta sajt', 'Ricotta', 'Mascarpone', 'Joghurt'],
@@ -559,13 +559,13 @@ class IngredientRecipeSeeder extends Seeder
 
         // Név => ID párosok az adatbázisból (így a fenti listában olvasható nevek szerepelhetnek)
         $ingredientIds = DB::table('ingredient')->pluck('id', 'name');
-        $allergenIds = DB::table('allergen')->pluck('id', 'name');
+        $freeFromIds = DB::table('free_from')->pluck('id', 'name');
 
         $records = [];
-        $allergenRecords = [];
+        $freeFromRecords = [];
 
         foreach ($recipeIngredients as $recipeId => $ingredients) {
-            $recipeAllergens = [];
+            $recipeContains = [];
 
             foreach ($ingredients as [$name, $quantity, $unit]) {
                 if (!isset($ingredientIds[$name])) {
@@ -579,15 +579,18 @@ class IngredientRecipeSeeder extends Seeder
                     'unit' => $unit,
                 ];
 
-                foreach ($allergenMap as $allergen => $names) {
+                foreach ($containsMap as $freeFrom => $names) {
                     if (in_array($name, $names)) {
-                        $recipeAllergens[$allergen] = true;
+                        $recipeContains[$freeFrom] = true;
                     }
                 }
             }
 
-            foreach (array_keys($recipeAllergens) as $allergen) {
-                $allergenRecords[] = ['allergen_id' => $allergenIds[$allergen], 'recipe_id' => $recipeId];
+            // A recept attól mentes, amit egyik hozzávalója sem tartalmaz
+            foreach ($freeFromIds as $freeFrom => $freeFromId) {
+                if (!isset($recipeContains[$freeFrom])) {
+                    $freeFromRecords[] = ['free_from_id' => $freeFromId, 'recipe_id' => $recipeId];
+                }
             }
         }
 
@@ -595,6 +598,6 @@ class IngredientRecipeSeeder extends Seeder
             DB::table('ingredient_recipe')->insert($chunk);
         }
 
-        DB::table('allergen_recipe')->insert($allergenRecords);
+        DB::table('free_from_recipe')->insert($freeFromRecords);
     }
 }

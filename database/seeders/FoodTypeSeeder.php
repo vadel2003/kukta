@@ -27,7 +27,7 @@ class FoodTypeSeeder extends Seeder
         foreach ($foodTypes as $name) {
             DB::table('food_type')->updateOrInsert(
                 ['name' => $name],
-                ['name' => $name, 'thumbnail' => null]
+                ['name' => $name]
             );
         }
     }

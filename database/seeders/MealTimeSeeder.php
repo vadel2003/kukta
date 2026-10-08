@@ -20,7 +20,7 @@ class MealTimeSeeder extends Seeder
         foreach ($mealTimes as $name) {
             DB::table('meal_time')->updateOrInsert(
                 ['name' => $name],
-                ['name' => $name, 'thumbnail' => null]
+                ['name' => $name]
             );
         }
     }

@@ -2,7 +2,7 @@
     Kereső sáv + aktív szűrők + Szűrők/Rendezés modal - a főoldal, a Saját receptek
     és a Kedvenc receptek oldal is ezt használja, hogy ne kelljen 3x lemásolni.
     Elvárt változók: $searchAction (route), $mealTimes, $foodTypes, $diets,
-    $allergens, $cuisines. Opcionális: $searchPlaceholder.
+    $freeFroms, $cuisines. Opcionális: $searchPlaceholder.
 
     FONTOS: a modalok tartalma (checkboxok, rádiógombok) szándékosan a <form> ELEMEN
     BELÜL van - így egyetlen submit mindent (keresőszó + szűrők + rendezés) egyszerre küld el.
@@ -15,7 +15,7 @@
         'meal_time' => ['Étkezés', $mealTimes],
         'food_type' => ['Ételtípus', $foodTypes],
         'diet' => ['Diéta', $diets],
-        'allergen' => ['Érzékenység', $allergens],
+        'free_from' => ['Érzékenység', $freeFroms],
         'cuisine' => ['Konyha', $cuisines],
     ];
 @endphp
@@ -47,7 +47,7 @@
                 @foreach ($filterGroups as $param => [$title, $items])
                     <div class="filter-group">
                         <h4>{{ $title }}</h4>
-                        @if ($param === 'allergen')
+                        @if ($param === 'free_from')
                             <p class="filter-hint">Jelöld be, amit a recept <strong>nem</strong> tartalmazhat.</p>
                         @endif
                         <div class="filter-options">
@@ -55,9 +55,16 @@
                                 {{-- data-label: ez a szöveg jelenik meg az aktív szűrő címkéjén --}}
                                 <label class="filter-chip">
                                     <input type="checkbox" name="{{ $param }}[]" value="{{ $item->id }}"
-                                        data-label="{{ $param === 'allergen' ? $item->name . ' nélkül' : $item->name }}"
+                                        data-label="{{ $param === 'free_from' ? $item->name . ' nélkül' : $item->name }}"
                                         {{ in_array($item->id, (array) request($param)) ? 'checked' : '' }}>
-                                    <span>{{ $item->name }}</span>
+                                    <span>
+                                        {{-- Ikon csak a mentességeknél van (csak a free_from táblának van thumbnail mezője).
+                                             alt="": a név úgyis ott van mellette, a képernyőolvasó ne mondja kétszer --}}
+                                        @if ($item->thumbnail)
+                                            <img src="{{ asset($item->thumbnail) }}" alt="" class="category-icon">
+                                        @endif
+                                        {{ $item->name }}
+                                    </span>
                                 </label>
                             @endforeach
                         </div>

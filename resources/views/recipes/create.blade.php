@@ -295,7 +295,7 @@
             </h2>
 
             <div>
-                <h3 style="margin-bottom: 0.25rem;">Napszak</h3>
+                <h3 style="margin-bottom: 0.25rem;">Napszak <span class="form-error">*</span></h3>
                 <div class="checkbox-group">
                     @foreach ($mealTimes as $mealTime)
                         <label>
@@ -327,17 +327,23 @@
             </div>
 
             <div style="margin-top: 1rem;">
-                <h3 style="margin-bottom: 0.25rem;">Étrend</h3>
+                <h3 style="margin-bottom: 0.25rem;">Étrend <span class="form-error">*</span></h3>
                 <div class="checkbox-group">
+                    {{-- Checkbox + diets[] név: így több étrend is bejelölhető, a [] miatt a PHP tömbként kapja meg.
+                         Ha a form hibával tér vissza, az old() értékek (a legutóbbi pipák) élveznek elsőbbséget. --}}
                     @foreach ($diets as $diet)
+                        @php
+                            $isChecked = is_array(old('diets'))
+                                ? in_array($diet->id, old('diets'))
+                                : $isEdit && $recipe->diets->contains($diet->id);
+                        @endphp
                         <label>
-                            <input type="radio" name="diet" value="{{ $diet->id }}"
-                                {{ old('diet', $isEdit ? $recipe->diets->pluck('id')->first() ?? '' : '') == $diet->id ? 'checked' : '' }}>
+                            <input type="checkbox" name="diets[]" value="{{ $diet->id }}" {{ $isChecked ? 'checked' : '' }}>
                             {{ $diet->name }}
                         </label>
                     @endforeach
                 </div>
-                @error('diet')
+                @error('diets')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
@@ -345,30 +351,29 @@
             <div style="margin-top: 1rem;">
                 <h3 style="margin-bottom: 0.25rem;">Mentesség</h3>
                 <p class="field-hint">Jelöld be, amitől a recept mentes.</p>
-                {{-- Fordított logika: az adatbázis azt tárolja, mit TARTALMAZ a recept, a form viszont
-                     azt kérdezi, mitől MENTES. Ezért szerkesztésnél azok vannak bepipálva, amelyeket
-                     a recept NEM tartalmaz (a controller mentéskor visszafordítja). Ha a form hibával
+                {{-- Szerkesztésnél azok vannak bepipálva, amelyektől a recept mentes. Ha a form hibával
                      tér vissza, az old() értékek (a felhasználó legutóbbi pipái) élveznek elsőbbséget. --}}
                 <div class="checkbox-group">
-                    @foreach ($allergens as $allergen)
+                    @foreach ($freeFroms as $freeFrom)
                         @php
-                            $isFree = is_array(old('allergen_free'))
-                                ? in_array($allergen->id, old('allergen_free'))
-                                : $isEdit && !$recipe->allergens->contains($allergen->id);
+                            $isFree = is_array(old('free_from'))
+                                ? in_array($freeFrom->id, old('free_from'))
+                                : $isEdit && $recipe->freeFroms->contains($freeFrom->id);
                         @endphp
                         <label>
-                            <input type="checkbox" name="allergen_free[]" value="{{ $allergen->id }}" {{ $isFree ? 'checked' : '' }}>
-                            {{ $allergen->name }}
+                            <input type="checkbox" name="free_from[]" value="{{ $freeFrom->id }}" {{ $isFree ? 'checked' : '' }}>
+                            <img src="{{ asset($freeFrom->thumbnail) }}" alt="" class="category-icon">
+                            {{ $freeFrom->name }}
                         </label>
                     @endforeach
                 </div>
-                @error('allergen_free')
+                @error('free_from')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
 
             <div style="margin-top: 1rem;">
-                <h3 style="margin-bottom: 0.25rem;">Konyha</h3>
+                <h3 style="margin-bottom: 0.25rem;">Konyha <span class="form-error">*</span></h3>
                 <div class="checkbox-group">
                     @foreach ($cuisines as $cuisine)
                         <label>
