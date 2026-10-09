@@ -269,3 +269,16 @@
         width: 100%;
     }
 }
+
+/* Recept feltöltése / Módosítások mentése gomb: ugyanaz az árnyék, mint a főoldal
+   Keresés/Szűrők/Rendezés és a kártyák gombjain (home.css, app.css .card-actions),
+   hoverre picit erősebb. A transition-be a box-shadow is bekerül, különben a .btn-cook
+   csak a hátteret és a mozgást animálná, az árnyék pedig ugrásszerűen váltana. */
+.btn-recipe-submit {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.btn-recipe-submit:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}

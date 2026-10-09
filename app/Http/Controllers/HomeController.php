@@ -30,7 +30,7 @@ class HomeController extends Controller
         switch ($sort) {
             case 'date':
                 // Feltöltés ideje: legújabb elöl
-                $query->orderBy('creation_date', 'desc');
+                $query->orderBy('created_at', 'desc');
                 break;
 
             case 'popularity':
@@ -45,7 +45,7 @@ class HomeController extends Controller
                     $query->orderByRaw('CASE WHEN title LIKE ? THEN 1 WHEN description LIKE ? THEN 2 ELSE 3 END', ["%{$search}%", "%{$search}%"]);
                 }
                 // Ha nincs kereső szó: egyszerűen legújabb elöl
-                $query->orderBy('creation_date', 'desc');
+                $query->orderBy('created_at', 'desc');
         }
 
         $recipes = $query->paginate(21);

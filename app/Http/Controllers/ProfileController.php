@@ -17,8 +17,8 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:30', 'unique:user,name,' . $user->id . ',id'],
-            'email' => ['required', 'string', 'email', 'max:50', 'unique:user,email,' . $user->id . ',id'],
+            'name' => ['required', 'string', 'min:3', 'max:30', 'unique:user,name,' . $user->id . ',id'],
+            'email' => ['required', 'string', 'email', 'min:6', 'max:254', 'unique:user,email,' . $user->id . ',id'],
             // A böngésző a feltöltés előtt 100x100-as JPEG-re vágja a képet (profile/index.blade.php).
             // A JS megkerülhető, ezért itt is ellenőrizzük: más méret/formátum nem jöhet be.
             'avatar' => ['nullable', 'image', 'mimes:jpeg', 'dimensions:width=100,height=100', 'max:2048'],

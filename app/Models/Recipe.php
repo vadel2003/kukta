@@ -27,14 +27,12 @@ class Recipe extends Model
         'difficulty',
         'servings',
         'thumbnail',
-        'creation_date',
         'user_id',
     ];
 
     protected function casts(): array
     {
         return [
-            'creation_date' => 'date',
             'user_id' => 'integer',
             'prep_time' => 'integer',
             'difficulty' => 'integer',

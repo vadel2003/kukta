@@ -62,14 +62,13 @@ return new class extends Migration
 
         // Users table
         Schema::create('user', function (Blueprint $table) {
-            $table->id()->autoIncrement()->primary();
-            $table->string('email', 50)->unique();
+            $table->id();
+            $table->string('email', 254)->unique();
             $table->string('name', 30)->unique();
-            $table->string('password', 64);
-            $table->integer('role');
+            $table->string('password', 255); // hash-elve tárolva
+            $table->boolean('is_admin')->default(false); // szuperadmin jogot kézzel kell beállítani
             $table->string('avatar', 255)->nullable();
         });
-
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
@@ -88,219 +87,124 @@ return new class extends Migration
 
         // Recipes table
         Schema::create('recipe', function (Blueprint $table) {
-            $table->id()->autoIncrement()->primary();
+            $table->id();
             $table->string('title', 100);
             $table->string('description', 1000);
-            $table->unsignedSmallInteger('prep_time')->nullable(); // elkészítési idő percben
-            $table->string('difficulty', 20)->nullable(); // könnyű / közepes / nehéz
-            $table->unsignedSmallInteger('servings')->nullable(); // adag
-            $table->string('thumbnail', 255)->nullable();
-            $table->date('creation_date')->nullable();
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->timestamps();
+            $table->unsignedSmallInteger('prep_time'); // elkészítési idő percben
+            $table->unsignedTinyInteger('difficulty'); // 0 = könnyű, 1 = közepes, 2 = nehéz (Recipe::DIFFICULTIES)
+            $table->unsignedTinyInteger('servings'); // adag
+            $table->string('thumbnail', 255);
+            $table->foreignId('user_id')->nullable()->constrained('user')->onDelete('SET NULL')->onUpdate('RESTRICT');
+            // A timestamps() üresen hagyható oszlopokat hozna létre, ezért kézzel, kötelezőként
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
 
-        // Foreign keys and indexes for recipe
-        Schema::table('recipe', function (Blueprint $table) {
-            $table->index('user_id');
-            $table->foreign('user_id')->references('id')->on('user')->onDelete('SET NULL')->onUpdate('RESTRICT');
-        });
-
-        // Ingredient table
+        // Ingredient table (tápértékek 100 g-ra)
         Schema::create('ingredient', function (Blueprint $table) {
-            $table->id()->autoIncrement()->primary();
+            $table->id();
             $table->string('name', 50)->unique();
-            $table->float('calories');
-            $table->float('carbohydrate');
-            $table->float('protein');
-            $table->float('fat');
+            $table->double('calories');     // kcal
+            $table->double('carbohydrate'); // g
+            $table->double('protein');      // g
+            $table->double('fat');          // g
         });
 
         // Step category table
         Schema::create('step_category', function (Blueprint $table) {
-            $table->id()->autoIncrement()->primary();
+            $table->id();
             $table->string('name', 50);
-            $table->string('gif_filename', 255)->nullable();
+            $table->string('gif_filename', 255)->unique(); // a public/lottie mappában lévő animáció fájlneve
         });
 
         // Step table
         Schema::create('step', function (Blueprint $table) {
-            $table->id()->autoIncrement()->primary();
+            $table->id();
             $table->string('description', 1000);
-            $table->unsignedBigInteger('recipe_id');
-            $table->unsignedBigInteger('step_category_id')->nullable();
-            $table->integer('order');
+            // "position" és nem "order": az order SQL-ben foglalt szó (ORDER BY)
+            $table->unsignedTinyInteger('position'); // sorszám, 1-től
+            $table->foreignId('recipe_id')->constrained('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
+            $table->foreignId('step_category_id')->constrained('step_category')->onDelete('RESTRICT')->onUpdate('RESTRICT');
 
-            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
-            $table->foreign('step_category_id')->references('id')->on('step_category')->onDelete('SET NULL')->onUpdate('RESTRICT');
-        });
-
-        // Unique constraint for step
-        Schema::table('step', function (Blueprint $table) {
-            $table->unique(['recipe_id', 'order']);
+            $table->unique(['recipe_id', 'position']);
         });
 
         // Ingredient_Recipe table
         Schema::create('ingredient_recipe', function (Blueprint $table) {
-            $table->id()->autoIncrement()->primary();
-            $table->unsignedBigInteger('ingredient_id');
-            $table->unsignedBigInteger('recipe_id');
-            $table->float('quantity');
-            $table->string('unit', 20);
-        });
-
-        Schema::table('ingredient_recipe', function (Blueprint $table) {
-            $table->index('ingredient_id');
-            $table->index('recipe_id');
-            $table->foreign('ingredient_id')->references('id')->on('ingredient')->onDelete('CASCADE')->onUpdate('RESTRICT');
-            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
+            $table->id();
+            $table->foreignId('recipe_id')->constrained('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
+            // RESTRICT: receptben használt alapanyagot a MySQL nem enged törölni
+            $table->foreignId('ingredient_id')->constrained('ingredient')->onDelete('RESTRICT')->onUpdate('RESTRICT');
+            $table->double('quantity');
+            $table->string('unit', 30);
         });
 
         // Favorite table
         Schema::create('favorites', function (Blueprint $table) {
-            $table->id()->autoIncrement()->primary();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('recipe_id');
+            $table->id();
+            $table->foreignId('user_id')->constrained('user')->onDelete('CASCADE')->onUpdate('RESTRICT');
+            $table->foreignId('recipe_id')->constrained('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
             $table->timestamps();
 
             $table->unique(['user_id', 'recipe_id']);
         });
 
-        Schema::table('favorites', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('user')->onDelete('CASCADE')->onUpdate('RESTRICT');
-            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
-        });
-
-        // Category tables
-        Schema::create('meal_time', function (Blueprint $table) {
-            $table->id()->autoIncrement()->primary();
-            $table->string('name', 50);
-            $table->string('thumbnail', 255)->nullable();
-        });
-
-        Schema::create('food_type', function (Blueprint $table) {
-            $table->id()->autoIncrement()->primary();
-            $table->string('name', 50);
-            $table->string('thumbnail', 255)->nullable();
-        });
-
-        Schema::create('diet', function (Blueprint $table) {
-            $table->id()->autoIncrement()->primary();
-            $table->string('name', 50);
-            $table->string('thumbnail', 255)->nullable();
-        });
-
-        Schema::create('allergen', function (Blueprint $table) {
-            $table->id()->autoIncrement()->primary();
-            $table->string('name', 50);
-            $table->string('thumbnail', 255)->nullable();
-        });
-
-        Schema::create('cuisine', function (Blueprint $table) {
-            $table->id()->autoIncrement()->primary();
-            $table->string('name', 50);
-            $table->string('thumbnail', 255)->nullable();
-        });
-
-        // Pivot tables
-        Schema::create('meal_time_recipe', function (Blueprint $table) {
-            $table->unsignedBigInteger('meal_time_id');
-            $table->unsignedBigInteger('recipe_id');
-            $table->primary(['meal_time_id', 'recipe_id']);
-        });
-
-        Schema::table('meal_time_recipe', function (Blueprint $table) {
-            $table->foreign('meal_time_id')->references('id')->on('meal_time')->onDelete('CASCADE')->onUpdate('RESTRICT');
-            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
-        });
-
-        Schema::create('food_type_recipe', function (Blueprint $table) {
-            $table->unsignedBigInteger('food_type_id');
-            $table->unsignedBigInteger('recipe_id');
-            $table->primary(['food_type_id', 'recipe_id']);
-        });
-
-        Schema::table('food_type_recipe', function (Blueprint $table) {
-            $table->foreign('food_type_id')->references('id')->on('food_type')->onDelete('CASCADE')->onUpdate('RESTRICT');
-            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
-        });
-
-        Schema::create('diet_recipe', function (Blueprint $table) {
-            $table->unsignedBigInteger('diet_id');
-            $table->unsignedBigInteger('recipe_id');
-            $table->primary(['diet_id', 'recipe_id']);
-        });
-
-        Schema::table('diet_recipe', function (Blueprint $table) {
-            $table->foreign('diet_id')->references('id')->on('diet')->onDelete('CASCADE')->onUpdate('RESTRICT');
-            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
-        });
-
-        Schema::create('allergen_recipe', function (Blueprint $table) {
-            $table->unsignedBigInteger('allergen_id');
-            $table->unsignedBigInteger('recipe_id');
-            $table->primary(['allergen_id', 'recipe_id']);
-        });
-
-        Schema::table('allergen_recipe', function (Blueprint $table) {
-            $table->foreign('allergen_id')->references('id')->on('allergen')->onDelete('CASCADE')->onUpdate('RESTRICT');
-            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
-        });
-
-        Schema::create('cuisine_recipe', function (Blueprint $table) {
-            $table->unsignedBigInteger('cuisine_id');
-            $table->unsignedBigInteger('recipe_id');
-            $table->primary(['cuisine_id', 'recipe_id']);
-        });
-
-        Schema::table('cuisine_recipe', function (Blueprint $table) {
-            $table->foreign('cuisine_id')->references('id')->on('cuisine')->onDelete('CASCADE')->onUpdate('RESTRICT');
-            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
-        });
-
-        // Score table
-        Schema::create('score', function (Blueprint $table) {
-            $table->id()->autoIncrement()->primary();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('recipe_id');
-            $table->unsignedTinyInteger('score');
+        // Rating table
+        Schema::create('rating', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('user')->onDelete('CASCADE')->onUpdate('RESTRICT');
+            $table->foreignId('recipe_id')->constrained('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
+            $table->unsignedTinyInteger('score'); // 1-5
 
             $table->unique(['user_id', 'recipe_id']);
         });
 
-        Schema::table('score', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('user')->onDelete('CASCADE')->onUpdate('RESTRICT');
-            $table->foreign('recipe_id')->references('id')->on('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
+        // Category tables (konstans adatok, a seeder tölti fel)
+        foreach (['meal_time', 'food_type', 'diet', 'cuisine'] as $tableName) {
+            Schema::create($tableName, function (Blueprint $table) {
+                $table->id();
+                $table->string('name', 50);
+            });
+        }
+
+        // Mitől mentes a recept (pl. Glutén), áthúzott ikonnal
+        Schema::create('free_from', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 30);
+            $table->string('thumbnail', 255);
         });
 
+        // Pivot tables (recept <-> kategória, N:M kapcsolat)
+        foreach (['meal_time', 'food_type', 'diet', 'cuisine', 'free_from'] as $category) {
+            Schema::create($category . '_recipe', function (Blueprint $table) use ($category) {
+                $table->foreignId($category . '_id')->constrained($category)->onDelete('CASCADE')->onUpdate('RESTRICT');
+                $table->foreignId('recipe_id')->constrained('recipe')->onDelete('CASCADE')->onUpdate('RESTRICT');
+                $table->primary([$category . '_id', 'recipe_id']);
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('cache');
-        Schema::dropIfExists('cache_locks');
-        Schema::dropIfExists('jobs');
-        Schema::dropIfExists('job_batches');
-        Schema::dropIfExists('failed_jobs');
-        Schema::dropIfExists('user');
-        Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('sessions');
-        Schema::dropIfExists('recipe');
-        Schema::dropIfExists('ingredient');
+        // Fordított sorrendben: előbb azok a táblák, amelyek másikra hivatkoznak
+        foreach (['meal_time', 'food_type', 'diet', 'cuisine', 'free_from'] as $category) {
+            Schema::dropIfExists($category . '_recipe');
+            Schema::dropIfExists($category);
+        }
+        Schema::dropIfExists('rating');
+        Schema::dropIfExists('favorites');
+        Schema::dropIfExists('ingredient_recipe');
         Schema::dropIfExists('step');
         Schema::dropIfExists('step_category');
-        Schema::dropIfExists('ingredient_recipe');
-        Schema::dropIfExists('favorites');
-        Schema::dropIfExists('score');
-        Schema::dropIfExists('cuisine_recipe');
-        Schema::dropIfExists('allergen_recipe');
-        Schema::dropIfExists('diet_recipe');
-        Schema::dropIfExists('food_type_recipe');
-        Schema::dropIfExists('meal_time_recipe');
-        Schema::dropIfExists('cuisine');
-        Schema::dropIfExists('allergen');
-        Schema::dropIfExists('diet');
-        Schema::dropIfExists('food_type');
-        Schema::dropIfExists('meal_time');
+        Schema::dropIfExists('ingredient');
+        Schema::dropIfExists('recipe');
+        Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('user');
+        Schema::dropIfExists('failed_jobs');
+        Schema::dropIfExists('job_batches');
+        Schema::dropIfExists('jobs');
+        Schema::dropIfExists('cache_locks');
+        Schema::dropIfExists('cache');
     }
 };

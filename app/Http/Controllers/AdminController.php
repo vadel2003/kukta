@@ -51,11 +51,11 @@ class AdminController extends Controller
         }
 
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:50', 'unique:ingredient,name'],
-            'calories' => ['required', 'numeric', 'min:0'],
-            'carbohydrate' => ['required', 'numeric', 'min:0'],
-            'protein' => ['required', 'numeric', 'min:0'],
-            'fat' => ['required', 'numeric', 'min:0'],
+            'name' => ['required', 'string', 'min:2', 'max:50', 'unique:ingredient,name'],
+            'calories' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
+            'carbohydrate' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
+            'protein' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
+            'fat' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
         ]);
 
         Ingredient::create($validated);
@@ -72,11 +72,11 @@ class AdminController extends Controller
         $ingredient = Ingredient::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:50', Rule::unique('ingredient', 'name')->ignore($ingredient->id)],
-            'calories' => ['required', 'numeric', 'min:0'],
-            'carbohydrate' => ['required', 'numeric', 'min:0'],
-            'protein' => ['required', 'numeric', 'min:0'],
-            'fat' => ['required', 'numeric', 'min:0'],
+            'name' => ['required', 'string', 'min:2', 'max:50', Rule::unique('ingredient', 'name')->ignore($ingredient->id)],
+            'calories' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
+            'carbohydrate' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
+            'protein' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
+            'fat' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
         ]);
 
         $ingredient->update($validated);
@@ -129,10 +129,10 @@ class AdminController extends Controller
 
         $search = $request->query('search');
 
-        $allowedSorts = ['title', 'user', 'creation_date'];
-        $sort = $request->query('sort', 'creation_date');
+        $allowedSorts = ['title', 'user', 'created_at'];
+        $sort = $request->query('sort', 'created_at');
         if (!in_array($sort, $allowedSorts)) {
-            $sort = 'creation_date';
+            $sort = 'created_at';
         }
 
         $direction = $request->query('direction', 'desc');

@@ -57,7 +57,7 @@
                     </div>
                     <div class="meta-date">
                         <span class="meta-icon"><i data-lucide="calendar"></i></span>
-                        <span>{{ $recipe->creation_date->format('Y. m. d.') }}</span>
+                        <span>{{ $recipe->created_at->format('Y. m. d.') }}</span>
                     </div>
                 </div>
 

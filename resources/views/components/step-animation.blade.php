@@ -4,7 +4,7 @@
 @props(['category'])
 
 @php
-    $file = $category?->slug ? 'lottie/' . $category->slug . '.json' : null;
+    $file = $category?->gif_filename ? 'lottie/' . $category->gif_filename : null;
 @endphp
 
 @if ($file && file_exists(public_path($file)))

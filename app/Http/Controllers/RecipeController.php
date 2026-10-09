@@ -34,18 +34,18 @@ class RecipeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => ['required', 'string', 'max:100'],
-            'description' => ['required', 'string', 'max:1000'],
-            'prep_time' => ['required', 'integer', 'min:1', 'max:1440'],
+            'title' => ['required', 'string', 'min:5', 'max:100'],
+            'description' => ['required', 'string', 'min:5', 'max:1000'],
+            'prep_time' => ['required', 'integer', 'min:3', 'max:1440'],
             'difficulty' => ['required', 'integer', Rule::in(array_keys(Recipe::DIFFICULTIES))],
             'servings' => ['required', 'integer', 'min:1', 'max:50'],
             'steps' => ['nullable', 'array'],
-            'steps.*.description' => ['nullable', 'string', 'max:1000'],
+            'steps.*.description' => ['nullable', 'string', 'min:5', 'max:1000'],
             'steps.*.step_category_id' => ['nullable', 'integer', 'exists:step_category,id'],
             'ingredients' => ['nullable', 'array'],
-            'ingredients.*.name' => ['nullable', 'string', 'max:50'],
-            'ingredients.*.quantity' => ['nullable', 'numeric', 'min:0.1'],
-            'ingredients.*.unit' => ['nullable', 'string', 'max:20'],
+            'ingredients.*.name' => ['nullable', 'string', 'min:2', 'max:50'],
+            'ingredients.*.quantity' => ['nullable', 'numeric', 'decimal:0,2', 'min:0.1'],
+            'ingredients.*.unit' => ['nullable', 'string', 'max:30'],
             'meal_times' => ['required', 'array', 'min:1'],
             'meal_times.*' => ['exists:meal_time,id'],
             'food_types' => ['required', 'array', 'min:1'],
@@ -71,6 +71,7 @@ class RecipeController extends Controller
             'cuisines.required' => 'Válassz legalább egy konyhát!',
             'cuisines.min' => 'Válassz legalább egy konyhát!',
             'ingredients.*.quantity.min' => 'A mennyiség legalább 0,1 legyen!',
+            'ingredients.*.quantity.decimal' => 'A mennyiség legfeljebb két tizedesjegyű lehet!',
             'thumbnail_image.required_without' => 'Tölts fel saját képet, vagy válassz egy alapképet!',
             'thumbnail_image.required' => 'Tölts fel saját képet, vagy válassz egy alapképet!',
         ]);
@@ -137,6 +138,11 @@ class RecipeController extends Controller
                 ->withErrors(['steps' => 'Adj meg legalább 3 lépést!'])
                 ->withInput();
         }
+        if (count($stepsToSave) > 50) {
+            return back()
+                ->withErrors(['steps' => 'Legfeljebb 50 lépést adhatsz meg!'])
+                ->withInput();
+        }
         if (count($ingredientsToSave) < 3) {
             return back()
                 ->withErrors(['ingredients' => 'Adj meg legalább 3 alapanyagot!'])
@@ -167,7 +173,6 @@ class RecipeController extends Controller
             'difficulty' => $validated['difficulty'],
             'servings' => $validated['servings'],
             'thumbnail' => $thumbnail,
-            'creation_date' => now(),
             'user_id' => Auth::id(),
         ]);
 
@@ -185,7 +190,11 @@ class RecipeController extends Controller
 
         // 3. Alapanyagok feldolgozása
         foreach ($ingredientsToSave as $ingredient) {
-            $ingredientModel = Ingredient::firstOrCreate(['name' => $ingredient['name']]);
+            // Ha még nincs ilyen alapanyag, létrehozzuk 0 tápértékkel (a tápérték kötelező mező) - az admin később kitöltheti
+            $ingredientModel = Ingredient::firstOrCreate(
+                ['name' => $ingredient['name']],
+                ['calories' => 0, 'carbohydrate' => 0, 'protein' => 0, 'fat' => 0]
+            );
             $recipe->ingredients()->attach($ingredientModel->id, [
                 'quantity' => $ingredient['quantity'],
                 'unit' => $ingredient['unit'],
@@ -219,7 +228,7 @@ class RecipeController extends Controller
 
         switch ($sort) {
             case 'date':
-                $query->orderBy('creation_date', 'desc');
+                $query->orderBy('created_at', 'desc');
                 break;
 
             case 'popularity':
@@ -231,7 +240,7 @@ class RecipeController extends Controller
                 if ($search) {
                     $query->orderByRaw('CASE WHEN title LIKE ? THEN 1 WHEN description LIKE ? THEN 2 ELSE 3 END', ["%{$search}%", "%{$search}%"]);
                 }
-                $query->orderBy('creation_date', 'desc');
+                $query->orderBy('created_at', 'desc');
         }
 
         $myRecipes = $query->paginate(21);
@@ -295,7 +304,7 @@ class RecipeController extends Controller
 
         switch ($sort) {
             case 'date':
-                $query->orderBy('recipe.creation_date', 'desc');
+                $query->orderBy('recipe.created_at', 'desc');
                 break;
 
             case 'popularity':
@@ -527,18 +536,18 @@ class RecipeController extends Controller
         $recipe = Recipe::where('user_id', Auth::id())->findOrFail($id);
 
         $validated = $request->validate([
-            'title' => ['required', 'string', 'max:100'],
-            'description' => ['required', 'string', 'max:1000'],
-            'prep_time' => ['required', 'integer', 'min:1', 'max:1440'],
+            'title' => ['required', 'string', 'min:5', 'max:100'],
+            'description' => ['required', 'string', 'min:5', 'max:1000'],
+            'prep_time' => ['required', 'integer', 'min:3', 'max:1440'],
             'difficulty' => ['required', 'integer', Rule::in(array_keys(Recipe::DIFFICULTIES))],
             'servings' => ['required', 'integer', 'min:1', 'max:50'],
             'steps' => ['nullable', 'array'],
-            'steps.*.description' => ['nullable', 'string', 'max:1000'],
+            'steps.*.description' => ['nullable', 'string', 'min:5', 'max:1000'],
             'steps.*.step_category_id' => ['nullable', 'integer', 'exists:step_category,id'],
             'ingredients' => ['nullable', 'array'],
-            'ingredients.*.name' => ['nullable', 'string', 'max:50'],
-            'ingredients.*.quantity' => ['nullable', 'numeric', 'min:0.1'],
-            'ingredients.*.unit' => ['nullable', 'string', 'max:20'],
+            'ingredients.*.name' => ['nullable', 'string', 'min:2', 'max:50'],
+            'ingredients.*.quantity' => ['nullable', 'numeric', 'decimal:0,2', 'min:0.1'],
+            'ingredients.*.unit' => ['nullable', 'string', 'max:30'],
             'meal_times' => ['required', 'array', 'min:1'],
             'meal_times.*' => ['exists:meal_time,id'],
             'food_types' => ['required', 'array', 'min:1'],
@@ -562,6 +571,7 @@ class RecipeController extends Controller
             'cuisines.required' => 'Válassz legalább egy konyhát!',
             'cuisines.min' => 'Válassz legalább egy konyhát!',
             'ingredients.*.quantity.min' => 'A mennyiség legalább 0,1 legyen!',
+            'ingredients.*.quantity.decimal' => 'A mennyiség legfeljebb két tizedesjegyű lehet!',
             'thumbnail_image.required_without' => 'Tölts fel saját képet, vagy válassz egy alapképet!',
             'thumbnail_image.required' => 'Tölts fel saját képet, vagy válassz egy alapképet!',
         ]);
@@ -626,6 +636,11 @@ class RecipeController extends Controller
                 ->withErrors(['steps' => 'Adj meg legalább 3 lépést!'])
                 ->withInput();
         }
+        if (count($stepsToSave) > 50) {
+            return back()
+                ->withErrors(['steps' => 'Legfeljebb 50 lépést adhatsz meg!'])
+                ->withInput();
+        }
         if (count($ingredientsToSave) < 3) {
             return back()
                 ->withErrors(['ingredients' => 'Adj meg legalább 3 alapanyagot!'])
@@ -670,7 +685,11 @@ class RecipeController extends Controller
         // 4. Alapanyagok frissítése (sync törli a régieket és beszúrja az újakat)
         $ingredientData = [];
         foreach ($ingredientsToSave as $ingredient) {
-            $ingredientModel = Ingredient::firstOrCreate(['name' => $ingredient['name']]);
+            // Ha még nincs ilyen alapanyag, létrehozzuk 0 tápértékkel (a tápérték kötelező mező) - az admin később kitöltheti
+            $ingredientModel = Ingredient::firstOrCreate(
+                ['name' => $ingredient['name']],
+                ['calories' => 0, 'carbohydrate' => 0, 'protein' => 0, 'fat' => 0]
+            );
             $ingredientData[$ingredientModel->id] = [
                 'quantity' => $ingredient['quantity'],
                 'unit' => $ingredient['unit'],

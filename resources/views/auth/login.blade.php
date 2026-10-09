@@ -17,7 +17,7 @@
                 <div class="form-group">
                     <label for="email">Email cím</label>
                     <div class="field-control">
-                        <input type="email" id="email" name="email" value="{{ old('email') }}" required maxlength="50" class="{{ $errors->has('email') ? 'is-invalid' : '' }}" aria-describedby="email-counter">
+                        <input type="email" id="email" name="email" value="{{ old('email') }}" required maxlength="254" class="{{ $errors->has('email') ? 'is-invalid' : '' }}" aria-describedby="email-counter">
                         <small class="char-counter" id="email-counter">0 / 50</small>
                     </div>
                     @error('email')

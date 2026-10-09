@@ -978,7 +978,7 @@ class StepSeeder extends Seeder
     // Visszaadja a lépések kategória-azonosítóit, ugyanabban a sorrendben.
     private function categorizeSteps(array $steps): array
     {
-        $categories = DB::table('step_category')->pluck('id', 'slug');
+        $categories = DB::table('step_category')->pluck('id', 'gif_filename');
 
         // Sütőben sütés ("sütőpapír" nem számít). A mb_strtolower miatt a °C itt már °c.
         $ovenPattern = '/sütő(?!papír)|°c/u';
@@ -1009,7 +1009,7 @@ class StepSeeder extends Seeder
                 $slug = $isOven ? 'sutes' : ($isStove ? 'fozes' : 'elkeszites');
             }
 
-            $result[] = $categories[$slug] ?? null;
+            $result[] = $categories[$slug . '.json'];
         }
 
         return $result;

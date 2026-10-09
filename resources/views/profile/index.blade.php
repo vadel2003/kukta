@@ -35,8 +35,8 @@
 
                     <div class="avatar-row-actions">
                         <label for="avatar" class="btn-outline">Kép cseréje</label>
-                        <input type="file" name="avatar" id="avatar" accept="image/*" class="upload-input" aria-describedby="avatar-hint">
-                        <p class="field-hint" id="avatar-hint">Kiválasztás után körbevághatod a képet.</p>
+                        <input type="file" name="avatar" id="avatar" accept="image/jpeg,image/png,image/webp" class="upload-input" aria-describedby="avatar-hint">
+                        <p class="field-hint" id="avatar-hint">JPG, PNG vagy WebP kép. Kiválasztás után körbevághatod.</p>
                         @if (Auth::user()->avatar)
                             <button type="button" class="btn-link-danger" id="avatar-remove">Eltávolítás</button>
                         @endif
@@ -49,7 +49,7 @@
                 <div class="form-group">
                     <label for="name">Felhasználónév</label>
                     <div class="field-control">
-                        <input type="text" name="name" id="name" value="{{ old('name', Auth::user()->name) }}" required maxlength="30" class="{{ $errors->has('name') ? 'is-invalid' : '' }}" aria-describedby="name-counter">
+                        <input type="text" name="name" id="name" value="{{ old('name', Auth::user()->name) }}" required minlength="3" maxlength="30" class="{{ $errors->has('name') ? 'is-invalid' : '' }}" aria-describedby="name-counter">
                         <small class="char-counter" id="name-counter">0 / 30</small>
                     </div>
                     @error('name')
@@ -60,7 +60,7 @@
                 <div class="form-group">
                     <label for="email">Email cím</label>
                     <div class="field-control">
-                        <input type="email" name="email" id="email" value="{{ old('email', Auth::user()->email) }}" required maxlength="50" class="{{ $errors->has('email') ? 'is-invalid' : '' }}" aria-describedby="email-counter">
+                        <input type="email" name="email" id="email" value="{{ old('email', Auth::user()->email) }}" required minlength="6" maxlength="254" class="{{ $errors->has('email') ? 'is-invalid' : '' }}" aria-describedby="email-counter">
                         <small class="char-counter" id="email-counter">0 / 50</small>
                     </div>
                     @error('email')
@@ -96,9 +96,10 @@
                 <div class="form-group">
                     <label for="new_password">Új jelszó</label>
                     <div class="field-control">
-                        <input type="password" name="new_password" id="new_password" required maxlength="50" class="{{ $errors->has('new_password') ? 'is-invalid' : '' }}" aria-describedby="new_password-counter">
+                        <input type="password" name="new_password" id="new_password" required minlength="8" maxlength="50" class="{{ $errors->has('new_password') ? 'is-invalid' : '' }}" aria-describedby="new_password-counter new_password-hint">
                         <small class="char-counter" id="new_password-counter">0 / 50</small>
                     </div>
+                    <p class="field-hint" id="new_password-hint">Legalább 8 karakter.</p>
                     @error('new_password')
                         <span class="form-error">{{ $message }}</span>
                     @enderror
@@ -106,7 +107,7 @@
 
                 <div class="form-group">
                     <label for="new_password_confirmation">Új jelszó megerősítése</label>
-                    <input type="password" name="new_password_confirmation" id="new_password_confirmation" required maxlength="50">
+                    <input type="password" name="new_password_confirmation" id="new_password_confirmation" required minlength="8" maxlength="50">
                 </div>
 
                 <div class="panel-footer">

@@ -62,7 +62,7 @@
                 <label for="title">Recept címe <span class="form-error">*</span></label>
                 <div class="field-control">
                     {{-- textarea (nem input), hogy a teljes 100 karakter látsszon; az Entert a lenti JS tiltja, mert a cím egysoros adat --}}
-                    <textarea name="title" id="title" rows="2" required maxlength="100" autofocus>{{ old('title', $recipe->title ?? '') }}</textarea>
+                    <textarea name="title" id="title" rows="2" required minlength="5" maxlength="100" autofocus>{{ old('title', $recipe->title ?? '') }}</textarea>
                     <small class="char-counter">0 / 100</small>
                 </div>
                 @error('title')
@@ -73,7 +73,7 @@
             <div class="form-group">
                 <label for="description">Leírás <span class="form-error">*</span></label>
                 <div class="field-control">
-                    <textarea name="description" id="description" rows="18" required maxlength="1000">{{ old('description', $recipe->description ?? '') }}</textarea>
+                    <textarea name="description" id="description" rows="18" required minlength="5" maxlength="1000">{{ old('description', $recipe->description ?? '') }}</textarea>
                     <small class="char-counter">0 / 1000</small>
                 </div>
                 @error('description')
@@ -83,7 +83,7 @@
 
             <div class="form-group">
                 <label for="prep_time">Elkészítési idő (perc) <span class="form-error">*</span></label>
-                <input type="number" name="prep_time" id="prep_time" value="{{ old('prep_time', $recipe->prep_time ?? '') }}" required min="1" max="1440">
+                <input type="number" name="prep_time" id="prep_time" value="{{ old('prep_time', $recipe->prep_time ?? '') }}" required min="3" max="1440">
                 @error('prep_time')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
@@ -122,6 +122,7 @@
 
             <div>
                 <h3 class="image-section-title">Tölts fel saját képet</h3>
+                <p class="field-hint">JPG, PNG vagy WebP kép. Kiválasztás után körbevághatod.</p>
                 {{-- Hiba miatti visszatöltéskor a böngésző biztonsági okból nem tölti vissza a
                      fájlmezőt, ezért szólunk, ha a felhasználó előzőleg saját képet választott.
                      old() csak hibás beküldés utáni visszairányításkor tartalmaz adatot. --}}
@@ -133,7 +134,7 @@
                 {{-- a JS állítja 1-re, ha saját képet választott (így tudjuk, kell-e a fenti figyelmeztetés) --}}
                 <input type="hidden" name="had_upload" value="0" class="had-upload">
                 <label class="upload-box">
-                    <input type="file" name="thumbnail_image" accept="image/jpeg,image/png,image/gif,image/webp" class="upload-input">
+                    <input type="file" name="thumbnail_image" accept="image/jpeg,image/png,image/webp" class="upload-input">
                     <img src="{{ asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="" class="upload-placeholder">
                     <span class="upload-hint">+</span>
                 </label>
@@ -194,6 +195,7 @@
                 <span class="title-icon"><i data-lucide="chef-hat"></i></span>
                 Elkészítés lépései <span class="form-error">*</span>
             </h2>
+            <p class="field-hint">Legalább 3 lépés kell, mindegyikhez válassz kategóriát. Az üres sorok nem mentődnek.</p>
 
             <div class="form-group">
                 <div id="steps-container">
@@ -204,7 +206,7 @@
                     @for ($i = 0; $i < $stepCount; $i++)
                         <div class="step-item">
                             <label>{{ $i + 1 }}. lépés</label>
-                            <input type="text" name="steps[{{ $i }}][description]" value="{{ old('steps.' . $i . '.description', $stepValues[$i]['description'] ?? '') }}" placeholder="Add meg a(z) {{ $i + 1 }}. lépést" maxlength="1000">
+                            <input type="text" name="steps[{{ $i }}][description]" value="{{ old('steps.' . $i . '.description', $stepValues[$i]['description'] ?? '') }}" placeholder="Add meg a(z) {{ $i + 1 }}. lépést" minlength="5" maxlength="1000">
                             <small class="char-counter">0 / 1000</small>
                             <select name="steps[{{ $i }}][step_category_id]">
                                 <option value="">-- Kategória --</option>
@@ -231,6 +233,7 @@
                 <span class="title-icon"><i data-lucide="cooking-pot"></i></span>
                 Alapanyagok <span class="form-error">*</span>
             </h2>
+            <p class="field-hint">Legalább 3 alapanyag kell, mennyiséggel és mértékegységgel. Válassz a listából, vagy írd be az új alapanyag nevét, ha nincs benne. Az üres sorok nem mentődnek.</p>
 
             <div class="form-group">
                 <div id="ingredients">
@@ -240,23 +243,16 @@
                     @endphp
                     @for ($i = 0; $i < $ingredientCount; $i++)
                         <div class="ingredient-item">
-                            <input type="text" name="ingredients[{{ $i }}][name]" list="ingredient-options" value="{{ old('ingredients.' . $i . '.name', $ingredientValues[$i]['name'] ?? '') }}" placeholder="Alapanyag neve" maxlength="50">
+                            <input type="text" name="ingredients[{{ $i }}][name]" list="ingredient-options" value="{{ old('ingredients.' . $i . '.name', $ingredientValues[$i]['name'] ?? '') }}" placeholder="Alapanyag neve" minlength="2" maxlength="50">
                             <small class="char-counter">0 / 50</small>
 
-                            <input type="number" name="ingredients[{{ $i }}][quantity]" step="0.1" min="0.1" placeholder="Mennyiség" value="{{ old('ingredients.' . $i . '.quantity', $ingredientValues[$i]['quantity'] ?? '') }}">
+                            <input type="number" name="ingredients[{{ $i }}][quantity]" step="0.01" min="0.1" placeholder="Mennyiség" value="{{ old('ingredients.' . $i . '.quantity', $ingredientValues[$i]['quantity'] ?? '') }}">
 
                             <select name="ingredients[{{ $i }}][unit]">
                                 <option value="">-- Mértékegység --</option>
-                                <option value="g" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'g' ? 'selected' : '' }}>g</option>
-                                <option value="kg" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'kg' ? 'selected' : '' }}>kg</option>
-                                <option value="ml" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'ml' ? 'selected' : '' }}>ml</option>
-                                <option value="l" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'l' ? 'selected' : '' }}>l</option>
-                                <option value="db" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'db' ? 'selected' : '' }}>db</option>
-                                <option value="csésze" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'csésze' ? 'selected' : '' }}>csésze</option>
-                                <option value="evőkanál" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'evőkanál' ? 'selected' : '' }}>evőkanál</option>
-                                <option value="teáskanál" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'teáskanál' ? 'selected' : '' }}>teáskanál</option>
-                                <option value="csipet" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'csipet' ? 'selected' : '' }}>csipet</option>
-                                <option value="ízlés szerint" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == 'ízlés szerint' ? 'selected' : '' }}>ízlés szerint</option>
+                                @foreach (['g', 'kg', 'ml', 'l', 'db', 'gerezd', 'fej', 'szelet', 'csokor', 'csomag', 'csésze', 'evőkanál', 'teáskanál', 'csipet', 'ízlés szerint'] as $unit)
+                                    <option value="{{ $unit }}" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == $unit ? 'selected' : '' }}>{{ $unit }}</option>
+                                @endforeach
                             </select>
 
                             <button type="button" class="remove-ingredient" title="Alapanyag eltávolítása">×</button>
@@ -389,7 +385,7 @@
             </div>
         </div>
 
-        <button type="submit" class="btn-cook btn-cook-primary">{{ $isEdit ? 'Módosítások mentése' : 'Recept feltöltése' }}</button>
+        <button type="submit" class="btn-cook btn-cook-primary btn-recipe-submit">{{ $isEdit ? 'Módosítások mentése' : 'Recept feltöltése' }}</button>
     </form>
     </div>
 

@@ -14,7 +14,6 @@ class StepCategory extends Model
 
     protected $fillable = [
         'name',
-        'slug',
         'gif_filename',
     ];
 
