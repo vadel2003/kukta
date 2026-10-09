@@ -163,7 +163,7 @@ return new class extends Migration
         foreach (['meal_time', 'food_type', 'diet', 'cuisine'] as $tableName) {
             Schema::create($tableName, function (Blueprint $table) {
                 $table->id();
-                $table->string('name', 50);
+                $table->string('name', 30);
             });
         }
 
