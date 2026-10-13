@@ -103,7 +103,7 @@
     <ul id="ingredientList" hidden>
         @foreach ($recipe->ingredients as $ingredient)
             <li class="ai-ingredient">
-                <span class="ai-ingredient-qty">{{ str_replace('.', ',', (float) $ingredient->pivot->quantity) }} {{ $ingredient->pivot->unit }}</span>
+                <span class="ai-ingredient-qty">{{ str_replace('.', ',', (float) $ingredient->pivot->quantity) }} {{ \App\Models\IngredientRecipe::UNITS[$ingredient->pivot->unit] ?? '' }}</span>
                 <span class="ai-ingredient-name">{{ $ingredient->name }}</span>
             </li>
         @endforeach

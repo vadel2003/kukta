@@ -136,7 +136,7 @@ return new class extends Migration
             // RESTRICT: receptben használt alapanyagot a MySQL nem enged törölni
             $table->foreignId('ingredient_id')->constrained('ingredient')->onDelete('RESTRICT')->onUpdate('RESTRICT');
             $table->double('quantity');
-            $table->string('unit', 30);
+            $table->unsignedTinyInteger('unit'); // mértékegység száma (IngredientRecipe::UNITS), pl. 0 = g
         });
 
         // Favorite table

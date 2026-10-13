@@ -20,6 +20,24 @@ class Recipe extends Model
         2 => 'nehéz',
     ];
 
+    // Választható alapképek: útvonal => megjelenő név. A tömb sorrendje = a választó sorrendje.
+    // Az űrlap innen rajzolja ki a képeket, a validáció pedig csak ezeket fogadja el
+    // (a rádiógomb értéke a böngészőben átírható, ezért kell a backendnek is ellenőriznie).
+    public const DEFAULT_IMAGES = [
+        'images/recipes/default/soup_thumbnail.svg'        => 'Leves',
+        'images/recipes/default/main_course_thumbnail.svg' => 'Főétel',
+        'images/recipes/default/dessert_thumbnail.svg'     => 'Desszert',
+        'images/recipes/default/starter_thumbnail.svg'     => 'Előétel / Nasi',
+        'images/recipes/default/side_dish_thumbnail.svg'   => 'Köret',
+        'images/recipes/default/salad_thumbnail.svg'       => 'Saláta',
+        'images/recipes/default/pasta_thumbnail.svg'       => 'Tészta',
+        'images/recipes/default/breakfast_thumbnail.svg'   => 'Reggeli',
+        'images/recipes/default/bakery_thumbnail.svg'      => 'Pékáru',
+        'images/recipes/default/fruit_thumbnail.svg'       => 'Gyümölcs',
+        'images/recipes/default/drink_thumbnail.svg'       => 'Ital',
+        'images/recipes/default/preserve_thumbnail.svg'    => 'Befőtt',
+    ];
+
     protected $fillable = [
         'title',
         'description',

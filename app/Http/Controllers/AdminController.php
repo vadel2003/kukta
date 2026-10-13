@@ -52,10 +52,10 @@ class AdminController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'min:2', 'max:50', 'unique:ingredient,name'],
-            'calories' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
-            'carbohydrate' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
-            'protein' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
-            'fat' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
+            'calories' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:' . PHP_FLOAT_MAX],
+            'carbohydrate' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:' . PHP_FLOAT_MAX],
+            'protein' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:' . PHP_FLOAT_MAX],
+            'fat' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:' . PHP_FLOAT_MAX],
         ]);
 
         Ingredient::create($validated);
@@ -73,10 +73,10 @@ class AdminController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'min:2', 'max:50', Rule::unique('ingredient', 'name')->ignore($ingredient->id)],
-            'calories' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
-            'carbohydrate' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
-            'protein' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
-            'fat' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
+            'calories' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:' . PHP_FLOAT_MAX],
+            'carbohydrate' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:' . PHP_FLOAT_MAX],
+            'protein' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:' . PHP_FLOAT_MAX],
+            'fat' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:' . PHP_FLOAT_MAX],
         ]);
 
         $ingredient->update($validated);

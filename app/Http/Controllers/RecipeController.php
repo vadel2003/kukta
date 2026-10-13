@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use App\Models\Ingredient;
+use App\Models\IngredientRecipe;
 use App\Models\Recipe;
 use App\Models\Step;
 use App\Models\StepCategory;
@@ -44,8 +45,8 @@ class RecipeController extends Controller
             'steps.*.step_category_id' => ['nullable', 'integer', 'exists:step_category,id'],
             'ingredients' => ['nullable', 'array'],
             'ingredients.*.name' => ['nullable', 'string', 'min:2', 'max:50'],
-            'ingredients.*.quantity' => ['nullable', 'numeric', 'decimal:0,2', 'min:0.1'],
-            'ingredients.*.unit' => ['nullable', 'string', 'max:30'],
+            'ingredients.*.quantity' => ['nullable', 'numeric', 'decimal:0,2', 'min:0.1', 'max:' . PHP_FLOAT_MAX],
+            'ingredients.*.unit' => ['nullable', 'integer', Rule::in(array_keys(IngredientRecipe::UNITS))],
             'meal_times' => ['required', 'array', 'min:1'],
             'meal_times.*' => ['exists:meal_time,id'],
             'food_types' => ['required', 'array', 'min:1'],
@@ -58,9 +59,9 @@ class RecipeController extends Controller
             'cuisines.*' => ['exists:cuisine,id'],
             // kép kötelező: vagy feltöltött saját kép, vagy kiválasztott alapkép
             // A böngésző a feltöltés előtt 1240x800-as JPEG-re vágja a képet (recipes/create.blade.php).
-            // A JS megkerülhető, ezért itt is ellenőrizzük: más méret/formátum nem jöhet be.
-            'thumbnail_image' => ['nullable', 'required_without:default_image', 'image', 'mimes:jpeg', 'dimensions:width=1240,height=800', 'max:2048'],
-            'default_image' => ['nullable', 'string'],
+            // A JS megkerülhető, ezért itt is ellenőrizzük: csak 1240x800-as jpeg/jpg/png/webp jöhet be.
+            'thumbnail_image' => ['nullable', 'required_without:default_image', 'image', 'mimes:jpeg,jpg,png,webp', 'dimensions:width=1240,height=800', 'max:2048'],
+            'default_image' => ['nullable', 'string', Rule::in(array_keys(Recipe::DEFAULT_IMAGES))],
         ], [
             'meal_times.required' => 'Válassz legalább egy napszakot!',
             'meal_times.min' => 'Válassz legalább egy napszakot!',
@@ -154,10 +155,10 @@ class RecipeController extends Controller
 
         // Saját kép feltöltése
         if ($request->hasFile('thumbnail_image')) {
-            // A fájlnév saját generált név fix .jpg kiterjesztéssel (a validáció csak JPEG-et
-            // enged), nem a feltöltő által megadott névből vesszük. uniqid(): egyedi azonosító,
+            // A fájlnév saját generált név, a kiterjesztést pedig az extension() a fájl TARTALMÁBÓL
+            // állapítja meg (jpg/png/webp), nem a feltöltő által megadott névből. uniqid(): egyedi azonosító,
             // hogy két egyszerre feltöltött kép ne írja felül egymást.
-            $filename = time() . '_' . uniqid() . '.jpg';
+            $filename = time() . '_' . uniqid() . '.' . $request->file('thumbnail_image')->extension();
             $request->file('thumbnail_image')->move(public_path('images/recipes'), $filename);
             $thumbnail = 'images/recipes/' . $filename;
         }
@@ -546,8 +547,8 @@ class RecipeController extends Controller
             'steps.*.step_category_id' => ['nullable', 'integer', 'exists:step_category,id'],
             'ingredients' => ['nullable', 'array'],
             'ingredients.*.name' => ['nullable', 'string', 'min:2', 'max:50'],
-            'ingredients.*.quantity' => ['nullable', 'numeric', 'decimal:0,2', 'min:0.1'],
-            'ingredients.*.unit' => ['nullable', 'string', 'max:30'],
+            'ingredients.*.quantity' => ['nullable', 'numeric', 'decimal:0,2', 'min:0.1', 'max:' . PHP_FLOAT_MAX],
+            'ingredients.*.unit' => ['nullable', 'integer', Rule::in(array_keys(IngredientRecipe::UNITS))],
             'meal_times' => ['required', 'array', 'min:1'],
             'meal_times.*' => ['exists:meal_time,id'],
             'food_types' => ['required', 'array', 'min:1'],
@@ -559,8 +560,8 @@ class RecipeController extends Controller
             'cuisines' => ['required', 'array', 'min:1'],
             'cuisines.*' => ['exists:cuisine,id'],
             // kép csak akkor kötelező, ha a receptnek még nincs képe és alapképet sem választott
-            'thumbnail_image' => ['nullable', Rule::requiredIf(empty($recipe->thumbnail) && !$request->filled('default_image')), 'image', 'mimes:jpeg', 'dimensions:width=1240,height=800', 'max:2048'],
-            'default_image' => ['nullable', 'string'],
+            'thumbnail_image' => ['nullable', Rule::requiredIf(empty($recipe->thumbnail) && !$request->filled('default_image')), 'image', 'mimes:jpeg,jpg,png,webp', 'dimensions:width=1240,height=800', 'max:2048'],
+            'default_image' => ['nullable', 'string', Rule::in(array_keys(Recipe::DEFAULT_IMAGES))],
         ], [
             'meal_times.required' => 'Válassz legalább egy napszakot!',
             'meal_times.min' => 'Válassz legalább egy napszakot!',
@@ -651,7 +652,7 @@ class RecipeController extends Controller
         $thumbnail = $recipe->thumbnail;
 
         if ($request->hasFile('thumbnail_image')) {
-            $filename = time() . '_' . uniqid() . '.jpg';
+            $filename = time() . '_' . uniqid() . '.' . $request->file('thumbnail_image')->extension();
             $request->file('thumbnail_image')->move(public_path('images/recipes'), $filename);
             $thumbnail = 'images/recipes/' . $filename;
         } elseif (!empty($validated['default_image'])) {

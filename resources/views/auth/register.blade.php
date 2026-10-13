@@ -73,4 +73,21 @@
             <p>Már van fiókod? <a href="{{ route('login') }}">Jelentkezz be!</a></p>
         </div>
     </div>
+
+    <script>
+        // A két jelszó egyezése (a backenden a 'confirmed' szabály). Ha nem egyeznek, a
+        // setCustomValidity hibásnak jelöli a mezőt, így a böngésző nem küldi el az űrlapot,
+        // hanem a saját hibabuborékában kiírja a szöveget. Üres szöveg = nincs hiba.
+        const password = document.getElementById('password');
+        const passwordConfirmation = document.getElementById('password_confirmation');
+
+        function checkPasswordMatch() {
+            passwordConfirmation.setCustomValidity(
+                passwordConfirmation.value === password.value ? '' : 'A két jelszó nem egyezik!'
+            );
+        }
+
+        password.addEventListener('input', checkPasswordMatch);
+        passwordConfirmation.addEventListener('input', checkPasswordMatch);
+    </script>
 @endsection

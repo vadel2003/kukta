@@ -54,16 +54,16 @@
                     <input type="text" name="name" minlength="2" maxlength="50" required>
                 </label>
                 <label>Kalória
-                    <input type="number" name="calories" step="0.01" min="0" required>
+                    <input type="number" name="calories" step="0.01" min="0" max="1.7976931348623157e308" required>
                 </label>
                 <label>Szénhidrát
-                    <input type="number" name="carbohydrate" step="0.01" min="0" required>
+                    <input type="number" name="carbohydrate" step="0.01" min="0" max="1.7976931348623157e308" required>
                 </label>
                 <label>Fehérje
-                    <input type="number" name="protein" step="0.01" min="0" required>
+                    <input type="number" name="protein" step="0.01" min="0" max="1.7976931348623157e308" required>
                 </label>
                 <label>Zsír
-                    <input type="number" name="fat" step="0.01" min="0" required>
+                    <input type="number" name="fat" step="0.01" min="0" max="1.7976931348623157e308" required>
                 </label>
                 <button type="submit" class="btn-edit btn-edit-primary">Mentés</button>
                 <button type="button" class="btn-delete" onclick="toggleNewIngredientForm()">Mégse</button>
@@ -140,16 +140,16 @@
                                     <input type="text" name="name" value="{{ $ingredient->name }}" minlength="2" maxlength="50" required>
                                 </label>
                                 <label>Kalória
-                                    <input type="number" name="calories" value="{{ $ingredient->calories }}" step="0.01" min="0" required>
+                                    <input type="number" name="calories" value="{{ $ingredient->calories }}" step="0.01" min="0" max="1.7976931348623157e308" required>
                                 </label>
                                 <label>Szénhidrát
-                                    <input type="number" name="carbohydrate" value="{{ $ingredient->carbohydrate }}" step="0.01" min="0" required>
+                                    <input type="number" name="carbohydrate" value="{{ $ingredient->carbohydrate }}" step="0.01" min="0" max="1.7976931348623157e308" required>
                                 </label>
                                 <label>Fehérje
-                                    <input type="number" name="protein" value="{{ $ingredient->protein }}" step="0.01" min="0" required>
+                                    <input type="number" name="protein" value="{{ $ingredient->protein }}" step="0.01" min="0" max="1.7976931348623157e308" required>
                                 </label>
                                 <label>Zsír
-                                    <input type="number" name="fat" value="{{ $ingredient->fat }}" step="0.01" min="0" required>
+                                    <input type="number" name="fat" value="{{ $ingredient->fat }}" step="0.01" min="0" max="1.7976931348623157e308" required>
                                 </label>
                                 <button type="submit" class="btn-edit btn-edit-primary">Mentés</button>
                                 <button type="button" class="btn-delete" onclick="toggleIngredientEdit({{ $ingredient->id }})">Mégse</button>

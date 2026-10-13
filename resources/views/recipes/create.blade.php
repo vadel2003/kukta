@@ -146,28 +146,10 @@
             <div class="image-section">
                 <h3 class="image-section-title">Vagy válassz előre definiált képet</h3>
                 <div class="image-picker">
-                    @php
-                        // Fájlnév => megjelenő név. A tömb sorrendje = a választó sorrendje.
-                        // Új alapkép hozzáadásakor ide is fel kell venni.
-                        $defaultImages = [
-                            'soup_thumbnail.svg'        => 'Leves',
-                            'main_course_thumbnail.svg' => 'Főétel',
-                            'dessert_thumbnail.svg'     => 'Desszert',
-                            'starter_thumbnail.svg'     => 'Előétel / Nasi',
-                            'side_dish_thumbnail.svg'   => 'Köret',
-                            'salad_thumbnail.svg'       => 'Saláta',
-                            'pasta_thumbnail.svg'       => 'Tészta',
-                            'breakfast_thumbnail.svg'   => 'Reggeli',
-                            'bakery_thumbnail.svg'      => 'Pékáru',
-                            'fruit_thumbnail.svg'       => 'Gyümölcs',
-                            'drink_thumbnail.svg'       => 'Ital',
-                            'preserve_thumbnail.svg'    => 'Befőtt',
-                        ];
-                    @endphp
-                    @foreach ($defaultImages as $imageName => $imageLabel)
+                    {{-- Az alapképek listája a Recipe modellben van (Recipe::DEFAULT_IMAGES), mert a validáció is azt használja --}}
+                    @foreach (\App\Models\Recipe::DEFAULT_IMAGES as $imageValue => $imageLabel)
                         @php
-                            $imagePath = public_path('images/recipes/default/' . $imageName);
-                            $imageValue = 'images/recipes/default/' . $imageName;
+                            $imagePath = public_path($imageValue);
                         @endphp
                         {{-- ha egy fájl hiányzik a mappából, kihagyjuk (ne legyen törött kép) --}}
                         @continue(!is_file($imagePath))
@@ -246,12 +228,15 @@
                             <input type="text" name="ingredients[{{ $i }}][name]" list="ingredient-options" value="{{ old('ingredients.' . $i . '.name', $ingredientValues[$i]['name'] ?? '') }}" placeholder="Alapanyag neve" minlength="2" maxlength="50">
                             <small class="char-counter">0 / 50</small>
 
-                            <input type="number" name="ingredients[{{ $i }}][quantity]" step="0.01" min="0.1" placeholder="Mennyiség" value="{{ old('ingredients.' . $i . '.quantity', $ingredientValues[$i]['quantity'] ?? '') }}">
+                            <input type="number" name="ingredients[{{ $i }}][quantity]" step="0.01" min="0.1" max="1.7976931348623157e308" placeholder="Mennyiség" value="{{ old('ingredients.' . $i . '.quantity', $ingredientValues[$i]['quantity'] ?? '') }}">
 
                             <select name="ingredients[{{ $i }}][unit]">
                                 <option value="">-- Mértékegység --</option>
-                                @foreach (['g', 'kg', 'ml', 'l', 'db', 'gerezd', 'fej', 'szelet', 'csokor', 'csomag', 'csésze', 'evőkanál', 'teáskanál', 'csipet', 'ízlés szerint'] as $unit)
-                                    <option value="{{ $unit }}" {{ old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') == $unit ? 'selected' : '' }}>{{ $unit }}</option>
+                                {{-- Az érték a mértékegység száma, a felirat a neve (IngredientRecipe::UNITS).
+                                     (string) === (string): szövegként hasonlítunk, különben az üres érték (null)
+                                     a PHP-ban egyenlő lenne a 0-val, és a "g" lenne kiválasztva. --}}
+                                @foreach (\App\Models\IngredientRecipe::UNITS as $unitId => $unitName)
+                                    <option value="{{ $unitId }}" {{ (string) old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') === (string) $unitId ? 'selected' : '' }}>{{ $unitName }}</option>
                                 @endforeach
                             </select>
 
@@ -544,6 +529,70 @@
                 if (btn) btn.disabled = !canRemove;
             });
         }
+
+        // Beküldés előtti ellenőrzés: azok a szabályok, amelyek több mezőt együtt néznek, ezért
+        // HTML attribútummal (required, min...) nem adhatók meg. Ugyanazok, mint a RecipeController-ben.
+        // Miért a gomb "click" eseménye, és nem a form "submit"-ja? A kattintás a böngésző saját
+        // ellenőrzése ELŐTT fut le, így az itt beállított hibákat a böngésző a többivel együtt,
+        // a saját hibabuborékában jeleníti meg (az Enter is "kattintásnak" számít a gombon).
+        // setCustomValidity('szöveg') hibásnak jelöli a mezőt, setCustomValidity('') törli a hibát.
+        const recipeForm = document.querySelector('.btn-recipe-submit').form;
+        const recipeHasThumbnail = @json($isEdit && !empty($recipe->thumbnail));
+
+        document.querySelector('.btn-recipe-submit').addEventListener('click', function () {
+            // Az előző próbálkozás hibáinak törlése, mindent újra ellenőrzünk
+            recipeForm.querySelectorAll('input, select').forEach(field => field.setCustomValidity(''));
+
+            // Lépések: kitöltött lépéshez kategória kell; legalább 3, legfeljebb 50 lépés
+            const stepRows = [...document.querySelectorAll('#steps-container .step-item')];
+            const filledSteps = stepRows.filter(row => row.querySelector('input').value.trim() !== '');
+            filledSteps.forEach(function (row) {
+                const category = row.querySelector('select');
+                if (category && category.value === '') category.setCustomValidity('Minden lépéshez válassz kategóriát!');
+            });
+            if (filledSteps.length < 3) {
+                // A hibát az első üres lépés kapja (mindig van, mert legalább 3 sor van)
+                const emptyStep = stepRows.find(row => !filledSteps.includes(row));
+                emptyStep.querySelector('input').setCustomValidity('Adj meg legalább 3 lépést!');
+            } else if (filledSteps.length > 50) {
+                filledSteps[50].querySelector('input').setCustomValidity('Legfeljebb 50 lépést adhatsz meg!');
+            }
+
+            // Alapanyagok: kitöltött névhez mennyiség és mértékegység kell; legalább 3 alapanyag
+            const ingredientRows = [...document.querySelectorAll('#ingredients .ingredient-item')];
+            const filledIngredients = ingredientRows.filter(row => row.querySelector('input[name*="[name]"]').value.trim() !== '');
+            filledIngredients.forEach(function (row) {
+                const quantity = row.querySelector('input[name*="[quantity]"]');
+                const unit = row.querySelector('select');
+                if (quantity.value === '') quantity.setCustomValidity('Minden alapanyaghoz adj meg mennyiséget!');
+                if (unit.value === '') unit.setCustomValidity('Minden alapanyaghoz válassz mértékegységet!');
+            });
+            if (filledIngredients.length < 3) {
+                const emptyIngredient = ingredientRows.find(row => !filledIngredients.includes(row));
+                emptyIngredient.querySelector('input[name*="[name]"]').setCustomValidity('Adj meg legalább 3 alapanyagot!');
+            }
+
+            // Kategóriák: mindegyik csoportból legalább egyet be kell jelölni (a mentesség nem kötelező)
+            const requiredGroups = {
+                'meal_times[]': 'Válassz legalább egy napszakot!',
+                'food_types[]': 'Válassz legalább egy ételtípust!',
+                'diets[]': 'Válassz legalább egy étrendet!',
+                'cuisines[]': 'Válassz legalább egy konyhát!',
+            };
+            for (const [name, message] of Object.entries(requiredGroups)) {
+                const boxes = recipeForm.querySelectorAll('input[name="' + name + '"]');
+                if (![...boxes].some(box => box.checked)) boxes[0].setCustomValidity(message);
+            }
+
+            // Kép: saját feltöltés vagy alapkép kell (szerkesztésnél a meglévő kép is elég).
+            // A hiba az első alapképet kapja, mert a feltöltő mező rejtett (display: none),
+            // rejtett mező mellé pedig a böngésző nem tud hibabuborékot rajzolni.
+            const hasUpload = thumbnailInput.files.length > 0;
+            const hasDefault = [...defaultImageRadios].some(radio => radio.checked);
+            if (!hasUpload && !hasDefault && !recipeHasThumbnail) {
+                defaultImageRadios[0].setCustomValidity('Tölts fel saját képet, vagy válassz egy alapképet!');
+            }
+        });
 
         // Induláskor elrejtjük a felesleges × gombokat
         updateStepRemoveButtons();

@@ -201,5 +201,19 @@
                 avatarRemoveBtn.remove();
             });
         }
+
+        // Az új jelszó és a megerősítése egyezzen (a backenden a 'confirmed' szabály).
+        // setCustomValidity: nem üres szöveg = hibás mező, a böngésző nem küldi el az űrlapot.
+        const newPassword = document.getElementById('new_password');
+        const newPasswordConfirmation = document.getElementById('new_password_confirmation');
+
+        function checkPasswordMatch() {
+            newPasswordConfirmation.setCustomValidity(
+                newPasswordConfirmation.value === newPassword.value ? '' : 'A két jelszó nem egyezik!'
+            );
+        }
+
+        newPassword.addEventListener('input', checkPasswordMatch);
+        newPasswordConfirmation.addEventListener('input', checkPasswordMatch);
     </script>
 @endsection

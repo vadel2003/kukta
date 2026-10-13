@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\IngredientRecipe;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -572,11 +573,18 @@ class IngredientRecipeSeeder extends Seeder
                     throw new \RuntimeException("Ismeretlen hozzávaló a(z) {$recipeId}. receptben: {$name}");
                 }
 
+                // A fenti listában olvashatóság miatt a mértékegység neve szerepel (pl. 'g'),
+                // az adatbázisba viszont a száma kerül (IngredientRecipe::UNITS, pl. 0)
+                $unitId = array_search($unit, IngredientRecipe::UNITS, true);
+                if ($unitId === false) {
+                    throw new \RuntimeException("Ismeretlen mértékegység a(z) {$recipeId}. receptben: {$unit}");
+                }
+
                 $records[] = [
                     'ingredient_id' => $ingredientIds[$name],
                     'recipe_id' => $recipeId,
                     'quantity' => $quantity,
-                    'unit' => $unit,
+                    'unit' => $unitId,
                 ];
 
                 foreach ($containsMap as $freeFrom => $names) {

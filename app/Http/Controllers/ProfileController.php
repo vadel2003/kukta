@@ -20,8 +20,8 @@ class ProfileController extends Controller
             'name' => ['required', 'string', 'min:3', 'max:30', 'unique:user,name,' . $user->id . ',id'],
             'email' => ['required', 'string', 'email', 'min:6', 'max:254', 'unique:user,email,' . $user->id . ',id'],
             // A böngésző a feltöltés előtt 100x100-as JPEG-re vágja a képet (profile/index.blade.php).
-            // A JS megkerülhető, ezért itt is ellenőrizzük: más méret/formátum nem jöhet be.
-            'avatar' => ['nullable', 'image', 'mimes:jpeg', 'dimensions:width=100,height=100', 'max:2048'],
+            // A JS megkerülhető, ezért itt is ellenőrizzük: csak 100x100-as jpeg/jpg/png/webp jöhet be.
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'dimensions:width=100,height=100', 'max:2048'],
         ]);
 
         $user->name = $validated['name'];
@@ -33,9 +33,9 @@ class ProfileController extends Controller
                 unlink(public_path($user->avatar));
             }
 
-            // Új kép mentése - a kiterjesztés fixen .jpg (a validáció csak JPEG-et enged),
+            // Új kép mentése - a kiterjesztést az extension() a fájl TARTALMÁBÓL állapítja meg (jpg/png/webp),
             // nem a feltöltő által megadott fájlnévből vesszük
-            $filename = $user->id . '_' . time() . '.jpg';
+            $filename = $user->id . '_' . time() . '.' . $request->file('avatar')->extension();
             $request->file('avatar')->move(public_path('avatars'), $filename);
             $user->avatar = 'avatars/' . $filename;
         } elseif ($request->boolean('remove_avatar') && $user->avatar) {
