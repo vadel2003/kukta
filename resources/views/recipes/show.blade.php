@@ -92,6 +92,24 @@
                     </li>
                 @endforeach
             </ul>
+
+            {{-- Allergének: a hozzávalók alatt, mert azokból következnek --}}
+            <h3 class="allergens-title">
+                <span class="title-icon"><i data-lucide="triangle-alert"></i></span>
+                Allergének
+            </h3>
+            @if ($allergens->isEmpty())
+                <p class="allergens-empty">A recept nem tartalmaz a nyilvántartott allergének közül egyet sem.</p>
+            @else
+                <ul class="allergens-list">
+                    @foreach ($allergens as $allergen)
+                        <li class="allergen-tag">
+                            <img src="{{ asset($allergen->thumbnail) }}" alt="" class="category-icon">
+                            {{ $allergen->name }}
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
         </div>
     </section>
 

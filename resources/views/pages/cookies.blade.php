@@ -25,34 +25,32 @@
                     harmadik fél sem helyez el sütit az oldalon keresztül.
                 </p>
 
-                <div class="legal-table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Név</th>
-                                <th>Mire való?</th>
-                                <th>Meddig él?</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>kukta-session</td>
-                                <td>A munkamenet azonosítója: ez tartja fenn a bejelentkezést oldalváltások között.</td>
-                                <td>120 perc inaktivitás után lejár</td>
-                            </tr>
-                            <tr>
-                                <td>XSRF-TOKEN</td>
-                                <td>Biztonsági süti: megakadályozza, hogy egy idegen oldal a nevedben küldjön be űrlapot (CSRF-védelem).</td>
-                                <td>120 perc inaktivitás után lejár</td>
-                            </tr>
-                            <tr>
-                                <td>cookie_notice_seen</td>
-                                <td>Megjegyzi, hogy a süti tájékoztató sávot már bezártad, így nem jelenik meg újra.</td>
-                                <td>1 év</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Név</th>
+                            <th>Mire való?</th>
+                            <th>Meddig él?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>kukta-session</td>
+                            <td>A munkamenet azonosítója: ez tartja fenn a bejelentkezést oldalváltások között.</td>
+                            <td>120 perc inaktivitás után lejár</td>
+                        </tr>
+                        <tr>
+                            <td>XSRF-TOKEN</td>
+                            <td>Biztonsági süti: megakadályozza, hogy egy idegen oldal a nevedben küldjön be űrlapot (CSRF-védelem).</td>
+                            <td>120 perc inaktivitás után lejár</td>
+                        </tr>
+                        <tr>
+                            <td>cookie_notice_seen</td>
+                            <td>Megjegyzi, hogy a süti tájékoztató sávot már bezártad, így nem jelenik meg újra.</td>
+                            <td>1 év</td>
+                        </tr>
+                    </tbody>
+                </table>
 
                 <h2>Kell-e hozzá a beleegyezésed?</h2>
                 <p>

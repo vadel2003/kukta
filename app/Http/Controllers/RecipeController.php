@@ -400,6 +400,12 @@ class RecipeController extends Controller
 
         $favoriteCount = $recipe->favorites()->count();
 
+        // Az adatbázis azt tárolja, mitől MENTES a recept (free_from_recipe).
+        // Az allergének ennek a fordítottja: minden, ami nincs a mentességek között.
+        $allergens = FreeFrom::whereNotIn('id', $recipe->freeFroms()->pluck('free_from.id'))
+            ->orderBy('id')
+            ->get();
+
         $averageRating = round($recipe->averageRating() ?? 0, 1);
         $ratingCount = $recipe->ratings()->count();
         $userRating = Auth::check() ? $recipe->ratings()->where('user_id', Auth::id())->first() : null;
@@ -421,7 +427,7 @@ class RecipeController extends Controller
             ];
         }
 
-        return view('recipes.show', compact('recipe', 'isFavorited', 'favoriteCount', 'averageRating', 'ratingCount', 'userRating', 'distributionPercentages'));
+        return view('recipes.show', compact('recipe', 'isFavorited', 'favoriteCount', 'allergens', 'averageRating', 'ratingCount', 'userRating', 'distributionPercentages'));
     }
 
     public function assistant($id)

@@ -32,6 +32,7 @@
     --color-footer-bg: #958776;
     --color-footer-border: #7a6e60;
     --color-search-bg: #fff4e6;
+    --color-cookie-bg: #5c4b40;
 }
 
 * {
@@ -2196,17 +2197,19 @@ select.is-invalid:focus {
 }
 
 /* ===== MOBIL NÉZET (fejléc/navigáció rész - az oldal saját tartalmának mobil nézete a saját css fájljában van) ===== */
-@media (max-width: 768px) {
-    /* Vízszintes csúszka tiltása (html-re is kell, nem elég csak a body-ra).
-       overflow-x: hidden helyett clip kell, mert a hidden a böngészőben
-       automatikusan overflow-y: auto-t is beállít, ami eltöri a fejléc
-       position: sticky-jét (a clip erre nincs hatással). */
-    html,
-    body {
-        overflow-x: clip;
-        width: 100%;
-    }
+/* Vízszintes csúszka tiltása minden képernyőméreten (html-re is kell, nem elég csak a body-ra).
+   Ok: a főoldali hero width: 100vw-vel lóg ki a main-ből teljes szélességre, de a 100vw a
+   függőleges görgetősáv szélességét is tartalmazza, így asztali gépen ~15px-szel túlnyúlt.
+   overflow-x: hidden helyett clip kell, mert a hidden a böngészőben
+   automatikusan overflow-y: auto-t is beállít, ami eltöri a fejléc
+   position: sticky-jét (a clip erre nincs hatással). */
+html,
+body {
+    overflow-x: clip;
+    width: 100%;
+}
 
+@media (max-width: 768px) {
     /* Hamburger elrejtése mobilon (az avatar veszi át a szerepét) */
     .mobile-menu-btn {
         display: none !important;
@@ -2503,11 +2506,16 @@ select.is-invalid:focus {
     max-width: 900px;
     margin: 0 auto;
     padding: 1rem 1.25rem;
-    background: var(--color-white);
-    color: var(--color-text);
-    border: 2px solid var(--color-primary);
+    /* Középbarna sáv krémszínű szöveggel: világosabb, mint a --color-dark-brown, de még elég
+       sötét ahhoz, hogy a krém szöveg jól olvasható legyen. Sötét háttéren keret nem kell. */
+    background: var(--color-cookie-bg);
+    color: var(--color-bg);
+    /* vékony, világosabb barna keret (a lábléc színe): finoman kirajzolja a doboz szélét */
+    border: 1px solid var(--color-footer-bg);
     border-radius: 12px;
-    box-shadow: 0 6px 24px var(--color-shadow);
+    /* Két árnyék egymáson: a nagy, elmosott "lebegtet", a kicsi, éles a doboz alját rajzolja ki,
+       így az egész jobban kiemelkedik az oldal síkjából */
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25), 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* A display: flex felülírná a HTML hidden attribútumát, ezért külön ki kell mondani */
@@ -2522,27 +2530,41 @@ select.is-invalid:focus {
 }
 
 .cookie-notice a {
-    color: var(--color-primary);
+    /* fehér link: a sötét háttéren jól olvasható, az aláhúzás (böngésző alapértelmezés)
+       jelzi, hogy kattintható */
+    color: var(--color-white);
 }
 
 .btn-cookie-ok {
-    /* Ugyanaz a stílus, mint a kártyák Részletek gombja (.card-actions .btn-view):
-       halvány narancs háttér, narancs keret és szöveg, enyhe árnyék */
+    /* Teli krémszínű gomb barna szöveggel: a barna sávon ez a legvilágosabb folt */
     flex-shrink: 0;
-    padding: 8px 24px;
-    background: var(--color-search-bg);
-    color: var(--color-primary);
-    border: 2px solid var(--color-search-border);
-    border-radius: 4px;
-    font-weight: 600;
+    padding: 10px 28px;
+    background: var(--color-bg);
+    color: var(--color-dark-brown);
+    border: none;
+    /* kis lekerekítés: a klasszikus "gomb" forma, nem kapszula */
+    border-radius: 6px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
+    /* Két árnyék: a sötét, éles alsó csík (3px, elmosás nélkül) olyan, mint a gomb "talpa",
+       ettől tűnik háromdimenziósnak, megnyomhatónak; a puha árnyék kiemeli a sávból */
+    box-shadow: 0 3px 0 var(--color-footer-bg), 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.15s ease;
 }
 
+/* Hoverre kicsit megemelkedik (translateY: felfelé tolja) és kivilágosodik */
 .btn-cookie-ok:hover {
-    background: var(--color-primary-soft);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    background: var(--color-white);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 0 var(--color-footer-bg), 0 6px 14px rgba(0, 0, 0, 0.35);
+}
+
+/* :active = amíg az egérgomb le van nyomva. A gomb lejjebb "süllyed", a talpa eltűnik,
+   mintha tényleg benyomnánk */
+.btn-cookie-ok:active {
+    transform: translateY(3px);
+    box-shadow: 0 0 0 var(--color-footer-bg), 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* Mobilon a gomb a szöveg alá kerül, teljes szélességben */
@@ -2593,11 +2615,6 @@ select.is-invalid:focus {
     font-size: 0.9rem;
 }
 
-/* A táblázat mobilon vízszintesen görgethető, ne lógjon ki az oldalból */
-.legal-table-wrap {
-    overflow-x: auto;
-}
-
 .legal-text table {
     width: 100%;
     border-collapse: collapse;
@@ -2610,6 +2627,9 @@ select.is-invalid:focus {
     border: 1px solid var(--color-border);
     text-align: left;
     vertical-align: top;
+    /* A hosszú, szóköz nélküli szavak (pl. cookie_notice_seen) mobilon is eltörhetnek,
+       így a táblázat mindig kifér, nem kell hozzá vízszintes csúszka */
+    overflow-wrap: anywhere;
 }
 
 .legal-text th {
