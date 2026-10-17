@@ -40,7 +40,7 @@
                 <div class="dropdown desktop-user">
                     <div class="dropdown-trigger">
                         <img src="{{ asset('images/profile_icon.svg') }}?v={{ filemtime(public_path('images/profile_icon.svg')) }}" alt="Profil" class="profile-icon">
-                        <span class="dropdown-arrow">▾</span>
+                        <i data-lucide="chevron-down" class="dropdown-arrow"></i>
                     </div>
                     <div class="dropdown-menu">
                         {{-- A fehér doboz külön elem, mert a .dropdown-menu felső paddingje átlátszó
@@ -72,7 +72,7 @@
                 <div class="dropdown desktop-user">
                     <div class="dropdown-trigger" title="Bejelentkezés">
                         <img src="{{ asset('images/profile_icon.svg') }}?v={{ filemtime(public_path('images/profile_icon.svg')) }}" alt="Bejelentkezés" class="profile-icon">
-                        <span class="dropdown-arrow">▾</span>
+                        <i data-lucide="chevron-down" class="dropdown-arrow"></i>
                     </div>
                     <div class="dropdown-menu">
                         <div class="dropdown-panel">

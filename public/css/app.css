@@ -13,6 +13,9 @@
     --color-shadow-dark: rgba(0,0,0,0.5);
     --color-primary: #e67e22;
     --color-primary-hover: #d35400;
+    /* A fejléc sötétebb narancsa (a primary ugyanazon árnyalata, csak sötétebb) -
+       a header háttere ugyanez rgba-ként (202, 107, 23), átlátszósággal */
+    --color-header: #ca6b17;
     --color-primary-soft: rgba(230, 126, 34, 0.2);
     --color-cta-soft: #e8f3e1;
     --color-search-border: var(--color-primary);
@@ -60,10 +63,18 @@ body {
 
 /* ===== FEJLÉC / NAVIGÁCIÓ (minden oldalon megjelenik) ===== */
 header {
-    background: var(--color-primary);
+    /* Áttetsző narancs "üveg": a #ca6b17 (a #e67e22 sötétebb változata, ugyanazzal
+       a színárnyalattal - csak a HSL világosság 52% helyett 44%) 90%-ban fedő, a backdrop-filter pedig
+       elmossa az alatta görgő tartalmat. Erősebb fedés kell, különben a krémszínű
+       oldalháttér "kiszívja" a narancsot (fakó karamell lesz), és erős blur, különben
+       a kártyák nagy, sötétbarna formái foltokként ütnek át. A saturate csak enyhe,
+       hogy a barna képek ne erősödjenek fel "sárossá". */
+    background: rgba(202, 107, 23, 0.9);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    backdrop-filter: blur(24px) saturate(140%);
     padding: 0.5rem 2rem;
-    border-bottom: 2px solid #cf6d17;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 4px 6px rgba(0,0,0,0.08), 0 10px 20px rgba(0,0,0,0.12);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 1px 12px rgba(0, 0, 0, 0.08);
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
@@ -87,7 +98,7 @@ header {
        mint az avatar-kör a másik oldalon. */
     height: 40px;
     vertical-align: middle;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
 }
 
 .header-right {
@@ -123,15 +134,14 @@ header {
 .profile-icon {
     height: 40px;
     vertical-align: middle;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
 }
 
+/* Lucide chevron-down ikon (svg) - a <i>-t a lucide cseréli svg-re, ezért az svg-t méretezzük */
 .dropdown-arrow {
-    font-size: 0.9rem;
+    width: 20px;
+    height: 20px;
     color: var(--color-white);
-    display: inline-block;
-    transform: scale(2.2);
-    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.6);
 }
 
 .dropdown-menu {
@@ -178,7 +188,7 @@ header {
     flex-shrink: 0;
     width: 18px;
     height: 18px;
-    color: var(--color-primary);
+    color: var(--color-header);
 }
 
 /* Csoportok közti elválasztó vonal */
@@ -202,7 +212,7 @@ header {
 .dropdown-menu a:hover,
 .dropdown-menu form button:hover {
     background-color: var(--color-bg-hover);
-    color: var(--color-primary);
+    color: var(--color-header);
 }
 
 /* Hamburger ikon - alapból rejtve */
@@ -413,7 +423,7 @@ header.scrolled .header-search {
 }
 
 header.scrolled .header-search .search-row > * {
-    animation: headerSearchItemIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+    animation: headerSearchItemIn 0.3s ease-out backwards;
 }
 
 header.scrolled .header-search .search-row > *:nth-child(1) { animation-delay: 0s; }
@@ -459,7 +469,7 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
 
 .header-search .search-input-group {
     background: var(--color-white);
-    border-radius: 4px;
+    border-radius: 8px;
 }
 
 /* A gombok belső szegélye minden irányban azonos legyen (mint a kártyák feletti keresőben).
@@ -479,7 +489,7 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
 .header-search .btn-sort {
     background-color: transparent;
     color: var(--color-white);
-    opacity: 0.85;
+    opacity: 0.8;
 }
 
 .header-search .btn-filters:hover,
@@ -487,7 +497,7 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     background-color: rgba(255, 255, 255, 0.15);
     color: var(--color-white);
     opacity: 1;
-    border-radius: 4px;
+    border-radius: 8px;
 }
 
 .header-search .search-divider {
@@ -497,10 +507,10 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
 /* A fejléc keresés gombja fordított színezésű (fehér alapon narancs), mivel a fejléc háttere már narancs */
 .header-search .btn-search {
     background: var(--color-white);
-    color: var(--color-primary);
+    color: var(--color-header); /* ugyanaz a sötétebb narancs, mint a fejléc háttere */
     font-weight: 700; /* félkövérebb, mint a többi gomb (600), hogy kitűnjön */
-    border-radius: 4px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35); /* erősebb árnyék: jobban "kiemelkedik" a mező mellől */
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15); /* lágy árnyék: épp csak elválik a fejléctől, a lapos stílushoz illik */
     margin-left: 0.5rem; /* térköz a keresőmező és a gomb között */
 }
 
@@ -2257,7 +2267,7 @@ body {
     }
 
     header.scrolled .header-search .search-row > * {
-        animation: headerSearchItemIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+        animation: headerSearchItemIn 0.3s ease-out backwards;
     }
 
     header.scrolled .header-search .search-row > *:nth-child(1) { animation-delay: 0s; }
@@ -2280,7 +2290,7 @@ body {
         min-width: 0;
         height: 36px;
         padding: 0 0.7rem;
-        border-radius: 4px 0 0 4px;
+        border-radius: 8px 0 0 8px;
     }
 
     header .header-search .search-input {
@@ -2297,12 +2307,12 @@ body {
         font-size: 0;
         justify-content: center;
         margin-left: 0 !important;
-        border-radius: 4px;
+        border-radius: 8px;
     }
 
     header .header-search .btn-search {
         margin-left: -0.3rem !important; /* a sor gap-jét visszavesszük: a gomb a mezőhöz tapad */
-        border-radius: 0 4px 4px 0;
+        border-radius: 0 8px 8px 0;
         box-shadow: none;
     }
 
@@ -2425,7 +2435,7 @@ body {
     .mobile-menu a:hover,
     .mobile-menu form button:hover {
         background-color: var(--color-bg-hover);
-        color: var(--color-primary);
+        color: var(--color-header);
     }
 
     .mobile-menu a svg,
@@ -2433,7 +2443,7 @@ body {
         flex-shrink: 0;
         width: 20px;
         height: 20px;
-        color: var(--color-primary);
+        color: var(--color-header);
     }
 
     /* Mindkét mobil keresőben: a mező eleji nagyító ikon fölösleges (a keresés gombon
