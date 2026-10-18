@@ -83,6 +83,11 @@ body.assistant-page::-webkit-scrollbar {
     background-position: center;
     background-repeat: no-repeat;
     animation: assistantBgFadeIn 1s ease;
+    /* Ami kilógna (pl. a szóbuborék keskeny telefonon), azt levágja, így az oldal nem lesz
+       szélesebb a képernyőnél. Enélkül a mobil böngésző oldalra elcsúsztatható nézetet
+       csinál, és a kártyák széle levágódik. (A body overflow: hidden-je ezt mobilon nem
+       mindig akadályozza meg, ezért kell itt is.) */
+    overflow: hidden;
 }
 
 /* A háttérkép ne "pattanjon" be nyersen betöltéskor: az egész oldal együtt, lágyan tűnik fel vele */
@@ -535,10 +540,80 @@ body.assistant-page::-webkit-scrollbar {
 }
 
 @media (max-width: 640px) {
+    /* Minden képernyőn (nyitó, hozzávalók, lépések, befejezés) ugyanakkora, 1rem-es oldalsó
+       távolság: így minden kártya széle egy vonalban van. Az alsó 6rem a lent lévő
+       navigációs nyilaknak hagy helyet (l. lejjebb), hogy ne takarják ki a kártyát.
+       A felső 5rem: a kártyák a bal felső bezáró gomb (56px + 1.25rem) alatt kezdődnek. */
+    .assistant-intro-content,
     .assistant-ingredients,
     .assistant-step,
     .assistant-finish {
-        padding: 1.5rem 3.5rem;
+        padding: 5rem 1rem 6rem;
+    }
+
+    /* A kártyák nem függőlegesen középen, hanem fent kezdődnek - így lapozáskor a teteje
+       mindig ugyanott van, nem ugrál a kártya magasságától függően */
+    .assistant-screen.is-active {
+        justify-content: flex-start;
+    }
+
+    .assistant-intro {
+        align-items: flex-start;
+    }
+
+    /* Keskenyebb kártyák belső tere is kisebb, hogy a tartalom ne lógjon ki */
+    .assistant-intro-card,
+    .assistant-ingredients-card,
+    .assistant-step-card,
+    .assistant-finish-card {
+        padding: 20px;
+    }
+
+    .ai-ingredient {
+        padding: 14px;
+    }
+
+    .assistant-step-number {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 0.8rem;
+        font-size: 1.25rem;
+    }
+
+    .assistant-step-text {
+        font-size: 1.05rem;
+        line-height: 1.6;
+    }
+
+    .assistant-stars {
+        font-size: 2.25rem;
+    }
+
+    .assistant-intro-overlay h1 {
+        font-size: 1.5rem;
+    }
+
+    /* Navigáció mobilon: a nyilak a képernyő két szélén függőlegesen középen a kártyák
+       fölé lógtak. Itt lent, a két alsó sarokban vannak, a kártyák alatt. */
+    .assistant-nav-zone {
+        top: auto;
+        bottom: 1rem;
+        height: auto;
+        width: auto;
+    }
+
+    .assistant-nav-zone-prev {
+        left: 1rem;
+    }
+
+    .assistant-nav-zone-next {
+        right: 1rem;
+    }
+
+    /* Az asztali hover-es fehér derengés itt nem kell (érintésnél "beragadna") */
+    .assistant-nav-zone-prev:hover,
+    .assistant-nav-zone-next:hover {
+        background: none;
     }
 
     .step-animation {
@@ -546,19 +621,21 @@ body.assistant-page::-webkit-scrollbar {
         height: 140px;
     }
 
-    /* Keskeny képernyőn kisebb figura és keskenyebb buborék, hogy a kártyába beférjen */
+    /* Keskeny képernyőn kisebb figura és keskenyebb buborék, hogy a kártyába beférjen.
+       A margin-right: 120px a középre igazított figurát 60px-szel balra tolja (a flex a
+       figurát + a margót együtt teszi középre), így jobbra több hely jut a buboréknak */
     .assistant-figure {
-        width: 190px;
+        width: 160px;
+        margin-right: 120px;
     }
 
-    /* A buborék a képernyő közepétől kb. 40 px-re kezdődik (a középre tett figura 71%-ánál),
-       ezért legfeljebb a képernyő fele mínusz 4rem széles lehet (a kártya margója + a buborék kerete), hogy keskeny telefonon se lógjon ki */
+    /* A buborék itt a figura 80%-ánál kezdődik (asztalin 71%), hogy ne lógjon rá a borsó
+       fejére. Ez kb. 12px-szel a képernyő közepe előtt van; jobbra a képernyő széléig
+       1rem (oldal) + 20px (kártya padding) + 1px (keret) marad szabadon, ezért legfeljebb
+       a képernyő fele mínusz 2rem széles lehet, hogy keskeny telefonon se lógjon ki */
     .assistant-figure-bubble {
-        max-width: min(130px, calc(50vw - 4rem));
-    }
-
-    .assistant-intro-content {
-        padding: 1rem;
+        left: 80%;
+        max-width: min(150px, calc(50vw - 2rem));
     }
 
     .assistant-heading {

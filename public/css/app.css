@@ -13,9 +13,6 @@
     --color-shadow-dark: rgba(0,0,0,0.5);
     --color-primary: #e67e22;
     --color-primary-hover: #d35400;
-    /* A fejléc sötétebb narancsa (a primary ugyanazon árnyalata, csak sötétebb) -
-       a header háttere ugyanez rgba-ként (202, 107, 23), átlátszósággal */
-    --color-header: #ca6b17;
     --color-primary-soft: rgba(230, 126, 34, 0.2);
     --color-cta-soft: #e8f3e1;
     --color-search-border: var(--color-primary);
@@ -46,9 +43,9 @@
 
 html {
     scroll-behavior: smooth;
-    /* A ragadós fejléc (58px) alá ne kerüljön elem sem ugrásnál (pl. #recipes
-       link), sem billentyűzetes fókuszálásnál (pl. Tab a Mentés gombra) */
-    scroll-padding-top: 70px;
+    /* A ragadós fejléc (58px + 12px távolság a tetejétől) alá ne kerüljön elem sem
+       ugrásnál (pl. #recipes link), sem billentyűzetes fókuszálásnál (pl. Tab a Mentés gombra) */
+    scroll-padding-top: 85px;
 }
 
 body {
@@ -63,23 +60,34 @@ body {
 
 /* ===== FEJLÉC / NAVIGÁCIÓ (minden oldalon megjelenik) ===== */
 header {
-    /* Áttetsző narancs "üveg": a #ca6b17 (a #e67e22 sötétebb változata, ugyanazzal
-       a színárnyalattal - csak a HSL világosság 52% helyett 44%) 90%-ban fedő, a backdrop-filter pedig
-       elmossa az alatta görgő tartalmat. Erősebb fedés kell, különben a krémszínű
-       oldalháttér "kiszívja" a narancsot (fakó karamell lesz), és erős blur, különben
-       a kártyák nagy, sötétbarna formái foltokként ütnek át. A saturate csak enyhe,
-       hogy a barna képek ne erősödjenek fel "sárossá". */
-    background: rgba(202, 107, 23, 0.9);
+    /* Áttetsző narancs "üveg": a --color-primary (#e67e22 = 230, 126, 34) 90%-ban fedő,
+       a backdrop-filter pedig elmossa az alatta görgő tartalmat. Erősebb fedés kell,
+       különben a krémszínű oldalháttér "kiszívja" a narancsot (fakó karamell lesz), és
+       erős blur, különben a kártyák nagy, sötétbarna formái foltokként ütnek át. A saturate
+       csak enyhe, hogy a barna képek ne erősödjenek fel "sárossá". */
+    background: rgba(230, 126, 34, 0.9);
     -webkit-backdrop-filter: blur(24px) saturate(140%);
     backdrop-filter: blur(24px) saturate(140%);
-    padding: 0.5rem 2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 1px 12px rgba(0, 0, 0, 0.08);
+    padding: 0.5rem 1.5rem;
+    /* Lebegő "kapszula": nem ér ki a képernyő széléig, hanem egy lekerekített sziget.
+       A width kell, mert a body flex oszlop, és margin: auto mellett a fejléc
+       magától a tartalmához zsugorodna; a max-width a main szélességéhez igazítja. */
+    width: calc(100% - 2rem);
+    max-width: 1200px;
+    margin: 0.75rem auto 0;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    /* Lebegő elemnek kicsit erősebb árnyék kell, hogy "elváljon" az oldaltól. Két réteg:
+       a nagy, elmosott "lebegteti", a kicsi, közeli a fejléc alját rajzolja ki */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15), 0 2px 5px rgba(0, 0, 0, 0.08);
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    /* Logó | kereső | avatar: a két szélső oszlop (auto) csak akkora, amekkora a tartalma,
+       a középső (1fr) kitölti a maradék helyet - így a kereső a logó és az avatar között
+       mindkét oldalon ugyanakkora réssel (l. .header-search margin) nyúlik ki */
+    grid-template-columns: auto 1fr auto;
     align-items: center;
     position: sticky;
-    top: 0;
+    top: 0.75rem; /* görgetéskor is ennyire marad a képernyő tetejétől */
     z-index: 1000;
 }
 
@@ -99,6 +107,36 @@ header {
     height: 40px;
     vertical-align: middle;
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+}
+
+/* A logó link flex-szel: a sapka és a "Kukta" felirat egy sorban.
+   align-items: baseline - a képnek nincs saját alapvonala, ezért a böngésző az alját
+   veszi annak, így a felirat alapvonala (a betűk "talpa") a kép aljához igazodik */
+.header-left a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    text-decoration: none;
+    /* Fix magasság (= a sapka 40px-e): a felirat betűinek alapvonal alatti része (pl. a
+       "g", "j" szára helyének) különben pár pixellel magasabbá tenné a linket, így a
+       fejlécet is - és akkor a hero -70px-es felcsúsztatása (home.css) már nem érne el
+       a képernyő tetejéig, bézs sáv maradna fölötte. A kilógó rész így is látszik. */
+    height: 40px;
+}
+
+.logo-text {
+    color: var(--color-white);
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 1; /* különben az 1.6-os sormagasság miatt magasabb lenne a fejléc */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15); /* ugyanaz, mint a sapka drop-shadow-ja */
+    /* A kukta-sapka.svg-ben a rajz alatt van egy kis üres hely (a kép kerete lejjebb ér,
+       mint a sapka alja), ezért a felirat a látható sapkánál lejjebb ülne. A relative + top
+       csak vizuálisan tolja feljebb, a többi elem helyét nem befolyásolja.
+       Minél negatívabb, annál feljebb kerül a felirat. */
+    position: relative;
+    top: -3px;
 }
 
 .header-right {
@@ -147,7 +185,9 @@ header {
 .dropdown-menu {
     display: none;
     position: absolute;
-    right: 0;
+    /* A menü jobb széle a fejléc jobb szélével legyen egy vonalban, ne az avatarral:
+       ehhez a fejléc jobb paddingjével (1.5rem) és keretével (1px) kell kijjebb tolni */
+    right: calc(-1.5rem - 1px);
     top: 100%;
     padding-top: 0.5rem;
 }
@@ -188,7 +228,7 @@ header {
     flex-shrink: 0;
     width: 18px;
     height: 18px;
-    color: var(--color-header);
+    color: var(--color-primary);
 }
 
 /* Csoportok közti elválasztó vonal */
@@ -212,7 +252,7 @@ header {
 .dropdown-menu a:hover,
 .dropdown-menu form button:hover {
     background-color: var(--color-bg-hover);
-    color: var(--color-header);
+    color: var(--color-primary);
 }
 
 /* Hamburger ikon - alapból rejtve */
@@ -414,11 +454,13 @@ button {
     transition: max-width 0.6s ease, opacity 0.5s ease, margin 0.6s ease;
 }
 
+/* A rács középső (1fr) oszlopa nyújtja ki a keresőt, a max-width 0 -> 100% váltás pedig
+   animálva "kinyitja". A margin a rés a logó és az avatar felé - mindkét oldalon ugyanannyi */
 header.scrolled .header-search {
     flex: 1;
-    max-width: 760px;
+    max-width: 100%;
     opacity: 1;
-    margin: 0 1rem;
+    margin: 0 2rem;
     pointer-events: auto;
 }
 
@@ -426,21 +468,25 @@ header.scrolled .header-search .search-row > * {
     animation: headerSearchItemIn 0.3s ease-out backwards;
 }
 
-header.scrolled .header-search .search-row > *:nth-child(1) { animation-delay: 0s; }
-header.scrolled .header-search .search-row > *:nth-child(2) { animation-delay: 0.05s; }
-header.scrolled .header-search .search-row > *:nth-child(3) { animation-delay: 0.1s; }
-header.scrolled .header-search .search-row > *:nth-child(4) { animation-delay: 0.15s; }
-header.scrolled .header-search .search-row > *:nth-child(5) { animation-delay: 0.2s; }
-header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0.25s; }
+/* Az elemek egymás után úsznak be, kivéve a kereső mezőt (1.) és a Keresés gombot (2.):
+   ez a kettő egy egység, ezért ugyanakkor indulnak, és utánuk jön a többi */
+header.scrolled .header-search .search-row > *:nth-child(1),
+header.scrolled .header-search .search-row > *:nth-child(2) { animation-delay: 0s; }
+header.scrolled .header-search .search-row > *:nth-child(3) { animation-delay: 0.05s; }
+header.scrolled .header-search .search-row > *:nth-child(4) { animation-delay: 0.1s; }
+header.scrolled .header-search .search-row > *:nth-child(5) { animation-delay: 0.15s; }
 
+/* Nincs benne scale (kicsinyítés): azt minden elem a saját közepe körül csinálná, így a
+   mobilon egymáshoz tapadó mező és gomb közt beúszás közben rés nyílna. Csak lefelé
+   csúszás + előtűnés - ettől a kettő egy darabként mozog */
 @keyframes headerSearchItemIn {
     from {
         opacity: 0;
-        transform: translateY(-10px) scale(0.9);
+        transform: translateY(-10px);
     }
     to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translateY(0);
     }
 }
 
@@ -507,7 +553,7 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
 /* A fejléc keresés gombja fordított színezésű (fehér alapon narancs), mivel a fejléc háttere már narancs */
 .header-search .btn-search {
     background: var(--color-white);
-    color: var(--color-header); /* ugyanaz a sötétebb narancs, mint a fejléc háttere */
+    color: var(--color-primary);
     font-weight: 700; /* félkövérebb, mint a többi gomb (600), hogy kitűnjön */
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15); /* lágy árnyék: épp csak elválik a fejléctől, a lapos stílushoz illik */
@@ -522,10 +568,6 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
 /* Keskenyebb asztali/tablet nézetben (pl. kisebb laptop) a feliratok eltűnnek,
    csak az ikonok maradnak, hogy a keresősáv ne csorduljon túl a headeren */
 @media (max-width: 1200px) {
-    header.scrolled .header-search {
-        max-width: 320px;
-    }
-
     header.scrolled .header-search .search-input-group {
         flex: 2;
         min-width: 0;
@@ -608,20 +650,12 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
     width: 100%;
     height: 200px;
     object-fit: cover;
-    border-radius: 4px;
-    border: 1.5px solid #ccc;
-    box-shadow: inset 0 0 12px rgba(0,0,0,0.5), inset 0 0 30px rgba(0,0,0,0.25);
+    /* A régi belső "keretárnyék" (inset box-shadow) és szürke keret helyett lapos, lekerekített
+       kép. Az alapképek (svg) háttere átlátszó, ezért kapnak egy halvány krém hátteret - így
+       a fehér kártyán is látszik a kép területe. Saját feltöltött fotónál ez nem látszik. */
+    border-radius: 8px;
+    background-color: var(--color-bg);
     filter: brightness(1.06); /* egy leheletnyivel világosabb: a sötétebb barna tónusok kicsit feljebb jönnek */
-}
-
-.recipe-detail-image {
-    max-width: 100%;
-    max-height: 300px;
-    object-fit: cover;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-    border: 1.5px solid #ccc;
-    box-shadow: inset 0 0 12px rgba(0,0,0,0.5), inset 0 0 30px rgba(0,0,0,0.25);
 }
 
 .recipe-author {
@@ -905,12 +939,18 @@ header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0
 /* .btn-cook méretű/alakú gomb, de narancssárga (mint a főoldal kereső gombja,
    .recipes-section .search-bar .btn-search, home.css) - pl. Profil Mentés, Bejelentkezés,
    Regisztráció, asszisztens "Vissza a recepthez" gombja; a többi .btn-cook zöld marad */
+/* Ugyanaz az árnyék, mint a kártyák és a kereső gombjain (.card-actions, home.css): így
+   "megnyomható" gombnak hat, hoverre picit erősebb. A transition-be a box-shadow is
+   bekerül, hogy az árnyék is fokozatosan váltson */
 .btn-cook-primary {
     background: var(--color-primary);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .btn-cook-primary:hover {
     background: var(--color-primary-hover);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 /* .btn-cook méretű/alakú gomb veszélyes művelethez - csak a színe tér el */
@@ -1829,6 +1869,29 @@ select.is-invalid:focus {
     height: 1em;
 }
 
+/* Mobilon a vissza link gombnak néz ki: fehér, lekerekített "kapszula" kerettel és
+   árnyékkal (mint a mobil kereső gombjai), és legalább 40px magas, hogy ujjal is
+   könnyen el lehessen találni (asztalon marad a visszafogott szöveges link) */
+@media (max-width: 768px) {
+    .back-link {
+        min-height: 40px;
+        padding: 0 1rem;
+        background: var(--color-white);
+        border: 1px solid #ECE3D8;
+        border-radius: 999px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        color: var(--color-text);
+        font-weight: 600;
+        /* A link több oldalon egy oszlop irányú flex dobozban (.card-stack) van, ami alapból
+           a teljes szélességre nyújtaná - így csak akkora, amekkora a tartalma */
+        align-self: flex-start;
+    }
+
+    .back-link svg {
+        color: var(--color-primary);
+    }
+}
+
 .profile-panel {
     padding: 24px 32px 32px;
 }
@@ -2258,24 +2321,24 @@ body {
         stroke: currentColor;
     }
 
+    /* Mobilon a fejléc keresője visszafelé görgetéskor azonnal tűnjön el. Itt a nyitott
+       szélesség "max-width: none", és none-ról 0-ra a böngésző nem tud animálni - ezért
+       a szélesség egyből 0 lett, de az opacity még fél másodpercig halványult, és a
+       megmaradt oldalsó paddingben (0.35rem) kilátszott a kereső széle.
+       Beúszáskor ez nem gond: az elemek saját beúszó animációja (headerSearchItemIn) megmarad. */
+    .header-search {
+        padding: 0;
+        transition: none;
+    }
+
     /* Header kereső sáv mobilon (görgetéskor épül be/ki, ugyanúgy mint desktopon) */
     header.scrolled .header-search {
+        padding: 0 0.35rem; /* nyitva visszakapja az alap paddingjét (l. fent, csukva 0) */
         flex: 1;
         max-width: none;
         margin: 0 0.5rem;
         gap: 0.3rem;
     }
-
-    header.scrolled .header-search .search-row > * {
-        animation: headerSearchItemIn 0.3s ease-out backwards;
-    }
-
-    header.scrolled .header-search .search-row > *:nth-child(1) { animation-delay: 0s; }
-    header.scrolled .header-search .search-row > *:nth-child(2) { animation-delay: 0.05s; }
-    header.scrolled .header-search .search-row > *:nth-child(3) { animation-delay: 0.1s; }
-    header.scrolled .header-search .search-row > *:nth-child(4) { animation-delay: 0.15s; }
-    header.scrolled .header-search .search-row > *:nth-child(5) { animation-delay: 0.2s; }
-    header.scrolled .header-search .search-row > *:nth-child(6) { animation-delay: 0.25s; }
 
     /* Fejléc kereső mobilon: [ fehér mező | keresés ikon ] [szűrők] [rendezés]
        A keresés gomb ugyanolyan fehér, mint a mező, és csak a jobb sarkai kerekek,
@@ -2330,23 +2393,35 @@ body {
         height: 1rem;
     }
 
-    /* Header - sticky viselkedés mobilon */
+    /* Header - sticky viselkedés mobilon: kisebb távolság és lekerekítés, hogy keskeny
+       képernyőn ne vegyen el sok helyet */
     header {
-        padding: 0.35rem 1rem;
+        padding: 0.35rem 0.75rem;
+        width: calc(100% - 1rem);
+        margin: 0.5rem auto 0;
+        border-radius: 12px;
         position: sticky;
-        top: 0;
+        top: 0.5rem;
         z-index: 1000;
     }
 
-    /* Mobil oldalsó menü panel */
+    /* Mobilon nincs "Kukta" felirat, csak a sapka - keskeny képernyőn felesleges helyet foglalna */
+    .logo-text {
+        display: none;
+    }
+
+    /* Mobil oldalsó menü panel - ugyanúgy lebeg, mint a fejléc kapszula: 0.5rem-re a
+       képernyő szélétől, lekerekítve. Az overflow-y: auto a lekerekített sarkoknál le is
+       vágja a tartalmat (pl. a narancs panel-fejléc sarkait), így nem kell külön kerekíteni. */
     .mobile-menu-overlay {
         display: block;
         position: fixed;
-        top: 0;
+        top: 0.5rem;
         right: -300px;
         width: 240px;
-        height: 100%;
+        height: calc(100% - 1rem);
         background-color: var(--color-white);
+        border-radius: 12px;
         box-shadow: -4px 0 16px rgba(0,0,0,0.15);
         z-index: 1100;
         transition: right 0.3s ease;
@@ -2356,7 +2431,7 @@ body {
     /* A második árnyék egy óriási (100vmax), elmosás nélküli "keret" a panel körül:
        ez sötétíti el az oldal többi részét, külön háttér-elem nélkül */
     .mobile-menu-overlay.open {
-        right: 0 !important;
+        right: 0.5rem !important;
         box-shadow: -4px 0 16px rgba(0,0,0,0.15), 0 0 0 100vmax rgba(0,0,0,0.35);
     }
 
@@ -2368,7 +2443,8 @@ body {
         align-items: center;
         padding: 0.35rem 0.5rem 0.35rem 2rem;
         min-height: 53px; /* ugyanolyan magas, mint az oldal fejléce */
-        background-color: var(--color-primary);
+        /* ugyanaz az áttetsző narancs, mint az oldal fejlécén (l. header) */
+        background-color: rgba(230, 126, 34, 0.9);
         color: var(--color-white);
     }
 
@@ -2435,7 +2511,7 @@ body {
     .mobile-menu a:hover,
     .mobile-menu form button:hover {
         background-color: var(--color-bg-hover);
-        color: var(--color-header);
+        color: var(--color-primary);
     }
 
     .mobile-menu a svg,
@@ -2443,7 +2519,7 @@ body {
         flex-shrink: 0;
         width: 20px;
         height: 20px;
-        color: var(--color-header);
+        color: var(--color-primary);
     }
 
     /* Mindkét mobil keresőben: a mező eleji nagyító ikon fölösleges (a keresés gombon
@@ -2487,15 +2563,100 @@ body {
         font-size: 0.6rem;
     }
 
-    /* Receptkártyák egymás alatt, középen (minden olyan oldalon, ahol a galéria komponens megjelenik) */
+    /* Receptkártyák két oszlopban (minden olyan oldalon, ahol a galéria komponens megjelenik).
+       Grid, nem flex: a repeat(2, minmax(0, 1fr)) két pontosan egyforma oszlopot ad - a
+       minmax(0, ...) azért kell, hogy egy hosszú szó (pl. recept cím) se tolja szét az oszlopot */
     .recipe-gallery {
-        flex-direction: column;
-        align-items: center;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        padding-top: 0; /* a felső 20px helyett: a szekció saját felső paddingje (20px, home.css) elég */
     }
 
+    /* A keskeny kártyához minden kisebb: belső tér, kép, cím, csillagok, gombok */
     .recipe-card {
-        width: 100%;
-        max-width: 400px;
+        width: auto;
+        padding: 8px;
+    }
+
+    .recipe-image {
+        height: 120px;
+    }
+
+    /* A kép sarkában lévő kedvenc (szív + szám) jelvény is kisebb, hogy ne takarja ki a képet */
+    .card-favorite-form {
+        top: 0.35rem;
+        right: 0.35rem;
+        gap: 0.25rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .btn-favorite-card svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .favorite-badge {
+        font-size: 0.75rem;
+    }
+
+    .recipe-card h2 {
+        font-size: 1rem;
+        line-height: 1.3;
+    }
+
+    .recipe-card .star-rating {
+        gap: 4px;
+    }
+
+    .recipe-card .star-rating .stars {
+        font-size: 0.8rem;
+        letter-spacing: 0;
+    }
+
+    .recipe-card .star-rating .rating-number,
+    .recipe-card .star-rating .review-count {
+        font-size: 0.7rem;
+    }
+
+    /* A leírás mobilon nem fér el értelmesen a keskeny kártyán (6-7 sor lenne), és a teljes
+       leírást mutató tooltip is csak egérrel (hoverrel) működik - a recept oldalán úgyis ott van */
+    .recipe-card .recipe-description {
+        display: none;
+    }
+
+    /* A cím/csillagok és a gombok közé kell egy kis rés, mert a leírás eddig ezt adta */
+    .card-actions {
+        gap: 6px;
+        margin-top: auto;
+        padding-top: 8px;
+    }
+
+    .card-actions .btn-view {
+        padding: 6px;
+        font-size: 0.8rem;
+    }
+
+    .btn-spoon {
+        width: 34px;
+        height: 34px;
+    }
+
+    .btn-spoon .icon-assistant {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Saját receptek: a Szerkesztés/Törlés feliratok nem férnek ki a fél kártyányi gombon,
+       ezért csak az ikon marad (font-size: 0 - a szöveg a képernyőolvasónak megmarad) */
+    .card-owner-actions {
+        gap: 6px;
+    }
+
+    .btn-card-edit,
+    .btn-card-delete {
+        font-size: 0;
+        padding: 6px;
     }
 }
 

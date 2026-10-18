@@ -4,7 +4,12 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    padding: 64px 0;
+    /* A hero "felcsúszik" a lebegő fejléc mögé, hogy a háttérkép a képernyő legtetejéig érjen.
+       70px = a fejléc magassága (58px) + a távolsága a tetejétől (12px). A negatív margin
+       ennyivel feljebb húzza, a padding-top pedig ugyanennyivel megnő, így a hero tartalma
+       ugyanott marad, ahol eddig volt. A fejléc z-index-e (1000) miatt az marad felül. */
+    margin-top: -70px;
+    padding: calc(64px + 70px) 0 64px;
     width: 100vw;
     margin-left: calc(-50vw + 50%);
     overflow: visible;
@@ -290,9 +295,11 @@
     background: var(--color-primary-hover);
 }
 
-/* Amikor a fejléc görgetős keresője aktív, a főoldal saját alsó keresősávja elhalványul,
-   de a helye megmarad (visibility, nem display), hogy a kártyák ne csússzanak feljebb */
-header.scrolled ~ main .recipes-section .search-bar {
+/* Amikor a fejléc görgetős keresője aktív, a főoldal saját keresősávja (desktopon a kártyák
+   feletti, mobilon a hero-beli) elhalványul - különben az áttetsző fejlécen át is látszana.
+   A helye megmarad (visibility, nem display), hogy a tartalom ne csússzon feljebb */
+header.scrolled ~ main .recipes-section .search-bar,
+header.scrolled ~ main .mobile-search-sticky .search-bar {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -540,41 +547,49 @@ header.scrolled ~ main .recipes-section .search-bar {
         display: none !important;
     }
 
-    /* Kereső a hero-ban, közvetlenül az alcím alatt, a szövegoszlop szélességéhez igazítva */
+    /* Kereső a hero-ban, közvetlenül a cím alatt, a szövegoszlop szélességéhez igazítva.
+       Kisebb a felső margó, mert mobilon nincs alcím a cím és a kereső között */
     .mobile-search-sticky {
         display: block;
         width: 100%;
-        margin-top: 40px;
+        margin-top: 1rem;
     }
 
-    /* A padding 0.5rem (az alap .search-bar 1rem-je helyett), mint a desktop kártyák
-       feletti keresőnél - így a fehér doboz nem lesz sokkal magasabb a keresősornál */
+    /* Nincs külső fehér doboz: a mező és a gombok közvetlenül a hero háttéren ülnek
+       (különben "doboz a dobozban" hatású lenne a fehér mező a fehér keretben) */
     .mobile-search-sticky .search-bar {
         max-width: none;
         width: 100%;
         margin: 0;
-        padding: 0.5rem;
-        background-color: var(--color-white);
-        border-radius: 4px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        padding: 0;
+        background: none;
+        border-radius: 0;
+        box-shadow: none;
     }
 
     /* Mobil kereső: [ mező | narancs keresés gomb ] [szűrők] [rendezés]
        A mező és a keresés gomb egy egységnek látszik: a mezőnek csak a bal sarkai,
        a gombnak csak a jobb sarkai kerekek, és nincs köztük rés. A sorrendet az
-       "order" adja (a HTML-ben a keresés gomb a sor végén van). */
+       "order" adja (a HTML-ben a keresés gomb a sor végén van).
+       A sor alapból (app.css) fehér hátterű és overflow: hidden - itt átlátszó, és a
+       kilógás engedett, hogy az elemek árnyéka ne vágódjon le */
     .mobile-search-sticky .search-row {
         gap: 0.4rem;
+        background: none;
+        border-radius: 0;
+        overflow: visible;
     }
 
+    /* Három egyforma fehér, lekerekített, árnyékos elem (mező, szűrők, rendezés),
+       a narancs Keresés gomb a kiemelés. 8px sarok, mint a fejléc keresőjében */
     .mobile-search-sticky .search-input-group {
         flex: 1;
         min-width: 0;
         height: 40px;
         padding: 0 0.8rem;
-        border: 1.5px solid var(--color-border);
-        border-right: none;
-        border-radius: 4px 0 0 4px;
+        background: var(--color-white);
+        border-radius: 8px 0 0 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
     }
 
     .mobile-search-sticky .search-input {
@@ -590,13 +605,19 @@ header.scrolled ~ main .recipes-section .search-bar {
         height: 40px;
         padding: 0;
         font-size: 0;
-        border-radius: 4px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    }
+
+    .mobile-search-sticky .btn-filters,
+    .mobile-search-sticky .btn-sort {
+        background: var(--color-white);
     }
 
     .mobile-search-sticky .btn-search {
         order: 1;
         margin-left: -0.4rem; /* a sor gap-jét visszavesszük: a gomb a mezőhöz tapad */
-        border-radius: 0 4px 4px 0;
+        border-radius: 0 8px 8px 0;
     }
 
     .mobile-search-sticky .btn-filters {
@@ -622,14 +643,22 @@ header.scrolled ~ main .recipes-section .search-bar {
         width: auto;
         margin-left: -1rem;
         margin-right: -1rem;
-        /* Nincs min-height: a hero csak akkora, amekkora a tartalma (szöveg + kereső),
-           különben magas telefonon nagy üres sáv maradt a kereső alatt.
-           Az alsó padding a halványító átmenetnek (::after) hagy helyet. */
-        padding: 2rem 1rem 4rem;
+        /* Mobilon a fejléc 53px magas + 8px távolság a tetejétől = 61px (l. fent, desktopon 70px) */
+        margin-top: -61px;
+        /* A hero a képernyő kb. 2/3-át foglalja el, és a cím + kereső függőlegesen a közepén
+           van (justify-content: center egy oszlop irányú flexben = függőleges közép).
+           A vh a régi böngészőknek kell, a svh a mobil címsorral együtt számolt "kis" képernyő-
+           magasság - ha a böngésző ismeri, felülírja az előzőt.
+           A felső padding a fejléc helye (61px), az alsó (60px) pedig a halványító átmenet
+           (::after) egy részének helye. Az alsó padding csökkentése lejjebb tolja a tartalmat:
+           minden 2px-nyi csökkentés 1px-szel lejjebb viszi (a különbség fele-fele oszlik el). */
+        min-height: 65vh;
+        min-height: 65svh;
+        padding: 61px 1rem 60px;
         display: flex;
         align-items: stretch;
         flex-direction: column;
-        justify-content: flex-start;
+        justify-content: center;
         background-size: 100% 100%;
         background-position: center center;
     }
@@ -669,6 +698,12 @@ header.scrolled ~ main .recipes-section .search-bar {
         font-size: 1.8rem;
     }
 
+    /* A "Próbáld ki..." szlogen mobilon nem jelenik meg - keskeny képernyőn sok sort
+       foglalna, és a cím + kereső így tisztábban kiemelkedik */
+    .hero-subtitle {
+        display: none;
+    }
+
     .mobile-break {
         display: inline;
     }
@@ -678,7 +713,9 @@ header.scrolled ~ main .recipes-section .search-bar {
         display: none;
     }
 
+    /* A kártyák közvetlenül a hero alatt kezdődnek. A hero alját nem kurtítjuk, hogy a
+       színátmenetes "elhalványulás" (.hero-section::after) teljes hosszában megmaradjon */
     .recipes-section {
-        padding-top: 20px;
+        padding-top: 0;
     }
 }

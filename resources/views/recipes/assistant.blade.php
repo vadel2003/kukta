@@ -261,6 +261,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // Az utolsó lépésről a záró képernyőre lépve elköszön
         if (figure && isLast && previous === index - 1) figure.goodbye();
 
+        // A nyitó képernyőre visszalapozva újra a "Szia!..." szöveg látszik (ne a "Jó étvágyat!")
+        if (figure && index === 0 && previous !== 0) figure.sayHello();
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -294,6 +297,30 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.key === 'ArrowLeft') prevBtn.click();
         if (e.key === 'ArrowRight') nextBtn.click();
     });
+
+    // Húzás (swipe) érintőképernyőn: balra húzva Tovább, jobbra húzva Vissza - ugyanúgy,
+    // mintha a gombra koppintanánk (így a hozzávaló-oldalak lapozása is ugyanígy működik).
+    // Megjegyezzük, hol kezdődött az érintés, és az elengedéskor megnézzük, merre mozdult az ujj.
+    const SWIPE_MIN = 50; // px - ennél rövidebb mozdulat nem számít húzásnak (pl. sima koppintás)
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    // passive: true -> jelezzük a böngészőnek, hogy nem tiltjuk le a görgetést,
+    // így az érintés figyelése nem lassítja a kijelző reagálását
+    document.addEventListener('touchstart', function (e) {
+        touchStartX = e.changedTouches[0].clientX;
+        touchStartY = e.changedTouches[0].clientY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', function (e) {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        // Csak akkor lapozunk, ha a mozdulat elég hosszú ÉS inkább vízszintes, mint függőleges
+        // (egy kicsit ferde függőleges húzás ne lapozzon véletlenül)
+        if (Math.abs(dx) < SWIPE_MIN || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+        if (dx < 0) nextBtn.click();
+        else prevBtn.click();
+    }, { passive: true });
 
     // A gomb körüli teljes hover-zóna is kattintható, nem csak a kör maga
     document.querySelectorAll('.assistant-nav-zone').forEach(function (zone) {
@@ -344,7 +371,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const itemHeight = testGrid.firstChild.getBoundingClientRect().height || 50;
         pagesContainer.removeChild(testGrid);
 
-        const available = screenEl.clientHeight - headingSpace - DOTS_RESERVE - GRID_MARGIN_BOTTOM;
+        // A kártya és a köré tett doboz függőleges paddingje is elveszi a helyet (mobilon
+        // alul a navigációs nyilaknak is hely van hagyva) - ezt a CSS-ből olvassuk ki
+        const card = pagesContainer.closest('.assistant-ingredients-card');
+        const wrapper = card.parentElement;
+        const cardStyle = getComputedStyle(card);
+        const wrapperStyle = getComputedStyle(wrapper);
+        const paddingSpace = parseFloat(cardStyle.paddingTop) + parseFloat(cardStyle.paddingBottom)
+            + parseFloat(wrapperStyle.paddingTop) + parseFloat(wrapperStyle.paddingBottom);
+
+        const available = screenEl.clientHeight - paddingSpace - headingSpace - DOTS_RESERVE - GRID_MARGIN_BOTTOM;
         const rows = Math.floor((available + GRID_GAP) / (itemHeight + GRID_GAP));
 
         if (!wasActive) {

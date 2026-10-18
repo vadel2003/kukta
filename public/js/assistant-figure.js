@@ -5,6 +5,7 @@
 //   const figure = createAssistant(rootElem, animationData);
 //   figure.hello();    // integet + "Szia!..." buborék
 //   figure.goodbye();  // elköszön + "Jó étvágyat!" buborék
+//   figure.sayHello(); // csak a "Szia!..." szöveg, mozdulat nélkül
 //
 // A rootElem-ben kell lennie egy .assistant-figure-anim és egy .assistant-figure-bubble elemnek.
 // Az animáció JSON-jában lévő markerek (idle, hello, goodbye) adják meg, melyik képkockák tartoznak
@@ -31,9 +32,9 @@ function createAssistant(root, animationData) {
         anim.playSegments(seg.idle, true);
     }
 
-    // Egy mozdulat (hello/goodbye) végén: buborék eltűnik, vissza idle-be
+    // Egy mozdulat (hello/goodbye) végén: vissza idle-be. A buborék látva marad a figura
+    // mellett (csak a következő mozdulat cseréli le a szövegét)
     anim.addEventListener('complete', () => {
-        bubble.classList.remove('is-visible');
         idle();
         if (done) { const d = done; done = null; d(); }
     });
@@ -43,9 +44,8 @@ function createAssistant(root, animationData) {
         bubble.classList.remove('is-visible');
         bubble.textContent = text;
         if (reduced) {
-            // Csökkentett mozgás: nincs animáció, csak a buborék látszik 4 mp-ig
+            // Csökkentett mozgás: nincs animáció, csak a buborék jelenik meg (és látva marad)
             bubble.classList.add('is-visible');
-            bubbleTimer = setTimeout(() => bubble.classList.remove('is-visible'), 4000);
             return Promise.resolve();
         }
         bubbleTimer = setTimeout(() => bubble.classList.add('is-visible'), bubbleDelay);
@@ -56,9 +56,20 @@ function createAssistant(root, animationData) {
 
     anim.addEventListener('DOMLoaded', idle);
 
+    // Csak a buborék szövegét cseréli le, mozdulat (animáció) nélkül
+    function say(text) {
+        clearTimeout(bubbleTimer);
+        bubble.textContent = text;
+        bubble.classList.add('is-visible');
+    }
+
+    const HELLO_TEXT = 'Szia!\nÉn vagyok az asszisztensed.\nInduljon a főzés!';
+
     return {
-        hello: (text = 'Szia!\nÉn vagyok az asszisztensed.\nInduljon a főzés!') => play('hello', text, 500),
+        hello: (text = HELLO_TEXT) => play('hello', text, 500),
         goodbye: (text = 'Jó étvágyat!') => play('goodbye', text, 300),
+        // A nyitó képernyőre visszalapozva újra a köszönő szöveg látszik (integetés nélkül)
+        sayHello: () => say(HELLO_TEXT),
         destroy: () => anim.destroy(),
     };
 }

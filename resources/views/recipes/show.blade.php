@@ -8,6 +8,8 @@
 
 @section('content')
 <div class="recipe-detail">
+    <a href="{{ route('home') }}" class="back-link"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
+
     @if (session('success'))
         <p class="alert-success">{{ session('success') }}</p>
     @endif
@@ -16,19 +18,23 @@
     <section class="recipe-top">
         <!-- Bal oldal: kép + info -->
         <div class="recipe-left">
-            <div class="recipe-banner">
-                <img src="{{ $recipe->thumbnail_url }}" alt="{{ $recipe->title }}" class="banner-image">
-                @auth
-                    <form action="{{ route('recipes.favorite', $recipe->id) }}" method="POST" class="banner-favorite-form">
-                        @csrf
-                        <button type="submit" class="btn-favorite-banner {{ $isFavorited ? 'favorited' : '' }}" title="{{ $isFavorited ? 'Kedvenc törlése' : 'Kedvencnek jelölöm' }}">
-                            <i data-lucide="heart"></i>
-                        </button>
-                        <span class="favorite-badge">{{ $favoriteCount }}</span>
-                    </form>
-                @endauth
-                <div class="banner-cook-overlay">
-                    <a href="{{ route('recipes.assistant', $recipe->id) }}" class="btn-cook btn-cook-banner"><span class="icon-assistant" aria-hidden="true"></span> Elkészítem</a>
+            {{-- A kép egy fehér kártyában ül (mint a receptkártyákon a kép) - a meglévő
+                 .content-card stílust használja, így nem kell hozzá új CSS --}}
+            <div class="content-card">
+                <div class="recipe-banner">
+                    <img src="{{ $recipe->thumbnail_url }}" alt="{{ $recipe->title }}" class="banner-image">
+                    @auth
+                        <form action="{{ route('recipes.favorite', $recipe->id) }}" method="POST" class="banner-favorite-form">
+                            @csrf
+                            <button type="submit" class="btn-favorite-banner {{ $isFavorited ? 'favorited' : '' }}" title="{{ $isFavorited ? 'Kedvenc törlése' : 'Kedvencnek jelölöm' }}">
+                                <i data-lucide="heart"></i>
+                            </button>
+                            <span class="favorite-badge">{{ $favoriteCount }}</span>
+                        </form>
+                    @endauth
+                    <div class="banner-cook-overlay">
+                        <a href="{{ route('recipes.assistant', $recipe->id) }}" class="btn-cook btn-cook-banner"><span class="icon-assistant" aria-hidden="true"></span> Elkészítem</a>
+                    </div>
                 </div>
             </div>
 
@@ -78,38 +84,40 @@
             </div>
         </div>
 
-        <!-- Jobb oldal: hozzávalók -->
-        <div class="content-card ingredients-card">
-            <h2 class="content-title">
-                <span class="title-icon"><i data-lucide="cooking-pot"></i></span>
-                Hozzávalók
-            </h2>
-            <ul class="ingredients-list">
-                @foreach ($recipe->ingredients as $ingredient)
-                    <li class="ingredient-item">
-                        <span class="ingredient-quantity">{{ str_replace('.', ',', (float) $ingredient->pivot->quantity) }} {{ \App\Models\IngredientRecipe::UNITS[$ingredient->pivot->unit] ?? '' }}</span>
-                        <span class="ingredient-name">{{ $ingredient->name }}</span>
-                    </li>
-                @endforeach
-            </ul>
+        <!-- Jobb oldal: mentességek + hozzávalók, egymás alatt (mint a bal oldali kártyák) -->
+        <div class="recipe-right">
+            {{-- Mitől mentes a recept: külön kártyán, a Hozzávalók fölött, hogy egy pillantással
+                 eldönthető legyen, ehető-e (pl. allergiásoknak). A címkén a teljes szó áll
+                 ("Gluténmentes", l. FreeFrom::free_label), különben a sima "Glutén" azt is
+                 jelenthetné, hogy a recept TARTALMAZ glutént.
+                 Ha semmitől sem mentes, a kártya nem jelenik meg. --}}
+            @if ($freeFroms->isNotEmpty())
+                <div class="content-card">
+                    <ul class="allergens-list">
+                        @foreach ($freeFroms as $freeFrom)
+                            <li class="allergen-tag">
+                                <img src="{{ asset($freeFrom->thumbnail) }}" alt="" class="category-icon">
+                                {{ $freeFrom->free_label }}
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-            {{-- Allergének: a hozzávalók alatt, mert azokból következnek --}}
-            <h3 class="allergens-title">
-                <span class="title-icon"><i data-lucide="triangle-alert"></i></span>
-                Allergének
-            </h3>
-            @if ($allergens->isEmpty())
-                <p class="allergens-empty">A recept nem tartalmaz a nyilvántartott allergének közül egyet sem.</p>
-            @else
-                <ul class="allergens-list">
-                    @foreach ($allergens as $allergen)
-                        <li class="allergen-tag">
-                            <img src="{{ asset($allergen->thumbnail) }}" alt="" class="category-icon">
-                            {{ $allergen->name }}
+            <div class="content-card ingredients-card">
+                <h2 class="content-title">
+                    <span class="title-icon"><i data-lucide="cooking-pot"></i></span>
+                    Hozzávalók
+                </h2>
+                <ul class="ingredients-list">
+                    @foreach ($recipe->ingredients as $ingredient)
+                        <li class="ingredient-item">
+                            <span class="ingredient-quantity">{{ str_replace('.', ',', (float) $ingredient->pivot->quantity) }} {{ \App\Models\IngredientRecipe::UNITS[$ingredient->pivot->unit] ?? '' }}</span>
+                            <span class="ingredient-name">{{ $ingredient->name }}</span>
                         </li>
                     @endforeach
                 </ul>
-            @endif
+            </div>
         </div>
     </section>
 

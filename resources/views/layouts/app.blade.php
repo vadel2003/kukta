@@ -16,7 +16,8 @@
     <header>
         <div class="header-left">
             <a href="{{ route('home') }}">
-                <img src="{{ asset('images/kukta-sapka.svg') }}?v={{ filemtime(public_path('images/kukta-sapka.svg')) }}" alt="Kukta" class="logo">
+                <img src="{{ asset('images/kukta-sapka.svg') }}?v={{ filemtime(public_path('images/kukta-sapka.svg')) }}" alt="" class="logo">
+                <span class="logo-text">Kukta</span>
             </a>
         </div>
 
@@ -24,7 +25,7 @@
             <div class="search-row">
                 <div class="search-input-group">
                     <i data-lucide="search" class="search-input-icon"></i>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Keresés..." class="search-input">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Receptek keresése kulcsszó szerint..." class="search-input">
                 </div>
                 <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
                 <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők <span class="filter-count" hidden></span></button>
@@ -258,6 +259,19 @@
             openConfirmModal(form, form.dataset.confirmTitle || 'Biztosan folytatod?', form.dataset.confirm);
         });
 
+        // Mobilon minden recept-kereső mezőben rövid helykitöltő szöveg legyen, mert a keskeny
+        // mezőben a hosszú ("Receptek keresése kulcsszó szerint...") levágódna. A placeholder
+        // a HTML-ben van, CSS-sel nem lehet átírni - ezért itt, betöltéskor cseréljük le.
+        if (window.matchMedia('(max-width: 768px)').matches) {
+            document.querySelectorAll('.search-input').forEach(function (input) {
+                input.placeholder = 'Keresés...';
+            });
+        } else if (window.matchMedia('(max-width: 1200px)').matches) {
+            // 1200px alatt a fejléc gombjai már csak ikonok (l. app.css), a fejléc mezője
+            // pedig keskeny - itt csak a fejlécben kell a rövid szöveg, a többi kereső elfér
+            document.querySelector('.header-search .search-input').placeholder = 'Keresés...';
+        }
+
         // Scroll figyelés - kereső sáv megjelenítése header-ben
         // Egyszer, betöltéskor mérjük le a viszonyítási pontot:
         // desktopon a hero kép (serpenyő) félmagassága, hogy már korábban beúszon a fejléc keresője,
@@ -275,12 +289,18 @@
             const searchBarOffset = isMobileHero
                 ? referenceRect.top + window.scrollY
                 : referenceRect.top + window.scrollY + referenceEl.offsetHeight / 2;
-            const headerHeight = header.offsetHeight;
-            const extraDelay = 80; // px - ennyivel görgessünk lejjebb, mielőtt a fejléc keresője beúszik
+            // A fejléc lebeg (a képernyő tetejétől kis távolságra van), ezért nem a magassága,
+            // hanem az alsó széle számít: a kereső akkor bújik alá, amikor ezt eléri
+            const headerBottom = header.getBoundingClientRect().bottom;
+            // px - ennyivel görgessünk lejjebb, mielőtt a fejléc keresője beúszik.
+            // Mobilon 0: ott a hero keresője maga tűnik el a fejléc alatt, és rögtön
+            // a helyére kell úsznia a fejlécbelinek, különben egy ideig egyik sem látszik
+            const isMobile = window.matchMedia('(max-width: 768px)').matches;
+            const extraDelay = isMobile ? 0 : 80;
 
             window.addEventListener('scroll', function() {
                 header.classList.toggle('scrolled',
-                    window.scrollY >= searchBarOffset - headerHeight + extraDelay);
+                    window.scrollY >= searchBarOffset - headerBottom + extraDelay);
             });
         }
 

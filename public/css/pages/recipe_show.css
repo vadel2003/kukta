@@ -8,21 +8,34 @@
     font-weight: 600;
 }
 
+/* Vissza link az oldal tetején. A ~ (általános testvér-kiválasztó) a link utáni
+   .recipe-top-ot jelöli akkor is, ha köztük van a sikerüzenet - így a link és a kártyák
+   közti rés kisebb, mint a .recipe-top alap felső margója (mobilon is) */
+.recipe-detail > .back-link {
+    margin-top: 1.5rem;
+    margin-bottom: 0;
+}
+
+.back-link ~ .recipe-top {
+    margin-top: 0.75rem;
+}
+
 /* Banner szekció */
 .recipe-banner {
     position: relative;
     width: 100%;
     height: 300px;
-    overflow: hidden;
-    border-radius: 4px;
+    overflow: hidden; /* a lekerekített sarkoknál a képet is levágja */
+    border-radius: 8px;
+    /* Az alapképek (svg) háttere átlátszó - itt fehér, mint a kártya, amiben ül */
+    background-color: var(--color-white);
 }
 
+/* Lapos kép, a régi belső "keretárnyék" és szürke keret nélkül (mint a kártyákon) */
 .banner-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border: 1.5px solid #ccc;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.5), inset 0 0 50px rgba(0,0,0,0.25);
 }
 
 .banner-overlay {
@@ -47,7 +60,9 @@
     color: var(--color-text);
 }
 
-.recipe-left {
+/* A két oszlop kártyái egymás alatt, egyforma réssel */
+.recipe-left,
+.recipe-right {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -139,21 +154,7 @@
     text-align: right;
 }
 
-/* ===== Allergének (a hozzávalók kártya alján) ===== */
-.allergens-title {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 1.5rem 0 0.75rem;
-    font-size: 1.1rem;
-    color: var(--color-text);
-}
-
-.allergens-title .title-icon svg {
-    width: 1.2rem;
-    height: 1.2rem;
-}
-
+/* ===== Mitől mentes (külön kártyán, a hozzávalók kártya fölött) ===== */
 /* Címkék (tagek) egymás mellett; flex-wrap: ha nem férnek ki egy sorba, a következőbe törnek */
 .allergens-list {
     display: flex;
@@ -175,11 +176,6 @@
     border-radius: 999px;
     font-size: 0.9rem;
     color: var(--color-text);
-}
-
-.allergens-empty {
-    margin: 0;
-    color: var(--color-text-light);
 }
 
 /* Lépések listája */
@@ -485,10 +481,6 @@
 
 /* Reszponzív: mobilon függőleges elrendezés */
 @media (max-width: 768px) {
-    .recipe-banner {
-        height: 250px;
-    }
-
     .banner-title {
         font-size: 1.5rem;
     }
@@ -505,9 +497,8 @@
        Címeknél a szokásos ~1.2 (a betűméret 1.2-szerese). */
     .recipe-title {
         line-height: 1.2;
-        /* 40px helyett 32px: keskeny telefonon egy hosszú szó (pl. "melegszendvics")
-           különben épp hogy kifért, egy még hosszabb pedig kilógott volna a kártyából */
-        font-size: 2rem;
+        /* A betűméret lejjebb (1.6rem): keskeny telefonon egy hosszú szó
+           (pl. "melegszendvics") így biztosan nem lóg ki a kártyából */
     }
 
     .recipe-meta {
@@ -523,18 +514,130 @@
 
     .rating-summary {
         flex-direction: column;
-        gap: 2rem;
     }
 
     .rating-summary-left {
         min-width: auto;
     }
 
-    .rating-average {
-        font-size: 2.5rem;
+    .star-icon {
+        font-size: 1.75rem;
     }
 
-    .star-icon {
+    /* ===== Mobilon minden kisebb: térközök, kép, címek, gombok =====
+       (ez a fájl csak a recept oldalán töltődik be, így a .content-card / .content-title
+       itteni felülírása a többi oldalt nem érinti) */
+
+    /* Kisebb térközök a kártyák között és körül */
+    .recipe-top {
+        gap: 1rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .recipe-left,
+    .recipe-right {
+        gap: 1rem;
+    }
+
+    .steps-card {
+        margin-bottom: 1rem;
+    }
+
+    .content-card {
+        padding: 14px;
+    }
+
+    .content-title {
+        font-size: 1.15rem;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .title-icon svg {
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+
+    /* Kép: alacsonyabb, a rajta lévő gombok kisebbek */
+    .recipe-banner {
+        height: 200px;
+    }
+
+    .banner-favorite-form {
+        top: 0.6rem;
+        right: 0.6rem;
+        padding: 0.35rem 0.7rem;
+    }
+
+    .banner-cook-overlay {
+        padding: 0.75rem;
+    }
+
+    .btn-cook-banner {
+        font-size: 0.95rem;
+        padding: 0.6rem 1.2rem;
+    }
+
+    .btn-cook-banner .icon-assistant {
+        transform: scale(1.3);
+    }
+
+    /* A gomb mögötti fehér derengés is kisebb, a kisebb gombhoz igazítva */
+    .recipe-banner::after {
+        width: 260px;
+        height: 260px;
+        background: radial-gradient(circle 200px at bottom right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%);
+    }
+
+    /* Szövegek */
+    .recipe-title {
+        font-size: 1.6rem;
+    }
+
+    .recipe-description {
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .star-rating-section .stars {
+        font-size: 1.1rem;
+    }
+
+    .star-rating-section .rating-number {
+        font-size: 1rem;
+    }
+
+    /* Hozzávalók és lépések sűrűbben */
+    .ingredient-item {
+        padding: 0.5rem 0;
+    }
+
+    .step-item {
+        gap: 0.75rem;
+        padding: 0.75rem 0;
+    }
+
+    .step-number {
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
+    }
+
+    .step-text {
+        padding-top: 0.2rem;
+    }
+
+    /* Értékelések */
+    .rating-summary {
+        gap: 1.25rem;
+    }
+
+    .rating-average {
         font-size: 2rem;
+    }
+
+    .rating-stars-display {
+        font-size: 1.2rem;
     }
 }
