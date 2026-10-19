@@ -37,9 +37,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Jelszó</label>
+                    <label for="password">Jelszó <span class="label-hint" id="password-hint">(8–50 karakter)</span></label>
                     <input type="password" name="password" id="password" required minlength="8" maxlength="50" aria-describedby="password-hint" class="{{ $errors->has('password') ? 'is-invalid' : '' }}">
-                    <p class="field-hint" id="password-hint">8–50 karakter.</p>
                     @error('password')
                         <span class="form-error">{{ $message }}</span>
                     @enderror

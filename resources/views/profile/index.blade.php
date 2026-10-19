@@ -94,12 +94,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="new_password">Új jelszó</label>
+                    <label for="new_password">Új jelszó <span class="label-hint" id="new_password-hint">(8–50 karakter)</span></label>
                     <div class="field-control">
                         <input type="password" name="new_password" id="new_password" required minlength="8" maxlength="50" class="{{ $errors->has('new_password') ? 'is-invalid' : '' }}" aria-describedby="new_password-counter new_password-hint">
                         <small class="char-counter" id="new_password-counter">0 / 50</small>
                     </div>
-                    <p class="field-hint" id="new_password-hint">Legalább 8 karakter.</p>
                     @error('new_password')
                         <span class="form-error">{{ $message }}</span>
                     @enderror

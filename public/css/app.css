@@ -1672,6 +1672,38 @@ select.is-invalid:focus {
    nem a képernyő bal széléhez. A margin: auto (fent) középre teszi az oszlopot. */
 .card-stack--narrow {
     max-width: 440px;
+    /* Tömörebb (csak bejelentkezés + regisztráció): kevesebb üres hely a cím alatt, hogy
+       a rövid űrlap egy átlagos laptop képernyőjén is görgetés nélkül kiférjen */
+    gap: 1rem;
+    /* Az űrlap kitölti a képernyőt a fejléc alatt (70px = a lebegő fejléc 58px + 12px
+       távolsága a tetejétől), és függőlegesen középen van - így a lábléc a képernyő alja
+       alá kerül, csak görgetéssel látszik. A border-box miatt a padding beleszámít a magasságba. */
+    min-height: calc(100vh - 70px);
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 1.5rem 0;
+    box-sizing: border-box;
+    justify-content: center;
+}
+
+.card-stack--narrow h1 {
+    font-size: 1.75rem;
+    line-height: 1.2;
+}
+
+/* A mezők mérete nem változik, csak a köztük lévő levegő */
+.card-stack--narrow .form-card {
+    padding: 20px 28px 24px;
+}
+
+.card-stack--narrow .form-group {
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.card-stack--narrow .form-card p {
+    margin-top: 0.75rem;
+    margin-bottom: 0;
 }
 
 /* Recept form kártyáinak (content-card szekciók) függőleges térköze */
@@ -1869,6 +1901,16 @@ select.is-invalid:focus {
     height: 1em;
 }
 
+/* Asztali nézetben a vissza link csak ott látszik, ahol a böngésző Vissza gombja nem
+   segít: a jogi oldalakon (a regisztrációból új lapon nyílnak, ott nincs "vissza") és a
+   recept oldalán (megosztott linkről érkezve a Vissza kivezetne az oldalról). Ezeken a
+   .back-link--always osztály van. Máshol elég a böngésző Vissza gombja és a fejléc logója. */
+@media (min-width: 769px) {
+    .back-link:not(.back-link--always) {
+        display: none;
+    }
+}
+
 /* Mobilon a vissza link gombnak néz ki: fehér, lekerekített "kapszula" kerettel és
    árnyékkal (mint a mobil kereső gombjai), és legalább 40px magas, hogy ujjal is
    könnyen el lehessen találni (asztalon marad a visszafogott szöveges link) */
@@ -2001,6 +2043,14 @@ select.is-invalid:focus {
 
 .field-hint {
     font-size: 0.85rem;
+    color: var(--color-text-light);
+}
+
+/* Rövid segédszöveg a mező felirata mellett, zárójelben - pl. "Jelszó (8–50 karakter)".
+   Nem félkövér és halványabb, mint maga a felirat, így látszik, hogy csak kiegészítés */
+.label-hint {
+    font-size: 0.85rem;
+    font-weight: 400;
     color: var(--color-text-light);
 }
 

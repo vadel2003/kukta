@@ -8,7 +8,7 @@
 
 @section('content')
 <div class="recipe-detail">
-    <a href="{{ route('home') }}" class="back-link"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
+    <a href="{{ route('home') }}" class="back-link back-link--always"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
 
     @if (session('success'))
         <p class="alert-success">{{ session('success') }}</p>

@@ -6,7 +6,7 @@
     <section class="page-section">
         <div class="card-stack">
             <div>
-                <a href="{{ route('home') }}" class="back-link"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
+                <a href="{{ route('home') }}" class="back-link back-link--always"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
                 <h1>Általános szerződési feltételek</h1>
             </div>
             <div class="content-card legal-text">
