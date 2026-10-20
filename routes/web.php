@@ -30,19 +30,25 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profil', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Receptek
-Route::get('/recept/uj', [RecipeController::class, 'create'])->name('recipes.create');
-Route::post('/recept/uj', [RecipeController::class, 'store'])->name('recipes.store');
-Route::get('/sajat-receptek', [RecipeController::class, 'myRecipes'])->name('recipes.my');
-Route::get('/kedvenc-receptek', [RecipeController::class, 'favorites'])->name('recipes.favorites');
-Route::post('/recept/{id}/favorite', [RecipeController::class, 'toggleFavorite'])->name('recipes.favorite');
-Route::post('/recept/{id}/ertekeles', [RecipeController::class, 'storeRating'])->name('recipes.rate');
+// Receptek - csak bejelentkezve (a menü elrejti a linkeket, de az URL közvetlenül is beírható:
+// enélkül vendégként szerző nélküli recept jönne létre, a kedvenc/értékelés pedig 500-as hibát adna)
+// A /recept/uj-nak a /recept/{id} ELŐTT kell lennie, különben az "uj" szót {id}-ként értelmezné.
+Route::middleware('auth')->group(function () {
+    Route::get('/recept/uj', [RecipeController::class, 'create'])->name('recipes.create');
+    Route::post('/recept/uj', [RecipeController::class, 'store'])->name('recipes.store');
+    Route::get('/sajat-receptek', [RecipeController::class, 'myRecipes'])->name('recipes.my');
+    Route::get('/kedvenc-receptek', [RecipeController::class, 'favorites'])->name('recipes.favorites');
+    Route::post('/recept/{id}/favorite', [RecipeController::class, 'toggleFavorite'])->name('recipes.favorite');
+    Route::post('/recept/{id}/ertekeles', [RecipeController::class, 'storeRating'])->name('recipes.rate');
+    Route::get('/recept/{id}/szerkesztes', [RecipeController::class, 'edit'])->name('recipes.edit');
+    Route::put('/recept/{id}', [RecipeController::class, 'update'])->name('recipes.update');
+    Route::delete('/recept/{id}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
+});
+
+// Receptek - mindenkinek (a rateViaLink maga irányítja a vendéget a login oldalra)
 Route::get('/recept/{id}/ertekeles', [RecipeController::class, 'rateViaLink'])->name('recipes.rate.link');
 Route::get('/recept/{id}', [RecipeController::class, 'show'])->name('recipes.show');
 Route::get('/recept/{id}/asszisztens', [RecipeController::class, 'assistant'])->name('recipes.assistant');
-Route::get('/recept/{id}/szerkesztes', [RecipeController::class, 'edit'])->name('recipes.edit');
-Route::put('/recept/{id}', [RecipeController::class, 'update'])->name('recipes.update');
-Route::delete('/recept/{id}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
 
 // Admin
 Route::get('/admin/alapanyagok', [AdminController::class, 'ingredients'])->name('admin.ingredients');
