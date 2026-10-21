@@ -12,7 +12,14 @@
                 </form>
             @endauth
         </div>
-        <h2>{{ $recipe->title }}</h2>
+        {{-- Cím + asszisztens gomb egy sorban. A gomb itt csak mobilon látszik (ott nincs
+             külön gombsor a kártya alján); desktopon a lenti, Részletek melletti gomb látszik. --}}
+        <div class="card-title-row">
+            <h2>{{ $recipe->title }}</h2>
+            <a href="{{ route('recipes.assistant', $recipe->id) }}" class="btn-spoon" title="Kukta asszisztens" aria-label="Kukta asszisztens">
+                <span class="icon-assistant" aria-hidden="true"></span>
+            </a>
+        </div>
 
         {{-- ⭐ Csillagos értékelés (dinamikus) --}}
         <div class="star-rating">

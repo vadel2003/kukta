@@ -155,10 +155,25 @@
 }
 
 /* ===== Mitől mentes (külön kártyán, a hozzávalók kártya fölött) ===== */
-/* Címkék (tagek) egymás mellett; flex-wrap: ha nem férnek ki egy sorba, a következőbe törnek */
+/* A doboz szándékosan NEM .content-card: nem fehér, nincs árnyéka, így nem "újabb kártya",
+   hanem egy kiemelt infósáv. A vastag bal oldali csík a megszokott "figyelem, fontos" jelzés. */
+.allergens-box {
+    background: var(--color-search-bg);
+    border-left: 4px solid var(--color-primary);
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+}
+
+/* A doboz kétszer van az oldalon; desktopon csak a jobb oszlopbeli látszik */
+.allergens-box--mobile {
+    display: none;
+}
+
+/* Címkék két egyforma szélességű oszlopban: a grid 2 × 1fr oszlopot csinál,
+   az elemek balról jobbra, sorról sorra töltik ki (1-2, 3-4, ...) */
 .allergens-list {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;
     list-style: none;
     padding: 0;
@@ -171,7 +186,8 @@
     align-items: center;
     gap: 0.35rem;
     padding: 0.3rem 0.75rem;
-    background: var(--color-search-bg);
+    /* Fehér kapszula a halvány narancs dobozon, hogy a címkék kiváljanak a háttérből */
+    background: var(--color-white);
     border: 1px solid var(--color-primary-soft);
     border-radius: 999px;
     font-size: 0.9rem;
@@ -544,7 +560,19 @@
         margin-bottom: 1rem;
     }
 
-    .content-card {
+    /* Mobilon fordítva: a jobb oszlopbeli rejtve, az Elkészítés utáni látszik,
+       ugyanakkora réssel alatta, mint az Elkészítés kártya alatt */
+    .allergens-box--desktop {
+        display: none;
+    }
+
+    .allergens-box--mobile {
+        display: block;
+        margin-bottom: 1rem;
+    }
+
+    .content-card,
+    .allergens-box {
         padding: 14px;
     }
 

@@ -715,7 +715,18 @@ header.scrolled ~ main .mobile-search-sticky .search-bar {
 
     /* A kártyák közvetlenül a hero alatt kezdődnek. A hero alját nem kurtítjuk, hogy a
        színátmenetes "elhalványulás" (.hero-section::after) teljes hosszában megmaradjon */
+    /* margin-top: -1rem -> a kártyák egy picit feljebb csúsznak, rá a hero halványuló aljára.
+       A hero maga (háttérkép, magasság, átmenet) nem változik, csak a kártyák mozdulnak.
+       z-index: 6 -> a hero halványító rétege (::after) z-index: 5, enélkül az átfedő sávban
+       a kártyák teteje "bekoszolódna" a ráfestett krémszínű átmenettől */
     .recipes-section {
         padding-top: 0;
+    }
+
+    /* Csak a főoldalon (ahol a szekció közvetlenül a hero után jön): a Saját/Kedvenc
+       receptek oldal is ezt a fájlt tölti be, ott a cím alá csúszna */
+    .hero-section + .recipes-section {
+        margin-top: -1rem;
+        z-index: 6;
     }
 }

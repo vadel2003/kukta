@@ -86,23 +86,8 @@
 
         <!-- Jobb oldal: mentességek + hozzávalók, egymás alatt (mint a bal oldali kártyák) -->
         <div class="recipe-right">
-            {{-- Mitől mentes a recept: külön kártyán, a Hozzávalók fölött, hogy egy pillantással
-                 eldönthető legyen, ehető-e (pl. allergiásoknak). A címkén a teljes szó áll
-                 ("Gluténmentes", l. FreeFrom::free_label), különben a sima "Glutén" azt is
-                 jelenthetné, hogy a recept TARTALMAZ glutént.
-                 Ha semmitől sem mentes, a kártya nem jelenik meg. --}}
-            @if ($freeFroms->isNotEmpty())
-                <div class="content-card">
-                    <ul class="allergens-list">
-                        @foreach ($freeFroms as $freeFrom)
-                            <li class="allergen-tag">
-                                <img src="{{ asset($freeFrom->thumbnail) }}" alt="" class="category-icon">
-                                {{ $freeFrom->free_label }}
-                            </li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+            {{-- Mentességek desktopon: a Hozzávalók fölött (mobilon rejtett, l. lent) --}}
+            @include('partials.recipe-allergens', ['modifier' => 'allergens-box--desktop'])
 
             <div class="content-card ingredients-card">
                 <h2 class="content-title">
@@ -136,6 +121,10 @@
             @endforeach
         </ol>
     </section>
+
+    {{-- Mentességek mobilon: az Elkészítés után (desktopon rejtett). Azért kell második
+         példány, mert az Elkészítés külön szekció, CSS-sel nem lehet a dobozt mögé vinni. --}}
+    @include('partials.recipe-allergens', ['modifier' => 'allergens-box--mobile'])
 
     <!-- Értékelések szekció -->
     <section class="content-card reviews-card" id="reviews">

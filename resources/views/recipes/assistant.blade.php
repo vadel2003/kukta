@@ -40,7 +40,7 @@
     <section class="assistant-screen">
         <div class="assistant-ingredients">
             <div class="content-card assistant-ingredients-card">
-                <h2 class="assistant-heading">Hozzávalók <span class="ingredient-page-label" id="ingredientPageLabel"></span></h2>
+                <h2 class="assistant-heading">Hozzávalók</h2>
                 <div class="ingredient-pages" id="ingredientPages"></div>
                 <div class="page-dots" id="ingredientDots"></div>
             </div>
@@ -60,12 +60,10 @@
         </section>
     @endforeach
 
-    {{-- Befejezés: gratuláció + értékelés --}}
-    <section class="assistant-screen">
+    {{-- Befejezés: csak animáció (a figura "Jó étvágyat!" buborékkal köszön el) + értékelés + gomb --}}
+    <section class="assistant-screen assistant-screen-finish">
         <div class="assistant-finish">
             <div class="content-card assistant-finish-card">
-                <h2 class="assistant-heading">Gratulálunk!</h2>
-                <p>Sikeresen elkészítetted a(z) <strong>{{ $recipe->title }}</strong> receptet!</p>
                 <div class="assistant-figure-slot"></div>
 
                 <form id="assistantRatingForm" data-authenticated="{{ auth()->check() ? '1' : '0' }}" data-rate-link="{{ route('recipes.rate.link', $recipe->id) }}" action="{{ route('recipes.rate', $recipe->id) }}" method="POST" class="assistant-rating">
@@ -332,7 +330,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // ===== 2. Hozzávalók lapozása (dinamikus, a tényleges helyhez igazítva) =====
     const pagesContainer = document.getElementById('ingredientPages');
     const dotsContainer = document.getElementById('ingredientDots');
-    const pageLabel = document.getElementById('ingredientPageLabel');
     const items = Array.from(document.querySelectorAll('#ingredientList .ai-ingredient'));
     const GRID_GAP = 12;              // .ingredient-grid gap
     const GRID_MARGIN_BOTTOM = 16;    // .ingredient-grid margin-bottom
@@ -423,7 +420,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const pages = pagesContainer.querySelectorAll('.ingredient-grid');
         pages.forEach((pg, i) => pg.style.display = (i === p) ? 'grid' : 'none');
         dotsContainer.querySelectorAll('.page-dot').forEach((d, i) => d.classList.toggle('is-active', i === p));
-        pageLabel.textContent = (p + 1) + ' / ' + pages.length;
     }
 
     renderIngredientPages();

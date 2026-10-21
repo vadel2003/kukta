@@ -741,6 +741,11 @@ header.scrolled .header-search .search-row > *:nth-child(5) { animation-delay: 0
     transition: all 0.3s ease;
 }
 
+/* A cím melletti asszisztens gomb csak mobilon kell (l. a 768px-es @media blokkot) */
+.card-title-row .btn-spoon {
+    display: none;
+}
+
 .btn-spoon:hover {
     background: rgba(74, 124, 47, 0.32);
     color: var(--color-cta-hover);
@@ -2676,20 +2681,56 @@ body {
     }
 
     /* A cím/csillagok és a gombok közé kell egy kis rés, mert a leírás eddig ezt adta */
+    /* gap: 6px 0 -> a sorok között 6px (a saját receptek gombsora új sorba törik),
+       egymás mellett 0, mert a láthatatlan Részletek gomb mellett nem kell rés (l. lent) */
     .card-actions {
-        gap: 6px;
+        gap: 6px 0;
         margin-top: auto;
-        padding-top: 8px;
+        /* Nincs felső padding: a sorban már nincs látható gomb (a Részletek láthatatlan, az
+           asszisztens a képen van), így a kártya alja a csillagok után véget ér */
+        padding-top: 0;
     }
 
-    .card-actions .btn-view {
-        padding: 6px;
-        font-size: 0.8rem;
+    /* Részletek gomb mobilon: nem látszik, mert az egész kártya megnyomható. NEM display: none,
+       mert akkor a kártyát lefedő ::after réteg (l. .btn-view::after) is eltűnne, és a kártya
+       sehol nem lenne kattintható. Ehelyett csak a látható része megy nullára (szélesség,
+       padding, keret, szöveg, árnyék), a link és az ::after réteg megmarad.
+       A szöveg font-size: 0 mellett is ott van, így a képernyőolvasó felolvassa. */
+    .card-actions .btn-view,
+    .card-actions .btn-view:hover {
+        flex: 0 0 0;
+        padding: 0;
+        border: 0;
+        font-size: 0;
+        background: none;
+        box-shadow: none;
     }
 
-    .btn-spoon {
+    /* Asszisztens gomb mobilon: a cím mellett jobbra (nem kell neki külön sor a kártya alján).
+       A lenti (Részletek melletti) példány itt rejtett, a cím melletti látszik. */
+    .card-actions .btn-spoon {
+        display: none;
+    }
+
+    /* flex: a cím és a gomb egy sorban; a cím (flex: 1) kitölti a helyet, és ha hosszú,
+       két sorba törik, a gomb pedig a jobb szélen marad. align-items: center -> a gomb
+       a cím (1 vagy 2 sor) magasságának közepén van */
+    .card-title-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .card-title-row h2 {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .card-title-row .btn-spoon {
+        display: inline-flex;
         width: 34px;
         height: 34px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     }
 
     .btn-spoon .icon-assistant {

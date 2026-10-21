@@ -45,32 +45,50 @@ body.assistant-page::-webkit-scrollbar {
     display: none;
 }
 
+/* Bezáró X: maga a link egy 80px-es, LÁTHATATLAN nyomófelület (ujjal könnyű eltalálni),
+   a látható kör csak 40px - azt a ::before rajzolja meg a link közepére.
+   A nyomófelület a képernyő sarkáig ér (oda is lehet bökni), a kör pedig 20px-re
+   (a nyomófelület és a kör közti rés) van a saroktól - ugyanott, ahol eddig. */
 .assistant-close {
     position: fixed;
-    top: 1.25rem;
-    left: 1.25rem;
-    display: inline-flex;
+    top: 0;
+    right: 0;
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.55);
+    width: 80px;
+    height: 80px;
     color: #fff;
-    font-size: 1.3rem;
     text-decoration: none;
     z-index: 600;
-    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+/* A látható gomb: inset: 20px -> minden oldalról 20px-szel beljebb kezdődik, így 80 - 2*20 = 40px.
+   Vékony, áttetsző fekete keret (a háttér fölé rajzolódik, így finoman sötétebb peremnek látszik) + árnyék: ettől "emelkedik ki" a háttérből, és kattintható gombnak látszik.
+   z-index: -1 -> az X ikon mögé kerül (de a link saját rétegén belül marad, mert a fixed +
+   z-index a linknek saját réteget ad, így nem csúszik a többi tartalom mögé) */
+.assistant-close::before {
+    content: '';
+    position: absolute;
+    inset: 20px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.55);
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    /* Ugyanaz az árnyék (és hoverkor ugyanaz az erősödés), mint a lapozó nyilaknál (.btn-assistant-nav) */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+    z-index: -1;
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .assistant-close svg {
-    width: 1.6rem;
-    height: 1.6rem;
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
-.assistant-close:hover {
+.assistant-close:hover::before {
     background: rgba(0, 0, 0, 0.75);
     transform: scale(1.08);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
 }
 
 .assistant {
@@ -145,9 +163,10 @@ body.assistant-page::-webkit-scrollbar {
     align-items: center;
     gap: 1.5rem;
     width: 100%;
-    /* 760px: így a kártyák belseje kb. 600px, és a figura melletti szóbuborék nem lóg ki */
-    max-width: 760px;
-    padding: 3rem;
+    /* A kártyák szélessége kb. 664px marad (944 - 2*140), így a figura melletti szóbuborék nem lóg ki.
+       Oldalt 140px: a nyilak ne lógjanak a kártyákra (l. .assistant-ingredients) */
+    max-width: 944px;
+    padding: 3rem 140px;
     box-sizing: border-box;
 }
 
@@ -267,7 +286,10 @@ body.assistant-page::-webkit-scrollbar {
     width: 100%;
     display: flex;
     justify-content: center;
-    padding: 2rem 6rem;
+    /* Oldalt 140px: a nyíl gomb a képernyő szélétől 124px-ig ér (160px-es zóna közepén
+       88px-es gomb: (160 - 88) / 2 + 88 = 124), + 16px rés, így nem lóg a kártyára.
+       Felül/alul nincs ilyen tartalék: a bezáró X rálóghat a kártyára. */
+    padding: 2rem 140px;
     box-sizing: border-box;
 }
 
@@ -320,31 +342,17 @@ body.assistant-page::-webkit-scrollbar {
     text-overflow: ellipsis;
 }
 
-.ingredient-page-label {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 3.4rem;
-    height: 2.4rem;
-    padding: 0 0.9rem;
-    border-radius: 24px;
-    background: var(--color-primary);
-    color: #fff;
-    font-size: 1.15rem;
-    font-weight: 700;
-    line-height: 1;
-    vertical-align: middle;
-}
-
 .page-dots {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 14px;
+    /* 28px rés: így a pöttyök 44px-es nyomófelületei (l. .page-dot::after) nem fedik egymást */
+    gap: 28px;
     margin-top: 0.5rem;
 }
 
 .page-dot {
+    position: relative;
     width: 16px;
     height: 16px;
     padding: 0;
@@ -353,6 +361,15 @@ body.assistant-page::-webkit-scrollbar {
     background: #fff;
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+/* Láthatatlan, nagyobb nyomófelület a 16px-es pötty köré: inset: -14px -> minden irányban
+   14px-szel túllóg rajta, így 16 + 2*14 = 44px (ennyi a kényelmes ujjnyi méret).
+   A ::after a gomb része, ezért a rá bökés is a gombra kattintásnak számít. */
+.page-dot::after {
+    content: '';
+    position: absolute;
+    inset: -14px;
 }
 
 .page-dot.is-active {
@@ -365,7 +382,7 @@ body.assistant-page::-webkit-scrollbar {
     width: 100%;
     display: flex;
     justify-content: center;
-    padding: 3rem 6rem;
+    padding: 3rem 140px; /* oldalt a nyilaknak hagyott hely, l. .assistant-ingredients */
     box-sizing: border-box;
 }
 
@@ -419,7 +436,7 @@ body.assistant-page::-webkit-scrollbar {
     width: 100%;
     display: flex;
     justify-content: center;
-    padding: 3rem 6rem;
+    padding: 3rem 140px; /* oldalt a nyilaknak hagyott hely, l. .assistant-ingredients */
     box-sizing: border-box;
 }
 
@@ -434,9 +451,17 @@ body.assistant-page::-webkit-scrollbar {
 .assistant-stars {
     display: flex;
     justify-content: center;
-    gap: 6px;
+    /* Rés helyett a csillagok saját oldalsó paddingje választja el őket (l. .assistant-star):
+       így a csillagok közti hely is megnyomható, nincs "halott" sáv két csillag között */
+    gap: 0;
     font-size: 2.75rem;
     margin: 0.5rem 0 0.4rem;
+}
+
+/* 4px-4px oldalt: mobilon (36px-es csillag) így egy csillag nyomófelülete kb. 44px széles */
+.assistant-star {
+    padding: 0 4px;
+    cursor: pointer;
 }
 
 .assistant-star input {
@@ -525,10 +550,11 @@ body.assistant-page::-webkit-scrollbar {
     box-shadow: none;
 }
 
+/* Desktopon a bal felső sarokban (a jobb felsőben a bezáró X van) */
 .assistant-progress {
     position: fixed;
     top: 1.25rem;
-    right: 1.25rem;
+    left: 1.25rem;
     pointer-events: none;
     font-weight: 600;
     color: #fff;
@@ -543,12 +569,13 @@ body.assistant-page::-webkit-scrollbar {
     /* Minden képernyőn (nyitó, hozzávalók, lépések, befejezés) ugyanakkora, 1rem-es oldalsó
        távolság: így minden kártya széle egy vonalban van. Az alsó 6rem a lent lévő
        navigációs nyilaknak hagy helyet (l. lejjebb), hogy ne takarják ki a kártyát.
-       A felső 5rem: a kártyák a bal felső bezáró gomb (56px + 1.25rem) alatt kezdődnek. */
+       Felül 3rem (48px): a bezáró X látható köre 20px-től 60px-ig tart, így az alsó
+       kb. 12px-e lóg rá a kártya sarkára - csak egy picit, nem takar ki tartalmat. */
     .assistant-intro-content,
     .assistant-ingredients,
     .assistant-step,
     .assistant-finish {
-        padding: 5rem 1rem 6rem;
+        padding: 3rem 1rem 6rem;
     }
 
     /* A kártyák nem függőlegesen középen, hanem fent kezdődnek - így lapozáskor a teteje
@@ -557,9 +584,17 @@ body.assistant-page::-webkit-scrollbar {
         justify-content: flex-start;
     }
 
-    .assistant-intro {
-        align-items: flex-start;
+    /* Kivétel az utolsó oldal: innen már nem lapozunk tovább, így nincs mihez képest
+       "ugrálnia", és a rövid kártya középen szebb, mint fent egy nagy üres résszel alatta.
+       Azért működik, mert ugyanolyan erős (2 osztályos) szelektor, és később jön a fájlban. */
+    .assistant-screen-finish.is-active {
+        justify-content: center;
     }
+
+    /* Az első oldal (.assistant-intro) kártyái is középen maradnak (az asztali
+       align-items: center érvényes itt is): a kezdőképernyőn sincs mihez képest ugrálniuk.
+       Hosszú leírásnál sem vágódik le a teteje: a .assistant-intro min-height-tel
+       (nem fix magassággal) van megadva, így ilyenkor egyszerűen megnő, és fent kezdődik. */
 
     /* Keskenyebb kártyák belső tere is kisebb, hogy a tartalom ne lógjon ki */
     .assistant-intro-card,
@@ -642,13 +677,6 @@ body.assistant-page::-webkit-scrollbar {
         font-size: 1.4rem;
     }
 
-    .ingredient-page-label {
-        min-width: 2.6rem;
-        height: 1.9rem;
-        padding: 0 0.6rem;
-        font-size: 0.95rem;
-    }
-
     .assistant-nav-zone {
         width: 90px;
     }
@@ -662,5 +690,21 @@ body.assistant-page::-webkit-scrollbar {
     .btn-assistant-nav svg {
         width: 1.75rem;
         height: 1.75rem;
+    }
+
+    /* Pager mobilon: a bal felső sarokból alul középre, a két nyíl közé.
+       left: 50% a bal szélét teszi középre, a translateX(-50%) a saját fele szélességével
+       visszahúzza, így a közepe kerül középre. A függőleges közép a 60px-es nyilakéval
+       egyezik: bottom 1rem + 30px (a nyíl fele) és translateY(50%) (a pager fele). */
+    .assistant-progress {
+        top: auto;
+        bottom: calc(1rem + 30px);
+        left: 50%;
+        transform: translate(-50%, 50%);
+        /* Áttetsző narancs (70% fedés): kicsit erősebb, mint a bezáró X 55%-a, mert a
+           narancs világosabb a feketénél, és így a fehér szám jobban olvasható rajta.
+           A --color-primary (#e67e22) RGB-ben 230, 126, 34 - a változóból nem lehet
+           közvetlenül áttetszőt csinálni, ezért itt rgba()-val írjuk ki */
+        background: rgba(230, 126, 34, 0.7);
     }
 }
