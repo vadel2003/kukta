@@ -10,18 +10,13 @@ class MealTimeSeeder extends Seeder
     public function run(): void
     {
         $mealTimes = [
-            'Reggeli',
-            'Ebéd',
-            'Vacsora',
-            'Uzsonna',
-            'Tízórai',
+            ['name' => 'Reggeli'],
+            ['name' => 'Ebéd'],
+            ['name' => 'Vacsora'],
+            ['name' => 'Uzsonna'],
+            ['name' => 'Tízórai'],
         ];
 
-        foreach ($mealTimes as $name) {
-            DB::table('meal_time')->updateOrInsert(
-                ['name' => $name],
-                ['name' => $name]
-            );
-        }
+        DB::table('meal_time')->insert($mealTimes);
     }
 }

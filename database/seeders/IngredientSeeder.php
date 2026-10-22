@@ -9,7 +9,7 @@ class IngredientSeeder extends Seeder
 {
     public function run(): void
     {
-        // Tápértékek 100g-ra vonatkoztatva
+        // nutrition values per 100 g
         $ingredients = [
             ['name' => 'Liszt',              'calories' => 364, 'carbohydrate' => 76.0, 'protein' => 10.0, 'fat' => 1.0],
             ['name' => 'Cukor',              'calories' => 387, 'carbohydrate' => 100.0,'protein' => 0.0,  'fat' => 0.0],
@@ -63,7 +63,7 @@ class IngredientSeeder extends Seeder
             ['name' => 'Spenót',             'calories' => 23,  'carbohydrate' => 3.6,  'protein' => 2.9,  'fat' => 0.4],
             ['name' => 'Sárgaborsó',         'calories' => 341, 'carbohydrate' => 60.0, 'protein' => 25.0, 'fat' => 1.2],
             ['name' => 'Málna',              'calories' => 52,  'carbohydrate' => 12.0, 'protein' => 1.2,  'fat' => 0.7],
-            // Húsok, halak
+            // Meat, fish
             ['name' => 'Sertéshús',          'calories' => 242, 'carbohydrate' => 0.0,  'protein' => 27.0, 'fat' => 14.0],
             ['name' => 'Marhahús',           'calories' => 250, 'carbohydrate' => 0.0,  'protein' => 26.0, 'fat' => 15.0],
             ['name' => 'Kolbász',            'calories' => 301, 'carbohydrate' => 1.0,  'protein' => 15.0, 'fat' => 26.0],
@@ -75,7 +75,7 @@ class IngredientSeeder extends Seeder
             ['name' => 'Harcsa',             'calories' => 116, 'carbohydrate' => 0.0,  'protein' => 17.0, 'fat' => 4.8],
             ['name' => 'Keszeg',             'calories' => 105, 'carbohydrate' => 0.0,  'protein' => 18.0, 'fat' => 3.0],
             ['name' => 'Csirkecomb',         'calories' => 184, 'carbohydrate' => 0.0,  'protein' => 27.0, 'fat' => 8.0],
-            // Tésztafélék
+            // Pasta
             ['name' => 'Spagetti',           'calories' => 158, 'carbohydrate' => 31.0, 'protein' => 5.8,  'fat' => 0.9],
             ['name' => 'Nokedli',            'calories' => 140, 'carbohydrate' => 26.0, 'protein' => 5.0,  'fat' => 1.5],
             ['name' => 'Csipetke',           'calories' => 140, 'carbohydrate' => 26.0, 'protein' => 5.0,  'fat' => 1.5],
@@ -87,7 +87,7 @@ class IngredientSeeder extends Seeder
             ['name' => 'Tortilla',           'calories' => 300, 'carbohydrate' => 50.0, 'protein' => 8.0,  'fat' => 7.0],
             ['name' => 'Pita',               'calories' => 275, 'carbohydrate' => 55.0, 'protein' => 9.0,  'fat' => 1.2],
             ['name' => 'Kifli',              'calories' => 280, 'carbohydrate' => 52.0, 'protein' => 8.0,  'fat' => 4.0],
-            // Zöldségek, gyümölcsök
+            // Vegetables, fruit
             ['name' => 'Karfiol',            'calories' => 25,  'carbohydrate' => 5.0,  'protein' => 1.9,  'fat' => 0.3],
             ['name' => 'Brokkoli',           'calories' => 34,  'carbohydrate' => 7.0,  'protein' => 2.8,  'fat' => 0.4],
             ['name' => 'Cékla',              'calories' => 43,  'carbohydrate' => 10.0, 'protein' => 1.6,  'fat' => 0.2],
@@ -98,12 +98,12 @@ class IngredientSeeder extends Seeder
             ['name' => 'Paradicsomszósz',    'calories' => 38,  'carbohydrate' => 7.0,  'protein' => 1.5,  'fat' => 0.3],
             ['name' => 'Olívabogyó',         'calories' => 115, 'carbohydrate' => 6.3,  'protein' => 0.8,  'fat' => 10.7],
             ['name' => 'Baracklekvár',       'calories' => 250, 'carbohydrate' => 60.0, 'protein' => 0.5,  'fat' => 0.1],
-            // Sajtok
+            // Cheese
             ['name' => 'Parmezán',           'calories' => 431, 'carbohydrate' => 4.1,  'protein' => 38.0, 'fat' => 29.0],
             ['name' => 'Feta sajt',          'calories' => 264, 'carbohydrate' => 4.1,  'protein' => 14.0, 'fat' => 21.0],
             ['name' => 'Ricotta',            'calories' => 174, 'carbohydrate' => 3.0,  'protein' => 11.0, 'fat' => 13.0],
             ['name' => 'Mascarpone',         'calories' => 429, 'carbohydrate' => 2.3,  'protein' => 4.9,  'fat' => 44.0],
-            // Fűszerek, ízesítők
+            // Spices, seasonings
             ['name' => 'Pirospaprika őrlemény','calories' => 282,'carbohydrate' => 54.0, 'protein' => 14.0, 'fat' => 13.0],
             ['name' => 'Fahéj',              'calories' => 247, 'carbohydrate' => 81.0, 'protein' => 4.0,  'fat' => 1.2],
             ['name' => 'Kakaópor',           'calories' => 228, 'carbohydrate' => 58.0, 'protein' => 20.0, 'fat' => 14.0],
@@ -114,7 +114,7 @@ class IngredientSeeder extends Seeder
             ['name' => 'Curry por',          'calories' => 325, 'carbohydrate' => 56.0, 'protein' => 14.0, 'fat' => 14.0],
             ['name' => 'Ecet',               'calories' => 21,  'carbohydrate' => 0.9,  'protein' => 0.0,  'fat' => 0.0],
             ['name' => 'Majonéz',            'calories' => 680, 'carbohydrate' => 0.6,  'protein' => 1.0,  'fat' => 75.0],
-            // Egyéb
+            // Other
             ['name' => 'Keményítő',          'calories' => 381, 'carbohydrate' => 91.0, 'protein' => 0.3,  'fat' => 0.1],
             ['name' => 'Zabpehely',          'calories' => 389, 'carbohydrate' => 66.0, 'protein' => 17.0, 'fat' => 6.9],
             ['name' => 'Kávé',               'calories' => 2,   'carbohydrate' => 0.0,  'protein' => 0.1,  'fat' => 0.0],

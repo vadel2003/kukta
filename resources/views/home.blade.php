@@ -7,7 +7,6 @@
 @endpush
 
 @section('content')
-    <!-- 1. HERO SZEKCIÓ -->
     <section id="hero" class="hero-section">
         <div class="hero-container">
             <div class="hero-text">
@@ -23,9 +22,9 @@
                                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Keresés..." class="search-input">
                                 </div>
                                 <span class="search-divider"></span>
-                                <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők <span class="filter-count" hidden></span></button>
+                                <button type="button" class="btn-filters" data-modal-open="filtersModal"><i data-lucide="filter"></i> Szűrők <span class="filter-count" hidden></span></button>
                                 <span class="search-divider"></span>
-                                <button type="button" class="btn-sort" onclick="openModal('sortModal')"><i data-lucide="arrow-up-down"></i> Rendezés</button>
+                                <button type="button" class="btn-sort" data-modal-open="sortModal"><i data-lucide="arrow-up-down"></i> Rendezés</button>
                                 <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
                             </div>
                         </form>
@@ -33,34 +32,10 @@
                 </div>
             </div>
             <div class="hero-image">
-                <img src="{{ asset('images/hero-food-javitott.png') }}" alt="Ételkép">
+                <img src="{{ asset('images/hero-food.png') }}" alt="Ételkép">
             </div>
         </div>
     </section>
 
-    <!-- 2. RECEPT KERESŐ SZEKCIÓ -->
-    <section id="recipes" class="recipes-section">
-
-        @include('partials.recipe-search-bar', [
-            'searchAction' => route('home'),
-            'mealTimes' => $mealTimes,
-            'foodTypes' => $foodTypes,
-            'diets' => $diets,
-            'freeFroms' => $freeFroms,
-            'cuisines' => $cuisines,
-        ])
-
-        <div id="recipe-gallery" class="recipe-gallery">
-            @include('partials.recipe-gallery')
-        </div>
-
-        @if($recipes->hasMorePages())
-            <button id="load-more-btn" class="btn-load-more">További receptek betöltése...</button>
-        @endif
-
-        <div id="loading-spinner" class="loading-spinner" style="display: none;">
-            <div class="spinner"></div>
-            <p>Betöltés...</p>
-        </div>
-    </section>
+    @include('partials.recipe-list', ['searchAction' => route('home')])
 @endsection

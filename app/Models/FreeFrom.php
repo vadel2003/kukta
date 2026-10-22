@@ -8,8 +8,6 @@ class FreeFrom extends Model
 {
     protected $table = 'free_from';
 
-    protected $primaryKey = 'id';
-
     public $timestamps = false;
 
     protected $fillable = [
@@ -23,12 +21,9 @@ class FreeFrom extends Model
     }
 
     /**
-     * A mentesség kiírva ($freeFrom->free_label), pl. "Glutén" -> "Gluténmentes".
-     * A gyűjtőnevek ("Diófélék", "Rákfélék") külön szóval: "Dióféléktől mentes" -
-     * a "Diófélékmentes" nyelvtanilag helyes, de furcsán hangzik.
-     * A helyesírás szerint a 6 szótagnál hosszabb összetett szó kötőjelet kap
-     * (pl. "Földimogyoró-mentes"). Magyarban ahány magánhangzó, annyi szótag,
-     * ezért a szótagokat a magánhangzók megszámolásával kapjuk meg (a "mentes" +2 szótag).
+     * The "free from" label ($freeFrom->free_label), e.g. "Glutén" => "Gluténmentes",
+     * "Földimogyoró" => "Földimogyoró-mentes" (hyphenated above 6 syllables),
+     * "Diófélék" => "Dióféléktől mentes".
      */
     public function getFreeLabelAttribute(): string
     {

@@ -8,13 +8,12 @@ class IngredientRecipe extends Model
 {
     protected $table = 'ingredient_recipe';
 
-    protected $primaryKey = 'id';
-
     public $timestamps = false;
 
-    // Mértékegységek: az adatbázisban a szám van, ez adja hozzá a megnevezést (mint a Recipe::DIFFICULTIES).
-    // Az űrlap legördülője, a validáció, a seeder és a megjelenítés is innen veszi.
-    // Új egységet csak a végére vegyél fel, mert a meglévő számok a már mentett receptekben szerepelnek!
+    /**
+     * Units: number stored in the database => label.
+     * New units may only be appended, because saved recipes reference the numbers.
+     */
     public const UNITS = [
         0 => 'g',
         1 => 'kg',

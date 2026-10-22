@@ -40,7 +40,6 @@
             <p>{{ $search ? 'Nincs találat.' : 'Nincs még felhasználó.' }}</p>
         @else
         @php
-            // Oszlopok a fejléchez - így nem kell 4x ugyanazt a rendező linket kiírni
             $columns = [
                 'id' => 'ID',
                 'name' => 'Név',
@@ -63,7 +62,7 @@
                             </a>
                         </th>
                         @if ($key === 'id')
-                            <th></th> {{-- profilkép oszlop, nem rendezhető --}}
+                            <th></th>
                         @endif
                     @endforeach
                     <th class="admin-table-actions">Műveletek</th>

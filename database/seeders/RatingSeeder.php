@@ -7,34 +7,34 @@ use Illuminate\Support\Facades\DB;
 
 class RatingSeeder extends Seeder
 {
+    /**
+     * Each user rates 3-10 recipes of other users with a random score.
+     */
     public function run(): void
     {
         $ratings = [];
 
-        // User receptjeinek mappingje
+        // user ID => IDs of the user's own recipes
         $userRecipes = [
-            1 => range(1, 10),    // admin: 1-10
-            2 => range(11, 20),   // nagyanna: 11-20
-            3 => range(21, 30),   // kovacsbela: 21-30
-            4 => range(31, 40),   // szabocsilla: 31-40
-            5 => range(41, 50),   // tothdaniel: 41-50
-            6 => range(51, 60),   // molnarera: 51-60
-            7 => range(61, 70),   // kisstamas: 61-70
-            8 => range(71, 80),   // feherjudit: 71-80
-            9 => range(81, 90),   // baloghpetter: 81-90
-            10 => range(91, 100), // vargazsofia: 91-100
+            1 => range(1, 10),    // kukta
+            2 => range(11, 20),   // nagyanna
+            3 => range(21, 30),   // kovacsbela
+            4 => range(31, 40),   // szabocsilla
+            5 => range(41, 50),   // tothdaniel
+            6 => range(51, 60),   // molnarera
+            7 => range(61, 70),   // kisstamas
+            8 => range(71, 80),   // feherjudit
+            9 => range(81, 90),   // baloghpetter
+            10 => range(91, 100), // vargazsofia
         ];
 
         for ($userId = 1; $userId <= 10; $userId++) {
-            // Minden user 3-10 receptet értékel
-            $ratingCount = 3 + ($userId % 8); // 3-10
+            $ratingCount = 3 + ($userId % 8);
 
-            // Az összes recept, kivéve a sajátját
             $allRecipes = range(1, 100);
             $ownRecipes = $userRecipes[$userId];
             $otherRecipes = array_values(array_diff($allRecipes, $ownRecipes));
 
-            // Determinisztikus shuffle
             mt_srand($userId * 41);
             shuffle($otherRecipes);
             $selectedRecipes = array_slice($otherRecipes, 0, $ratingCount);

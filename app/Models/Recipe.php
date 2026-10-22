@@ -8,21 +8,18 @@ class Recipe extends Model
 {
     protected $table = 'recipe';
 
-    protected $primaryKey = 'id';
-
-    public $timestamps = true;
-
-    // Nehézségi szintek: az adatbázisban a szám (0/1/2) van, ez adja hozzá a megnevezést.
-    // Az űrlap legördülője, a validáció és a megjelenítés is innen veszi, így egy helyen kell módosítani.
+    /**
+     * Difficulty levels: number stored in the database => label.
+     */
     public const DIFFICULTIES = [
         0 => 'könnyű',
         1 => 'közepes',
         2 => 'nehéz',
     ];
 
-    // Választható alapképek: útvonal => megjelenő név. A tömb sorrendje = a választó sorrendje.
-    // Az űrlap innen rajzolja ki a képeket, a validáció pedig csak ezeket fogadja el
-    // (a rádiógomb értéke a böngészőben átírható, ezért kell a backendnek is ellenőriznie).
+    /**
+     * Selectable default images: path => label, in picker order.
+     */
     public const DEFAULT_IMAGES = [
         'images/recipes/default/soup_thumbnail.svg'        => 'Leves',
         'images/recipes/default/main_course_thumbnail.svg' => 'Főétel',
@@ -59,7 +56,7 @@ class Recipe extends Model
     }
 
     /**
-     * A nehézség megnevezése ($recipe->difficultyLabel()), pl. 1 -> "közepes"
+     * The difficulty label, e.g. 1 => "közepes".
      */
     public function difficultyLabel(): string
     {
@@ -67,9 +64,8 @@ class Recipe extends Model
     }
 
     /**
-     * A borítókép teljes URL-je ($recipe->thumbnail_url). A végére ?v=<módosítás ideje>
-     * kerül, így ha a képfájl megváltozik, a böngésző új címnek látja és nem a régi,
-     * gyorsítótárazott képet mutatja.
+     * The thumbnail URL ($recipe->thumbnail_url) with the file modification time (?v=...),
+     * so the browser downloads the image again when it changes.
      */
     public function getThumbnailUrlAttribute(): string
     {
@@ -136,12 +132,9 @@ class Recipe extends Model
     }
 
     /**
-     * Kulcsszavas keresés + kategória szűrők (étkezés, ételtípus, diéta, érzékenység, konyha).
-     * Egy csoporton belül VAGY (pl. Leves vagy Desszert), csoportok között ÉS a kapcsolat.
-     * Ezt a főoldal, a Saját receptek és a Kedvenc receptek oldal is használja,
-     * hogy ne kelljen 3x ugyanazt a kódot írni. A rendezést szándékosan NEM ez csinálja,
-     * mert az oldalanként eltérhet (l. Kedvenc receptek: alapból a kedvencnek jelölés
-     * ideje szerint rendez, nem a recept létrehozási dátuma szerint).
+     * Keyword search (title, description, ingredient, step) and category filters from the request.
+     * Values within a category are combined with OR, categories with AND. Exception: "free from"
+     * values are combined with AND too (the recipe must be free from all of them).
      */
     public function scopeSearchAndFilter($query, $request)
     {
@@ -164,9 +157,6 @@ class Recipe extends Model
         if ($request->filled('diet')) {
             $query->whereHas('diets', fn ($q) => $q->whereIn('diet.id', (array) $request->input('diet')));
         }
-        // Mentesség: itt csoporton belül is ÉS a kapcsolat - aki a "Glutén"-t és a "Laktóz"-t
-        // is bejelöli, annak olyan recept kell, ami MINDKETTŐTŐL mentes. Ezért minden
-        // bejelölt mentességre külön whereHas feltétel kerül (ezek között ÉS van)
         if ($request->filled('free_from')) {
             foreach ((array) $request->input('free_from') as $freeFromId) {
                 $query->whereHas('freeFroms', fn ($q) => $q->where('free_from.id', $freeFromId));
@@ -177,5 +167,29 @@ class Recipe extends Model
         }
 
         return $query;
+    }
+
+    /**
+     * Sorting by the request's "sort" parameter:
+     * date = newest first, popularity = number of favorites (requires withCount('favorites')),
+     * otherwise relevance: title matches first, then description matches, then $defaultColumn descending.
+     */
+    public function scopeApplySort($query, $request, string $defaultColumn = 'recipe.created_at')
+    {
+        $sort = $request->input('sort');
+
+        if ($sort === 'date') {
+            return $query->orderBy('recipe.created_at', 'desc');
+        }
+        if ($sort === 'popularity') {
+            return $query->orderBy('favorites_count', 'desc');
+        }
+
+        if ($request->filled('search')) {
+            $search = '%' . $request->input('search') . '%';
+            $query->orderByRaw('CASE WHEN recipe.title LIKE ? THEN 1 WHEN recipe.description LIKE ? THEN 2 ELSE 3 END', [$search, $search]);
+        }
+
+        return $query->orderBy($defaultColumn, 'desc');
     }
 }

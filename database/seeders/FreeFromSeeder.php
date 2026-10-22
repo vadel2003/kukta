@@ -9,40 +9,23 @@ class FreeFromSeeder extends Seeder
 {
     public function run(): void
     {
-        // A régi "-mentes" nevek átnevezése (id megtartásával, a recept-kapcsolatok nem sérülnek)
-        $renames = [
-            'Gluténmentes' => 'Glutén',
-            'Laktózmentes' => 'Laktóz',
-            'Cukormentes' => 'Cukor',
-            'Tojásmentes' => 'Tojás',
-        ];
-
-        foreach ($renames as $old => $new) {
-            DB::table('free_from')->where('name', $old)->update(['name' => $new]);
-        }
-
-        // Érzékenységek idempotens biztosítása, mindegyikhez egy áthúzott ikonnal
-        // (public/images/free_from/ - az asset() függvénnyel lehet rájuk hivatkozni)
         $sensitivities = [
             'Glutén'       => 'images/free_from/gluten.svg',
-            'Laktóz'       => 'images/free_from/laktoz.svg',
-            'Cukor'        => 'images/free_from/cukor.svg',
-            'Tojás'        => 'images/free_from/tojas.svg',
-            'Szója'        => 'images/free_from/szoja.svg',
-            'Diófélék'     => 'images/free_from/diofelek.svg',
-            'Földimogyoró' => 'images/free_from/foldimogyoro.svg',
-            'Hal'          => 'images/free_from/hal.svg',
-            'Rákfélék'     => 'images/free_from/rakfelek.svg',
-            'Zeller'       => 'images/free_from/zeller.svg',
-            'Mustár'       => 'images/free_from/mustar.svg',
-            'Szezámmag'    => 'images/free_from/szezammag.svg',
+            'Laktóz'       => 'images/free_from/lactose.svg',
+            'Cukor'        => 'images/free_from/sugar.svg',
+            'Tojás'        => 'images/free_from/egg.svg',
+            'Szója'        => 'images/free_from/soy.svg',
+            'Diófélék'     => 'images/free_from/tree-nuts.svg',
+            'Földimogyoró' => 'images/free_from/peanut.svg',
+            'Hal'          => 'images/free_from/fish.svg',
+            'Rákfélék'     => 'images/free_from/crustaceans.svg',
+            'Zeller'       => 'images/free_from/celery.svg',
+            'Mustár'       => 'images/free_from/mustard.svg',
+            'Szezámmag'    => 'images/free_from/sesame.svg',
         ];
 
         foreach ($sensitivities as $name => $thumbnail) {
-            DB::table('free_from')->updateOrInsert(
-                ['name' => $name],
-                ['name' => $name, 'thumbnail' => $thumbnail]
-            );
+            DB::table('free_from')->insert(['name' => $name, 'thumbnail' => $thumbnail]);
         }
     }
 }

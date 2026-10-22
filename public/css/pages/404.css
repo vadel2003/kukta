@@ -1,4 +1,4 @@
-/* ===== 404 HIBAOLDAL ===== */
+/* ===== 404 ERROR PAGE ===== */
 .error-page {
     display: flex;
     flex-direction: column;
@@ -11,7 +11,6 @@
     padding: 3rem 1.5rem 4rem;
 }
 
-/* --- Kukta (kuktafazék) CSS-rajz + gőz animáció --- */
 .kukta {
     position: relative;
     width: 220px;
@@ -63,7 +62,7 @@
     border-radius: 6px 6px 4px 4px;
 }
 
-/* Szomorkodó arc a kuktán */
+/* Sad face on the cooker */
 .kukta-eye {
     position: absolute;
     bottom: 22px;
@@ -88,7 +87,7 @@
     border-radius: 0 0 12px 12px;
 }
 
-/* Gőzpöffögés a szelep felett */
+/* Steam puffs above the valve */
 .kukta-steam {
     position: absolute;
     top: 0;
@@ -121,7 +120,6 @@
     100% { transform: translateY(-78px) scale(2); opacity: 0; }
 }
 
-/* --- Szövegek, gomb --- */
 .error-code {
     margin: 0;
     font-size: clamp(5rem, 12vw, 7.5rem);

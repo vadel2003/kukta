@@ -1,8 +1,3 @@
-/* Admin táblázatos oldalak (alapanyagok/receptek/felhasználók) kártya-konténere -
-   ugyanaz a vizuális nyelv, mint a .form-card (app.css), csak teljes szélességű,
-   hogy a táblázat ne csupaszon lógjon a háttéren, mint a többi kártyázott aloldal.
-   A padding-top 24px (nem 32px), mert a H1 mostantól a kártyán kívül van, mint a
-   Profil oldalon. */
 .admin-panel {
     background: var(--color-white);
     border: 1px solid #ECE3D8;
@@ -13,9 +8,6 @@
     margin: 0 auto;
 }
 
-/* .btn-edit méretű/alakú gomb, de narancssárga (mint a Profil oldal elsődleges
-   gombja) - csak az admin táblák Keresés/Új alapanyag/Mentés/Módosítás gombjain,
-   a .btn-edit-t máshol is használó recipe-gallery "Szerkesztés" gombja zöld marad */
 .btn-edit-primary {
     background-color: var(--color-primary);
 }
@@ -24,10 +16,7 @@
     background-color: var(--color-primary-hover);
 }
 
-/* Alapanyag / lépés sor eltávolító (×) gombja a recept létrehozás/szerkesztés oldalon
-   - mindig látszik, csak 3 sornál letiltva */
-.remove-step,
-.remove-ingredient {
+.remove-row {
     background: none;
     border: none;
     color: var(--color-danger);
@@ -37,18 +26,23 @@
     padding: 0.25rem 0.5rem;
 }
 
-.remove-step:hover,
-.remove-ingredient:hover {
+.remove-row:hover {
     color: var(--color-danger-hover);
 }
 
-.remove-step:disabled,
-.remove-ingredient:disabled {
+.remove-row:disabled {
     color: var(--color-text-lighter);
     cursor: not-allowed;
 }
 
-/* Kereső + "Új alapanyag" gomb egy sorban: a kereső balra, a gomb jobbra igazítva */
+.category-group h3 {
+    margin-bottom: 0.25rem;
+}
+
+.category-group + .category-group {
+    margin-top: 1rem;
+}
+
 .ingredient-toolbar {
     display: flex;
     justify-content: space-between;
@@ -62,16 +56,12 @@
     max-width: 500px;
 }
 
-/* A tömeges törlés gomb + az oldal saját "Új ..." gombja együtt, jobbra igazítva */
 .toolbar-actions {
     display: flex;
     gap: 0.5rem;
-    /* a táblázat celláinak 0.8rem jobb paddingje miatt a sorok Törlés gombja ennyivel
-       beljebb van a panel szélétől - ezzel a felső gombok jobb széle pont fölé kerül */
     margin-right: 0.8rem;
 }
 
-/* Kijelölő checkbox oszlop - ne nyúljon szét, középre igazítva a sorban */
 .admin-table th:first-child,
 .admin-table td:first-child {
     width: 1%;
@@ -96,7 +86,6 @@
     flex-shrink: 0;
 }
 
-/* "Összes" gomb - aktív keresés törlése, csak akkor jelenik meg, ha van keresőszó */
 .btn-clear-search {
     display: inline-block;
     padding: 8px 16px;
@@ -110,7 +99,6 @@
     background-color: var(--color-text);
 }
 
-/* Admin táblázat (alapanyagok) - eddig sehol nem volt table stílus a projektben */
 .admin-table {
     width: 100%;
     border-collapse: collapse;
@@ -129,27 +117,19 @@
     text-decoration: none;
 }
 
-/* A művelet-oszlop (pl. Részletek + Törlés) ne törjön két sorba - enélkül egy
-   hosszú szomszédos oszlop (pl. Leírás) elszívhatja a helyét, és a gombok
-   egymás alá esnek */
 .admin-table-actions {
     white-space: nowrap;
 }
 
-/* A művelet-oszlop (fejléc + gombok) jobbra igazítva. Két osztályos szelektor kell,
-   mert az .admin-table th/td { text-align: left } erősebb lenne egy sima .admin-table-actions-nél */
 .admin-table .admin-table-actions {
     text-align: right;
-    width: 1%; /* az oszlop csak a gombok szélességéig tart, így a középre tett felirat pont felettük van */
+    width: 1%;
 }
 
-/* A "Műveletek" felirat a gombok felett középen */
 .admin-table th.admin-table-actions {
     text-align: center;
 }
 
-/* A "Részletek" és "Törlés" gomb azonos méretű legyen, a hosszabb szöveghez
-   (Részletek) igazítva, ne a szöveg hossza határozza meg egyenként */
 .admin-table-actions .btn-edit,
 .admin-table-actions .btn-delete {
     display: inline-block;
@@ -161,7 +141,6 @@
     background: var(--color-search-bg);
 }
 
-/* Felhasználók táblázatának kis profilkép-thumbnailje */
 .user-avatar {
     width: 36px;
     height: 36px;
@@ -169,7 +148,7 @@
     object-fit: cover;
 }
 
-/* Receptek táblázatának kis recept-képe */
+/* Small recipe image in the recipes table */
 .recipe-thumbnail {
     width: 60px;
     height: 60px;
@@ -177,7 +156,6 @@
     object-fit: cover;
 }
 
-/* Beágyazott szerkesztő sor: alapból rejtve, a "Módosítás" gomb JS-e kapcsolja */
 .hidden-row {
     display: none;
 }
@@ -189,7 +167,6 @@
     gap: 0.75rem;
 }
 
-/* Az "Új alapanyag" form a táblázaton kívül, a gomb alatt jelenik meg */
 #new-ingredient-form {
     margin-top: 1rem;
 }
@@ -216,15 +193,12 @@
     width: 6rem;
 }
 
-/* ===== MOBIL NÉZET ===== */
+/* ===== MOBILE VIEW ===== */
 @media (max-width: 768px) {
-    /* Kisebb belső margó, hogy a táblázatnak több hely maradjon */
     .admin-panel {
         padding: 16px;
     }
 
-    /* A kereső és a gombok egymás alá kerülnek: egy sorban nem fértek el,
-       ezért a keresőmező pár pixelesre nyomódott, a gombok pedig kilógtak */
     .ingredient-toolbar {
         flex-direction: column;
         align-items: stretch;
@@ -235,7 +209,6 @@
         max-width: none;
     }
 
-    /* min-width: 0 nélkül a flex elem nem lehet keskenyebb a tartalmánál (placeholder) */
     .ingredient-search input[type="text"] {
         min-width: 0;
     }
@@ -244,25 +217,19 @@
         margin-right: 0;
     }
 
-    /* A két gomb egyforma szélesen kitölti a sort */
     .toolbar-actions > * {
         flex: 1;
     }
 
-    /* a tömeges törlés gomb egy formban van, ezért annak is ki kell töltenie a formot */
     .toolbar-actions button {
         width: 100%;
     }
 
-    /* A táblázat oldalra görgethető lesz, ahelyett hogy a jobb szélét levágná a képernyő.
-       display: block kell, mert a <table> elemre az overflow nem hat - így a táblázat
-       egy blokk "doboz" lesz, a sorai pedig görgethetően benne maradnak. */
     .admin-table {
         display: block;
         overflow-x: auto;
     }
 
-    /* Az új alapanyag űrlap mezői teljes szélességűek */
     .ingredient-edit-form label,
     .ingredient-edit-form input[name="name"],
     .ingredient-edit-form input[type="number"] {
@@ -270,10 +237,6 @@
     }
 }
 
-/* Recept feltöltése / Módosítások mentése gomb: ugyanaz az árnyék, mint a főoldal
-   Keresés/Szűrők/Rendezés és a kártyák gombjain (home.css, app.css .card-actions),
-   hoverre picit erősebb. A transition-be a box-shadow is bekerül, különben a .btn-cook
-   csak a hátteret és a mozgást animálná, az árnyék pedig ugrásszerűen váltana. */
 .btn-recipe-submit {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;

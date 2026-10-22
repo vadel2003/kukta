@@ -1,7 +1,5 @@
-{{-- Süti tájékoztató sáv. Az oldal csak a működéshez szükséges sütiket használja, ezekhez
-     a törvény nem kér beleegyezést, csak tájékoztatást - ezért elég egyetlen "Rendben" gomb.
-     Alapból rejtett (hidden), és a lenti JS csak akkor mutatja meg, ha a látogató még
-     nem nyomta meg a gombot (azaz nincs meg a cookie_notice_seen süti). --}}
+{{-- Cookie notice bar. Shown until the visitor clicks the OK button
+     (cookie_notice_seen cookie, kept for 1 year). --}}
 <div id="cookieNotice" class="cookie-notice" hidden>
     <p>
         Az oldal használatával elfogadod a <a href="{{ route('page.cookies') }}">Süti tájékoztatóban</a> foglaltakat.
@@ -10,18 +8,13 @@
 </div>
 
 <script>
-    (function () {
-        const notice = document.getElementById('cookieNotice');
+    if (!document.cookie.includes('cookie_notice_seen=1')) {
+        const cookieNotice = document.getElementById('cookieNotice');
+        cookieNotice.hidden = false;
 
-        // document.cookie az összes süti egy szövegben: "a=1; b=2" - ebben keressük a miénket
-        if (document.cookie.includes('cookie_notice_seen=1')) return;
-
-        notice.hidden = false;
-
-        notice.querySelector('.btn-cookie-ok').addEventListener('click', function () {
-            // 1 évig (másodpercben) emlékszik rá a böngésző, path=/ -> az egész oldalon érvényes
+        cookieNotice.querySelector('.btn-cookie-ok').addEventListener('click', () => {
             document.cookie = 'cookie_notice_seen=1; max-age=31536000; path=/; SameSite=Lax';
-            notice.hidden = true;
+            cookieNotice.hidden = true;
         });
-    })();
+    }
 </script>

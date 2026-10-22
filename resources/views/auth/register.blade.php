@@ -3,7 +3,6 @@
 @section('title', 'Regisztráció')
 
 @section('content')
-    {{-- card-stack--narrow: a cím és a vissza link egy oszlopban a kártyával (mint a Profil oldalon) --}}
     <div class="card-stack card-stack--narrow">
         <div>
             <a href="{{ route('home') }}" class="back-link"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
@@ -50,13 +49,9 @@
                 </div>
 
                 <div class="form-group">
-                    {{-- A szabályzatok új lapon nyílnak (target="_blank"), hogy a félig kitöltött űrlap ne vesszen el.
-                         Ezt jelezzük is: kis "kifelé mutató" ikon (látó felhasználóknak) + rejtett szöveg (képernyőolvasónak). --}}
                     <label class="checkbox-inline">
                         <input type="checkbox" name="terms" required>
                         <span>
-                            {{-- Az ÁSZF-et elfogadni kell (ez a szerződés), az adatkezelési tájékoztatót
-                                 viszont csak megismerni - az adatkezelés jogalapja nem ez a pipa, hanem a szerződés --}}
                             Elfogadom az <a href="{{ route('page.terms') }}" target="_blank" class="external-link">Általános szerződési feltételeket<i data-lucide="external-link" aria-hidden="true"></i><span class="sr-only"> (új lapon nyílik)</span></a>,
                             és megismertem az <a href="{{ route('page.privacy') }}" target="_blank" class="external-link">Adatkezelési tájékoztatót<i data-lucide="external-link" aria-hidden="true"></i><span class="sr-only"> (új lapon nyílik)</span></a>.
                         </span>
@@ -74,12 +69,12 @@
     </div>
 
     <script>
-        // A két jelszó egyezése (a backenden a 'confirmed' szabály). Ha nem egyeznek, a
-        // setCustomValidity hibásnak jelöli a mezőt, így a böngésző nem küldi el az űrlapot,
-        // hanem a saját hibabuborékában kiírja a szöveget. Üres szöveg = nincs hiba.
         const password = document.getElementById('password');
         const passwordConfirmation = document.getElementById('password_confirmation');
 
+        /**
+         * Marks the confirmation field invalid if it does not match the password (so the browser blocks the submit).
+         */
         function checkPasswordMatch() {
             passwordConfirmation.setCustomValidity(
                 passwordConfirmation.value === password.value ? '' : 'A két jelszó nem egyezik!'

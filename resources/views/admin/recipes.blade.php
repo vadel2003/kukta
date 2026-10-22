@@ -43,7 +43,6 @@
             <p>{{ $search ? 'Nincs találat.' : 'Nincs még feltöltött recept.' }}</p>
         @else
         @php
-            // Oszlopok a fejléchez - csak a ténylegesen megjelenő adatok szerint rendezhető
             $columns = [
                 'title' => 'Cím',
                 'user' => 'Feltöltötte',

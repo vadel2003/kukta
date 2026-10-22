@@ -14,157 +14,151 @@
         @endif
 
         <div class="grid-2col">
-        {{-- 1. Alapadatok: profilkép, felhasználónév, email - saját submit --}}
-        <div class="content-card profile-panel">
-            <h2 class="content-title">
-                <span class="title-icon"><i data-lucide="user"></i></span>
-                Alapadatok
-            </h2>
+            <div class="content-card profile-panel">
+                <h2 class="content-title">
+                    <span class="title-icon"><i data-lucide="user"></i></span>
+                    Alapadatok
+                </h2>
 
-            <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
-                @csrf
-                @method('put')
-                <input type="hidden" name="remove_avatar" id="remove_avatar" value="0">
+                <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="remove_avatar" id="remove_avatar" value="0">
 
-                <div class="avatar-row">
-                    @if (Auth::user()->avatar)
-                        <img src="{{ asset(Auth::user()->avatar) }}" alt="Profilkép" class="profile-avatar-preview" id="avatar-preview">
-                    @else
-                        <img src="{{ asset('images/default_avatar.svg') }}" alt="Alapértelmezett profilkép" class="profile-avatar-preview" id="avatar-preview">
-                    @endif
-
-                    <div class="avatar-row-actions">
-                        <label for="avatar" class="btn-outline">Kép cseréje</label>
-                        <input type="file" name="avatar" id="avatar" accept="image/jpeg,image/png,image/webp" class="upload-input" aria-describedby="avatar-hint">
-                        <p class="field-hint" id="avatar-hint">JPG, PNG vagy WebP kép. Kiválasztás után körbevághatod.</p>
+                    <div class="avatar-row">
                         @if (Auth::user()->avatar)
-                            <button type="button" class="btn-link-danger" id="avatar-remove">Eltávolítás</button>
+                            <img src="{{ asset(Auth::user()->avatar) }}" alt="Profilkép" class="profile-avatar-preview" id="avatar-preview">
+                        @else
+                            <img src="{{ asset('images/default_avatar.svg') }}" alt="Alapértelmezett profilkép" class="profile-avatar-preview" id="avatar-preview">
                         @endif
-                        @error('avatar')
-                            <span class="form-error">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="name">Felhasználónév</label>
-                    <div class="field-control">
-                        <input type="text" name="name" id="name" value="{{ old('name', Auth::user()->name) }}" required minlength="3" maxlength="30" class="{{ $errors->has('name') ? 'is-invalid' : '' }}" aria-describedby="name-counter">
-                        <small class="char-counter" id="name-counter">0 / 30</small>
-                    </div>
-                    @error('name')
-                        <span class="form-error">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email cím</label>
-                    <div class="field-control">
-                        <input type="email" name="email" id="email" value="{{ old('email', Auth::user()->email) }}" required minlength="6" maxlength="254" class="{{ $errors->has('email') ? 'is-invalid' : '' }}" aria-describedby="email-counter">
-                        <small class="char-counter" id="email-counter">0 / 50</small>
-                    </div>
-                    @error('email')
-                        <span class="form-error">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="panel-footer">
-                    <button type="submit" class="btn-cook btn-cook-primary">Mentés</button>
-                </div>
-            </form>
-        </div>
-
-        {{-- 2. Jelszó módosítása - saját submit, elkülönítve az alapadatoktól --}}
-        <div class="content-card profile-panel">
-            <h2 class="content-title">
-                <span class="title-icon"><i data-lucide="lock"></i></span>
-                Jelszó módosítása
-            </h2>
-
-            <form method="POST" action="{{ route('profile.password') }}">
-                @csrf
-                @method('put')
-
-                <div class="form-group">
-                    <label for="current_password">Jelenlegi jelszó</label>
-                    <input type="password" name="current_password" id="current_password" required class="{{ $errors->has('current_password') ? 'is-invalid' : '' }}">
-                    @error('current_password')
-                        <span class="form-error">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="new_password">Új jelszó <span class="label-hint" id="new_password-hint">(8–50 karakter)</span></label>
-                    <div class="field-control">
-                        <input type="password" name="new_password" id="new_password" required minlength="8" maxlength="50" class="{{ $errors->has('new_password') ? 'is-invalid' : '' }}" aria-describedby="new_password-counter new_password-hint">
-                        <small class="char-counter" id="new_password-counter">0 / 50</small>
-                    </div>
-                    @error('new_password')
-                        <span class="form-error">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="new_password_confirmation">Új jelszó megerősítése</label>
-                    <input type="password" name="new_password_confirmation" id="new_password_confirmation" required minlength="8" maxlength="50">
-                </div>
-
-                <div class="panel-footer">
-                    <button type="submit" class="btn-cook btn-cook-primary">Jelszó frissítése</button>
-                </div>
-            </form>
-        </div>
-        </div>
-
-        {{-- 3. Fiók törlése - semleges panel piros címmel/bal éllel, modal megerősítéssel.
-             A szuperadmin fiókja nem törölhető (különben nem maradna, aki kezeli az oldalt),
-             ezért neki meg sem jelenik a panel. --}}
-        @unless (Auth::user()->isAdmin())
-        <div class="content-card profile-panel profile-panel--danger">
-            <h2 class="content-title">
-                <span class="title-icon"><i data-lucide="trash-2"></i></span>
-                Fiók törlése
-            </h2>
-
-            <form method="POST" action="{{ route('profile.destroy') }}">
-                @csrf
-                @method('delete')
-
-                <div class="danger-row">
-                    <div class="danger-row-text">
-                        <p class="field-hint">Ez a művelet nem visszavonható. A receptjeid megmaradnak, de a fiókod és a hozzá tartozó kedvencek, értékelések véglegesen törlődnek.</p>
-
-                        <div class="form-group">
-                            <label for="delete_password">Jelenlegi jelszó a törléshez</label>
-                            <input type="password" name="password" id="delete_password" required class="{{ $errors->has('password') ? 'is-invalid' : '' }}">
-                            @error('password')
+                        <div class="avatar-row-actions">
+                            <label for="avatar" class="btn-outline">Kép cseréje</label>
+                            <input type="file" name="avatar" id="avatar" accept="image/jpeg,image/png,image/webp" class="upload-input" aria-describedby="avatar-hint">
+                            <p class="field-hint" id="avatar-hint">JPG, PNG vagy WebP kép. Kiválasztás után körbevághatod.</p>
+                            @if (Auth::user()->avatar)
+                                <button type="button" class="btn-link-danger" id="avatar-remove">Eltávolítás</button>
+                            @endif
+                            @error('avatar')
                                 <span class="form-error">{{ $message }}</span>
                             @enderror
                         </div>
                     </div>
 
-                    <button type="button" class="btn-cook btn-cook-danger" onclick="openModal('deleteAccountModal')">Fiók törlése</button>
-                </div>
+                    <div class="form-group">
+                        <label for="name">Felhasználónév</label>
+                        <div class="field-control">
+                            <input type="text" name="name" id="name" value="{{ old('name', Auth::user()->name) }}" required minlength="3" maxlength="30" class="{{ $errors->has('name') ? 'is-invalid' : '' }}" aria-describedby="name-counter">
+                            <small class="char-counter" id="name-counter">0 / 30</small>
+                        </div>
+                        @error('name')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
 
-                <div id="deleteAccountModal" class="modal">
-                    <div class="modal-content modal-small">
-                        <div class="modal-header">
-                            <h3>Biztosan törlöd a fiókodat?</h3>
-                            <button type="button" class="close-btn" onclick="closeModal('deleteAccountModal')">&times;</button>
+                    <div class="form-group">
+                        <label for="email">Email cím</label>
+                        <div class="field-control">
+                            <input type="email" name="email" id="email" value="{{ old('email', Auth::user()->email) }}" required minlength="6" maxlength="254" class="{{ $errors->has('email') ? 'is-invalid' : '' }}" aria-describedby="email-counter">
+                            <small class="char-counter" id="email-counter">0 / 50</small>
                         </div>
-                        <div class="modal-body">
-                            <p>Ez a művelet nem visszavonható. A receptjeid megmaradnak, de a fiókod és a hozzá tartozó kedvencek, értékelések véglegesen törlődnek.</p>
+                        @error('email')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="panel-footer">
+                        <button type="submit" class="btn-cook btn-cook-primary">Mentés</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="content-card profile-panel">
+                <h2 class="content-title">
+                    <span class="title-icon"><i data-lucide="lock"></i></span>
+                    Jelszó módosítása
+                </h2>
+
+                <form method="POST" action="{{ route('profile.password') }}">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="form-group">
+                        <label for="current_password">Jelenlegi jelszó</label>
+                        <input type="password" name="current_password" id="current_password" required class="{{ $errors->has('current_password') ? 'is-invalid' : '' }}">
+                        @error('current_password')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new_password">Új jelszó <span class="label-hint" id="new_password-hint">(8–50 karakter)</span></label>
+                        <div class="field-control">
+                            <input type="password" name="new_password" id="new_password" required minlength="8" maxlength="50" class="{{ $errors->has('new_password') ? 'is-invalid' : '' }}" aria-describedby="new_password-counter new_password-hint">
+                            <small class="char-counter" id="new_password-counter">0 / 50</small>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn-outline" onclick="closeModal('deleteAccountModal')">Mégse</button>
-                            <button type="submit" class="btn-delete">Igen, törlöm véglegesen</button>
+                        @error('new_password')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new_password_confirmation">Új jelszó megerősítése</label>
+                        <input type="password" name="new_password_confirmation" id="new_password_confirmation" required minlength="8" maxlength="50">
+                    </div>
+
+                    <div class="panel-footer">
+                        <button type="submit" class="btn-cook btn-cook-primary">Jelszó frissítése</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        @unless (Auth::user()->isAdmin())
+            <div class="content-card profile-panel profile-panel--danger">
+                <h2 class="content-title">
+                    <span class="title-icon"><i data-lucide="trash-2"></i></span>
+                    Fiók törlése
+                </h2>
+
+                <form method="POST" action="{{ route('profile.destroy') }}">
+                    @csrf
+                    @method('DELETE')
+
+                    <div class="danger-row">
+                        <div class="danger-row-text">
+                            <p class="field-hint">Ez a művelet nem visszavonható. A receptjeid megmaradnak, de a fiókod és a hozzá tartozó kedvencek, értékelések véglegesen törlődnek.</p>
+
+                            <div class="form-group">
+                                <label for="delete_password">Jelenlegi jelszó a törléshez</label>
+                                <input type="password" name="password" id="delete_password" required class="{{ $errors->has('password') ? 'is-invalid' : '' }}">
+                                @error('password')
+                                    <span class="form-error">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-cook btn-cook-danger" data-modal-open="deleteAccountModal">Fiók törlése</button>
+                    </div>
+
+                    <div id="deleteAccountModal" class="modal">
+                        <div class="modal-content modal-small">
+                            <div class="modal-header">
+                                <h3>Biztosan törlöd a fiókodat?</h3>
+                                <button type="button" class="close-btn" data-modal-close>&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Ez a művelet nem visszavonható. A receptjeid megmaradnak, de a fiókod és a hozzá tartozó kedvencek, értékelések véglegesen törlődnek.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn-outline" data-modal-close>Mégse</button>
+                                <button type="submit" class="btn-delete">Igen, törlöm véglegesen</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
         @endunless
-
     </div>
 
     @include('partials.image-cropper')
@@ -174,26 +168,21 @@
         const avatarPreview = document.getElementById('avatar-preview');
         const removeAvatarField = document.getElementById('remove_avatar');
 
-        // Profilkép: fájl kiválasztása után a közös vágó ablak nyílik meg, és egy
-        // 100x100-as, tömörített JPEG kerül a file inputba (partials/image-cropper.blade.php).
-        // A méretet a ProfileController validációja is ellenőrzi - ha itt változik, ott is kell!
         const avatarCropper = setupImageCropper({
             input: avatarInput,
             width: 100,
             height: 100,
             quality: 0.85,
             round: true,
-            onApply: function (blob) {
+            onApply: blob => {
                 avatarPreview.src = URL.createObjectURL(blob);
                 removeAvatarField.value = '0';
             },
         });
 
-        // "Eltávolítás" link - visszaállítja az alapértelmezett képet, és jelzi
-        // a szervernek, hogy a mentéskor törölje a jelenlegi avatart
         const avatarRemoveBtn = document.getElementById('avatar-remove');
         if (avatarRemoveBtn) {
-            avatarRemoveBtn.addEventListener('click', function () {
+            avatarRemoveBtn.addEventListener('click', () => {
                 avatarCropper.clear();
                 avatarPreview.src = "{{ asset('images/default_avatar.svg') }}";
                 removeAvatarField.value = '1';
@@ -201,11 +190,12 @@
             });
         }
 
-        // Az új jelszó és a megerősítése egyezzen (a backenden a 'confirmed' szabály).
-        // setCustomValidity: nem üres szöveg = hibás mező, a böngésző nem küldi el az űrlapot.
         const newPassword = document.getElementById('new_password');
         const newPasswordConfirmation = document.getElementById('new_password_confirmation');
 
+        /**
+         * Marks the confirmation field invalid if it does not match the new password (so the browser blocks the submit).
+         */
         function checkPasswordMatch() {
             newPasswordConfirmation.setCustomValidity(
                 newPasswordConfirmation.value === newPassword.value ? '' : 'A két jelszó nem egyezik!'

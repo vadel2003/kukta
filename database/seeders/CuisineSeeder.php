@@ -19,8 +19,6 @@ class CuisineSeeder extends Seeder
             ['name' => 'Görög'],
         ];
 
-        foreach ($cuisines as $cuisine) {
-            DB::table('cuisine')->insert($cuisine);
-        }
+        DB::table('cuisine')->insert($cuisines);
     }
 }

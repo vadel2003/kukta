@@ -9,8 +9,7 @@ class StepSeeder extends Seeder
 {
     public function run(): void
     {
-        // Minden lépésben szerepel a felhasznált alapanyag és annak pontos mennyisége
-        // (egyezik az IngredientRecipeSeeder mennyiségeivel).
+        // recipe ID => steps (quantities match the IngredientRecipeSeeder data)
         $recipeSteps = [
             1 => [ // Gulyásleves
                 '800 g marhahúst megmosunk és 2 cm-es kockákra vágunk.',
@@ -973,19 +972,18 @@ class StepSeeder extends Seeder
         }
     }
 
-    // Egy recept lépéseit szakaszokra bontja, a recept "menete" szerint:
-    // Előkészítés (az eleje) -> Elkészítés / Főzés / Sütés (a közepe) -> Tálalás (az utolsó lépés).
-    // Visszaadja a lépések kategória-azonosítóit, ugyanabban a sorrendben.
+    /**
+     * Step categories from the step text: leading prep steps (cutting, washing...) are Preparation,
+     * a final serving step is Serving, the rest is Baking (oven), Cooking (stove) or Making.
+     *
+     * @return array step_category IDs of the steps, in the same order
+     */
     private function categorizeSteps(array $steps): array
     {
         $categories = DB::table('step_category')->pluck('id', 'gif_filename');
 
-        // Sütőben sütés ("sütőpapír" nem számít). A mb_strtolower miatt a °C itt már °c.
         $ovenPattern = '/sütő(?!papír)|°c/u';
-        // Tűzhelyen végzett hőkezelés. A (?!ött) / (?!ott) kizárja a mellékneveket,
-        // pl. "kifőzött nokedlivel", "pirított szezámmaggal" (ezek nem főzést jelentenek abban a lépésben).
         $stovePattern = '/főz(?!ött)|forr|pirít(?!ott)|dinsztel|párol|serpenyő|wok|olajon|vajon|lassú tűz|megolvaszt|süt(?!ő)/u';
-        // Tipikus előkészítő műveletek
         $prepPattern = '/megmos|mossuk|vág|apró|kocká|karikáz|hámoz|tisztít|szeletel|darabol|aprít|reszel|kimagoz|klopfol|felfuttat|szitál|felver|beáztat|áztat/u';
 
         $result = [];
@@ -998,15 +996,12 @@ class StepSeeder extends Seeder
             $isStove = preg_match($stovePattern, $d);
 
             if ($i === $lastIndex && str_contains($d, 'tálal')) {
-                // Tálalás csak az utolsó lépés lehet
-                $slug = 'talalas';
-            } elseif ($inPrepPhase && ! $isOven && ! $isStove && preg_match($prepPattern, $d)) {
-                // Az elejéről az egymást követő előkészítő lépések, amíg nincs hőkezelés
-                $slug = 'elokeszites';
+                $slug = 'serving';
+            } elseif ($inPrepPhase && !$isOven && !$isStove && preg_match($prepPattern, $d)) {
+                $slug = 'preparation';
             } else {
-                // Innentől már nem lehet újra Előkészítés
                 $inPrepPhase = false;
-                $slug = $isOven ? 'sutes' : ($isStove ? 'fozes' : 'elkeszites');
+                $slug = $isOven ? 'baking' : ($isStove ? 'cooking' : 'making');
             }
 
             $result[] = $categories[$slug . '.json'];

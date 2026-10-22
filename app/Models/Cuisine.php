@@ -8,8 +8,6 @@ class Cuisine extends Model
 {
     protected $table = 'cuisine';
 
-    protected $primaryKey = 'id';
-
     public $timestamps = false;
 
     protected $fillable = [

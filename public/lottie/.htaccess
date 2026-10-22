@@ -1,6 +1,6 @@
-# Hosszú böngésző-cache a Lottie animációkhoz (1 év).
-# Biztonságos, mert a Blade komponens ?v=<fájl módosítási ideje> paramétert fűz az URL-hez:
-# ha lecseréled a JSON-t, új URL-t kap, és a böngésző újra letölti.
+# Long browser cache for the Lottie animations (1 year).
+# Safe, because the Blade component appends ?v=<file modification time> to the URL:
+# a replaced JSON file gets a new URL, so the browser downloads it again.
 
 <IfModule mod_expires.c>
     ExpiresActive On

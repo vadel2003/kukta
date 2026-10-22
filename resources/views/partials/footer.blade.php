@@ -4,7 +4,6 @@
             <h4>Elérhetőség</h4>
             <p><a href="mailto:info@kukta.hu"><i data-lucide="mail" class="footer-icon"></i> info@kukta.hu</a></p>
         </div>
-        {{-- nav + aria-label: a képernyőolvasó külön navigációs területként ismeri fel --}}
         <nav class="footer-section" aria-label="Jogi információk">
             <h4>Információk</h4>
             <ul>

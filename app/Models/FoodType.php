@@ -8,8 +8,6 @@ class FoodType extends Model
 {
     protected $table = 'food_type';
 
-    protected $primaryKey = 'id';
-
     public $timestamps = false;
 
     protected $fillable = [

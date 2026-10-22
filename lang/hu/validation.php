@@ -1,18 +1,8 @@
 <?php
 
 /*
-|--------------------------------------------------------------------------
-| Magyar validációs üzenetek
-|--------------------------------------------------------------------------
-|
-| A Laravel beépített angol üzeneteinek (vendor/laravel/framework/src/
-| Illuminate/Translation/lang/en/validation.php) magyar fordítása, ugyanazokkal
-| a kulcsokkal. Az APP_LOCALE=hu (.env) miatt a Laravel automatikusan ezt a
-| fájlt használja. A :attribute helyére a lenti 'attributes' tömbből kerül a
-| mező magyar neve (pl. "email" -> "email cím").
-|
-| "A(z)": a névelőt nem tudjuk előre (a vagy az), mert a mező neve változik.
-|
+| Hungarian validation messages: a translation of Laravel's English validation.php (APP_LOCALE=hu).
+| :attribute is replaced with the field's Hungarian name from the 'attributes' array.
 */
 
 return [
@@ -172,7 +162,7 @@ return [
     'uuid' => 'A(z) :attribute nem érvényes UUID.',
 
     /*
-    | Egyedi üzenetek adott mező + szabály párosra ("mezőnév.szabály")
+    | Custom messages for a field + rule pair ("field.rule")
     */
 
     'custom' => [
@@ -183,12 +173,11 @@ return [
     ],
 
     /*
-    | A mezők (input name-ek) magyar neve - ez kerül a :attribute helyére.
-    | A "*" bármelyik sorszámot jelenti (pl. steps.0.description, steps.1.description).
+    | Hungarian names of the fields (input names). "*" matches any index (e.g. steps.0.description).
     */
 
     'attributes' => [
-        // Regisztráció, bejelentkezés, profil
+        // Registration, login, profile
         'name' => 'felhasználónév',
         'email' => 'email cím',
         'password' => 'jelszó',
@@ -198,7 +187,7 @@ return [
         'avatar' => 'profilkép',
         'terms' => 'feltételek',
 
-        // Recept űrlap
+        // Recipe form
         'title' => 'recept címe',
         'description' => 'leírás',
         'prep_time' => 'elkészítési idő',
@@ -217,13 +206,14 @@ return [
         'meal_times.*' => 'étkezés',
         'food_types' => 'ételtípus',
         'food_types.*' => 'ételtípus',
-        'diet' => 'diéta',
-        'allergen_free' => 'mentesség',
-        'allergen_free.*' => 'mentesség',
+        'diets' => 'étrend',
+        'diets.*' => 'étrend',
+        'free_from' => 'mentesség',
+        'free_from.*' => 'mentesség',
         'cuisines' => 'konyha',
         'cuisines.*' => 'konyha',
 
-        // Admin: alapanyagok
+        // Admin: ingredients
         'calories' => 'kalória',
         'carbohydrate' => 'szénhidrát',
         'protein' => 'fehérje',

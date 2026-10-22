@@ -1,12 +1,10 @@
-{{-- Közös képvágó ablak (Profil: profilkép, Recept űrlap: saját kép).
-     Használat: az oldal saját script blokkja ELÉ kell behúzni (include), majd ott meghívni
-     a setupImageCropper függvényt. A formon KÍVÜLRE kerüljön: a kész (levágott) képet a JS
-     teszi vissza a form file inputjába. Egy oldalon egy vágó lehet. --}}
+{{-- Image crop dialog (avatar, recipe image). Include it outside the form, before the page script,
+     then connect it with setupImageCropper(). Only one cropper per page. --}}
 <div id="imageCropModal" class="modal">
     <div class="modal-content modal-small modal-crop">
         <div class="modal-header">
             <h3>Kép vágása</h3>
-            <button type="button" class="close-btn" onclick="closeModal('imageCropModal')">&times;</button>
+            <button type="button" class="close-btn" data-modal-close>&times;</button>
         </div>
         <div class="modal-body">
             <div class="crop-stage" id="crop-stage">
@@ -17,127 +15,117 @@
             <p class="field-hint">Húzd a képet a megfelelő helyre.</p>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn-outline" onclick="closeModal('imageCropModal')">Mégse</button>
+            <button type="button" class="btn-outline" data-modal-close>Mégse</button>
             <button type="button" class="btn-cook btn-cook-primary" id="crop-apply">Alkalmaz</button>
         </div>
     </div>
 </div>
 
 <script>
-    // A kiválasztott képet nem küldjük el eredetiben: a böngészőben vágjuk ki,
-    // kicsinyítjük a kért méretre és tömörítjük, és csak ez a kis kép megy a szerverre.
-    //
-    // options:
-    //   input   - a file input elem, amit figyelünk
-    //   width   - a kész kép szélessége pixelben
-    //   height  - a kész kép magassága pixelben
-    //   quality - JPEG tömörítés: 0 (kicsi fájl, csúnya) - 1 (nagy fájl, szép)
-    //   round   - true: kör alakú maszk a vágóterületen (profilkép)
-    //   onApply - "Alkalmaz" után hívjuk meg a kész képpel (blob), pl. előnézet frissítéséhez
-    // Visszaad egy objektumot, aminek a clear() függvénye kiüríti a file inputot.
+    /**
+     * Image cropper for a file input: the selected image is cropped, resized and compressed to JPEG
+     * in the browser, and this image is put back into the file input (the original is never uploaded).
+     *
+     * @param {Object} options
+     * @param {HTMLInputElement} options.input the file input
+     * @param {number} options.width width of the resulting image (px)
+     * @param {number} options.height height of the resulting image (px)
+     * @param {number} options.quality JPEG quality, 0-1
+     * @param {boolean} [options.round] round crop area (avatar)
+     * @param {function(Blob): void} options.onApply called with the resulting image after Apply
+     * @returns {Object} with a clear() function that empties the file input
+     */
     function setupImageCropper(options) {
         const input = options.input;
         const cropStage = document.getElementById('crop-stage');
         const cropImage = document.getElementById('crop-image');
         const cropZoom = document.getElementById('crop-zoom');
 
-        // A vágóterület alakja = a kész kép alakja (pl. 100x100 -> négyzet, 1200x800 -> fekvő)
         cropStage.style.aspectRatio = options.width + ' / ' + options.height;
         cropStage.classList.toggle('crop-stage--round', options.round === true);
 
-        // A file input "jóváhagyott" tartalma: üres, vagy a legutóbb levágott kép.
-        // (A DataTransfer az egyetlen mód arra, hogy JS-ből fájllistát készítsünk.)
         let appliedFiles = new DataTransfer().files;
-
-        let stageW = 0;     // a vágóterület mérete a képernyőn (px)
-        let stageH = 0;
-        let baseScale = 1;  // ennyivel szorozva a kép éppen kitölti a vágóterületet
-        let scale = 1;      // aktuális méretarány (baseScale * csúszka értéke)
-        let posX = 0;       // a kép bal felső sarkának helye a vágóterületen belül
+        let stageWidth = 0;
+        let stageHeight = 0;
+        let baseScale = 1;
+        let scale = 1;
+        let posX = 0;
         let posY = 0;
+        let dragStart = null;
 
+        /**
+         * Draws the image at the current scale and position, keeping it inside the crop area.
+         */
         function drawCropImage() {
-            // A kép nem húzható ki a keretből: a bal széle legfeljebb 0-nál lehet,
-            // a jobb széle pedig legalább a keret jobb szélénél (ugyanez függőlegesen)
-            posX = Math.min(0, Math.max(stageW - cropImage.naturalWidth * scale, posX));
-            posY = Math.min(0, Math.max(stageH - cropImage.naturalHeight * scale, posY));
+            posX = Math.min(0, Math.max(stageWidth - cropImage.naturalWidth * scale, posX));
+            posY = Math.min(0, Math.max(stageHeight - cropImage.naturalHeight * scale, posY));
             cropImage.style.width = cropImage.naturalWidth * scale + 'px';
             cropImage.style.transform = 'translate(' + posX + 'px, ' + posY + 'px)';
         }
 
-        input.addEventListener('change', function () {
+        input.addEventListener('change', () => {
             const file = input.files[0];
-            // Az inputot rögtön visszaállítjuk a jóváhagyott állapotra: így ha a vágó
-            // ablakot bárhogy bezárják (Mégse, X, háttérre kattintás), a nagy eredeti
-            // kép biztosan nem kerül elküldésre
             input.files = appliedFiles;
             if (!file) return;
 
-            cropImage.onload = function () {
-                // Előbb nyitjuk meg az ablakot, mert rejtett elemnek 0 a mérete
+            cropImage.onload = () => {
                 openModal('imageCropModal');
-                stageW = cropStage.clientWidth;
-                stageH = cropStage.clientHeight;
-                // A kép mindkét irányban töltse ki a keretet (mint a CSS object-fit: cover),
-                // ezért a két arány közül a nagyobbik kell
-                baseScale = Math.max(stageW / cropImage.naturalWidth, stageH / cropImage.naturalHeight);
+                stageWidth = cropStage.clientWidth;
+                stageHeight = cropStage.clientHeight;
+                baseScale = Math.max(stageWidth / cropImage.naturalWidth, stageHeight / cropImage.naturalHeight);
                 scale = baseScale;
                 cropZoom.value = 1;
-                // Induláskor a kép közepe látszik
-                posX = (stageW - cropImage.naturalWidth * scale) / 2;
-                posY = (stageH - cropImage.naturalHeight * scale) / 2;
+                posX = (stageWidth - cropImage.naturalWidth * scale) / 2;
+                posY = (stageHeight - cropImage.naturalHeight * scale) / 2;
                 drawCropImage();
             };
-            cropImage.onerror = function () {
+            cropImage.onerror = () => {
                 alert('Ezt a fájlt nem sikerült képként megnyitni.');
             };
             cropImage.src = URL.createObjectURL(file);
         });
 
-        // Nagyítás: a keret közepén lévő képpont maradjon a helyén, ne a bal felső sarok
-        cropZoom.addEventListener('input', function () {
-            const centerX = (stageW / 2 - posX) / scale;
-            const centerY = (stageH / 2 - posY) / scale;
+        cropZoom.addEventListener('input', () => {
+            const centerX = (stageWidth / 2 - posX) / scale;
+            const centerY = (stageHeight / 2 - posY) / scale;
             scale = baseScale * cropZoom.value;
-            posX = stageW / 2 - centerX * scale;
-            posY = stageH / 2 - centerY * scale;
+            posX = stageWidth / 2 - centerX * scale;
+            posY = stageHeight / 2 - centerY * scale;
             drawCropImage();
         });
 
-        // Húzás: pointer események = egér és érintés egy kódban
-        let dragStart = null;
-        cropStage.addEventListener('pointerdown', function (e) {
-            dragStart = { x: e.clientX - posX, y: e.clientY - posY };
-            // A húzás akkor is folytatódjon, ha a mutató kicsúszik a keretből
-            cropStage.setPointerCapture(e.pointerId);
+        cropStage.addEventListener('pointerdown', event => {
+            dragStart = { x: event.clientX - posX, y: event.clientY - posY };
+            cropStage.setPointerCapture(event.pointerId);
         });
-        cropStage.addEventListener('pointermove', function (e) {
+        cropStage.addEventListener('pointermove', event => {
             if (!dragStart) return;
-            posX = e.clientX - dragStart.x;
-            posY = e.clientY - dragStart.y;
+            posX = event.clientX - dragStart.x;
+            posY = event.clientY - dragStart.y;
             drawCropImage();
         });
-        cropStage.addEventListener('pointerup', function () { dragStart = null; });
-        cropStage.addEventListener('pointercancel', function () { dragStart = null; });
+        cropStage.addEventListener('pointerup', () => {
+            dragStart = null;
+        });
+        cropStage.addEventListener('pointercancel', () => {
+            dragStart = null;
+        });
 
-        document.getElementById('crop-apply').addEventListener('click', function () {
+        document.getElementById('crop-apply').addEventListener('click', () => {
             const canvas = document.createElement('canvas');
             canvas.width = options.width;
             canvas.height = options.height;
-            const ctx = canvas.getContext('2d');
-            // Fehér háttér: a JPEG nem ismer átlátszóságot, enélkül az átlátszó részek feketék lennének
-            ctx.fillStyle = '#fff';
-            ctx.fillRect(0, 0, options.width, options.height);
-            ctx.imageSmoothingQuality = 'high';
-            // Az eredeti képből a keretben látható részt rajzoljuk át a canvasra.
-            // A képernyő-pixeleket a scale-lel osztva kapjuk vissza az eredeti kép pixeleit.
-            ctx.drawImage(
+            const context = canvas.getContext('2d');
+            context.fillStyle = '#fff';
+            context.fillRect(0, 0, options.width, options.height);
+            context.imageSmoothingQuality = 'high';
+            context.drawImage(
                 cropImage,
-                -posX / scale, -posY / scale, stageW / scale, stageH / scale,
+                -posX / scale, -posY / scale, stageWidth / scale, stageHeight / scale,
                 0, 0, options.width, options.height
             );
 
-            canvas.toBlob(function (blob) {
+            canvas.toBlob(blob => {
                 const transfer = new DataTransfer();
                 transfer.items.add(new File([blob], 'image.jpg', { type: 'image/jpeg' }));
                 appliedFiles = transfer.files;
@@ -149,7 +137,7 @@
         });
 
         return {
-            clear: function () {
+            clear: () => {
                 appliedFiles = new DataTransfer().files;
                 input.files = appliedFiles;
             },

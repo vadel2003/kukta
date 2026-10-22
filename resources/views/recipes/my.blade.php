@@ -8,38 +8,18 @@
 
 @section('content')
     <div class="card-stack">
-    <div>
-        <a href="{{ route('home') }}" class="back-link"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
-        <h1>Saját receptek</h1>
-    </div>
+        <div>
+            <a href="{{ route('home') }}" class="back-link"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
+            <h1>Saját receptek</h1>
+        </div>
 
-    @if (!$hasAnyRecipes)
-        <p>Még nem töltöttél fel receptet. <a href="{{ route('recipes.create') }}">Tölts fel egyet most!</a></p>
-    @else
-        <section id="recipes" class="recipes-section">
-            @include('partials.recipe-search-bar', [
+        @if (!$hasAnyRecipes)
+            <p>Még nem töltöttél fel receptet. <a href="{{ route('recipes.create') }}">Tölts fel egyet most!</a></p>
+        @else
+            @include('partials.recipe-list', [
                 'searchAction' => route('recipes.my'),
                 'searchPlaceholder' => 'Saját receptek keresése kulcsszó szerint...',
-                'mealTimes' => $mealTimes,
-                'foodTypes' => $foodTypes,
-                'diets' => $diets,
-                'freeFroms' => $freeFroms,
-                'cuisines' => $cuisines,
             ])
-
-            <div id="recipe-gallery" class="recipe-gallery">
-                @include('partials.recipe-gallery')
-            </div>
-
-            @if ($recipes->hasMorePages())
-                <button id="load-more-btn" class="btn-load-more">További receptek betöltése...</button>
-            @endif
-
-            <div id="loading-spinner" class="loading-spinner" style="display: none;">
-                <div class="spinner"></div>
-                <p>Betöltés...</p>
-            </div>
-        </section>
-    @endif
+        @endif
     </div>
 @endsection

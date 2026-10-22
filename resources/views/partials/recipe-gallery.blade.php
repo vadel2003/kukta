@@ -1,9 +1,10 @@
+{{-- Recipe cards. Variables: $recipes, $favoriteIds, $showOwnerActions (optional), $removeOnUnfavorite (optional). --}}
 @forelse ($recipes as $recipe)
     <div class="recipe-card">
         <div class="card-image-wrapper">
             <img src="{{ $recipe->thumbnail_url }}" alt="{{ $recipe->title }}" class="recipe-image">
             @auth
-                <form action="{{ route('recipes.favorite', $recipe->id) }}" method="POST" class="card-favorite-form" @if(!empty($removeOnUnfavorite)) data-remove-card="true" @endif>
+                <form action="{{ route('recipes.favorite', $recipe->id) }}" method="POST" class="card-favorite-form" @if (!empty($removeOnUnfavorite)) data-remove-card="true" @endif>
                     @csrf
                     <button type="submit" class="btn-favorite-card {{ in_array($recipe->id, $favoriteIds) ? 'favorited' : '' }}" title="{{ in_array($recipe->id, $favoriteIds) ? 'Kedvenc törlése' : 'Kedvencnek jelölöm' }}">
                         <i data-lucide="heart"></i>
@@ -12,8 +13,6 @@
                 </form>
             @endauth
         </div>
-        {{-- Cím + asszisztens gomb egy sorban. A gomb itt csak mobilon látszik (ott nincs
-             külön gombsor a kártya alján); desktopon a lenti, Részletek melletti gomb látszik. --}}
         <div class="card-title-row">
             <h2>{{ $recipe->title }}</h2>
             <a href="{{ route('recipes.assistant', $recipe->id) }}" class="btn-spoon" title="Kukta asszisztens" aria-label="Kukta asszisztens">
@@ -21,7 +20,6 @@
             </a>
         </div>
 
-        {{-- ⭐ Csillagos értékelés (dinamikus) --}}
         <div class="star-rating">
             <span class="stars">
                 @for ($i = 1; $i <= 5; $i++)
@@ -39,12 +37,10 @@
                 <span class="icon-assistant" aria-hidden="true"></span>
             </a>
             @if (!empty($showOwnerActions))
-                {{-- Saját receptek: külön sorban, a kártya stílusához illő keretes gombok --}}
                 <div class="card-owner-actions">
                     <a href="{{ route('recipes.edit', $recipe->id) }}" class="btn-card-edit">
                         <i data-lucide="pencil"></i> Szerkesztés
                     </a>
-                    {{-- data-confirm: beküldés előtt a közös megerősítő ablak jön fel (layouts/app.blade.php) --}}
                     <form action="{{ route('recipes.destroy', $recipe->id) }}" method="POST"
                         data-confirm-title="Biztosan törlöd a receptet?"
                         data-confirm="A(z) „{{ $recipe->title }}” recept véglegesen törlődik. Ez a művelet nem visszavonható.">
@@ -58,7 +54,6 @@
             @endif
         </div>
 
-        {{-- Hover tooltip: a recept teljes leírása --}}
         <div class="card-tooltip">
             <p class="tooltip-description">{{ $recipe->description }}</p>
         </div>

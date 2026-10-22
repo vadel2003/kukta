@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,13 +15,12 @@ class ProfileController extends Controller
 
     public function update(Request $request)
     {
+        /** @var User $user */
         $user = Auth::user();
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'min:3', 'max:30', 'unique:user,name,' . $user->id . ',id'],
             'email' => ['required', 'string', 'email', 'min:6', 'max:254', 'unique:user,email,' . $user->id . ',id'],
-            // A böngésző a feltöltés előtt 100x100-as JPEG-re vágja a képet (profile/index.blade.php).
-            // A JS megkerülhető, ezért itt is ellenőrizzük: csak 100x100-as jpeg/jpg/png/webp jöhet be.
             'avatar' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'dimensions:width=100,height=100', 'max:2048'],
         ]);
 
@@ -28,21 +28,12 @@ class ProfileController extends Controller
         $user->email = $validated['email'];
 
         if ($request->hasFile('avatar')) {
-            // Régi kép törlése, ha van
-            if ($user->avatar && file_exists(public_path($user->avatar))) {
-                unlink(public_path($user->avatar));
-            }
-
-            // Új kép mentése - a kiterjesztést az extension() a fájl TARTALMÁBÓL állapítja meg (jpg/png/webp),
-            // nem a feltöltő által megadott fájlnévből vesszük
+            $user->deleteAvatarFile();
             $filename = $user->id . '_' . time() . '.' . $request->file('avatar')->extension();
             $request->file('avatar')->move(public_path('avatars'), $filename);
             $user->avatar = 'avatars/' . $filename;
-        } elseif ($request->boolean('remove_avatar') && $user->avatar) {
-            // "Eltávolítás" link - visszaáll az alapértelmezett avatarra
-            if (file_exists(public_path($user->avatar))) {
-                unlink(public_path($user->avatar));
-            }
+        } elseif ($request->boolean('remove_avatar')) {
+            $user->deleteAvatarFile();
             $user->avatar = null;
         }
 
@@ -53,6 +44,7 @@ class ProfileController extends Controller
 
     public function updatePassword(Request $request)
     {
+        /** @var User $user */
         $user = Auth::user();
 
         $validated = $request->validate([
@@ -66,26 +58,25 @@ class ProfileController extends Controller
         return redirect()->route('profile.index')->with('success', 'Jelszó sikeresen frissítve!');
     }
 
+    /**
+     * Deletes the current user's account. The super admin account cannot be deleted.
+     */
     public function destroy(Request $request)
     {
         $request->validate([
             'password' => ['required', 'current_password'],
         ]);
 
+        /** @var User $user */
         $user = Auth::user();
 
-        // A szuperadmin fiókja nem törölhető. A panel neki meg sem jelenik, de a kérés
-        // kézzel is elküldhető, ezért itt is ellenőrizzük.
         if ($user->isAdmin()) {
             abort(403);
         }
 
         Auth::logout();
-
-        // A profilkép fájlját a User modell deleting eseménye törli (User::booted())
         $user->delete();
 
         return redirect()->route('home');
     }
 }
-

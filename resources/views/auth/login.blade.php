@@ -3,7 +3,6 @@
 @section('title', 'Bejelentkezés')
 
 @section('content')
-    {{-- card-stack--narrow: a cím és a vissza link egy oszlopban a kártyával (mint a Profil oldalon) --}}
     <div class="card-stack card-stack--narrow">
         <div>
             <a href="{{ route('home') }}" class="back-link"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>

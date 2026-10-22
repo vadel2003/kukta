@@ -7,10 +7,14 @@ use Illuminate\Support\Facades\DB;
 
 class RecipeSeeder extends Seeder
 {
+    /**
+     * Recipes with their categories. A recipe's image is the default image of its first food type.
+     * "Free from" values are calculated from the ingredients by IngredientRecipeSeeder.
+     */
     public function run(): void
     {
         $recipes = [
-            // User 1 (admin) - receptek 1-10
+            // User 1 (admin) - recipes 1-10
             ['title' => 'Gulyásleves',                  'description' => 'Hagyományos magyar gulyásleves marhahússal, burgonyával, sárgarépával és paprikával. A lassú főzésnek köszönhetően az ízek tökéletesen összeérnek.', 'prep_time' => 120, 'difficulty' => 1, 'servings' => 6, 'created_at' => '2026-01-01', 'user_id' => 1],
             ['title' => 'Csirkepörkölt',                'description' => 'Szaftos csirkepörkölt hagymás alapon, paprikával és paradicsommal. Hagyományos magyar étel, amely tökéletes nokedlivel vagy tarhonyával.', 'prep_time' => 60, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-01-08', 'user_id' => 1],
             ['title' => 'Túrós csusza',                 'description' => 'Sós túrós csusza tejföllel és szalonnával. A kifőzött tésztát gazdagon megszórjuk túróval és megszórjuk ropogós szalonnadarabokkal.', 'prep_time' => 30, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-01-15', 'user_id' => 1],
@@ -22,7 +26,7 @@ class RecipeSeeder extends Seeder
             ['title' => 'Paprikás csirke',              'description' => 'Tejfölös paprikás csirke nokedlivel. A csirkedarabokat paprikás hagymás alapon pároljuk puhára, majd tejfölös habarással sűrítjük.', 'prep_time' => 60, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-02-19', 'user_id' => 1],
             ['title' => 'Meggyes pite',                 'description' => 'Omlós tésztájú meggyes pite fahéjjal. A friss meggyet cukorral és fahéjjal ízesítjük, majd rácsos tésztával borítjuk.', 'prep_time' => 75, 'difficulty' => 1, 'servings' => 8, 'created_at' => '2026-02-26', 'user_id' => 1],
 
-            // User 2 - receptek 11-20
+            // User 2 - recipes 11-20
             ['title' => 'Bolognai spagetti',            'description' => 'Olasz stílusú darált húsos spagetti paradicsomos szósszal. Hosszan főzött mártás hagymával, sárgarépával és zellerrel.', 'prep_time' => 90, 'difficulty' => 1, 'servings' => 4, 'created_at' => '2026-03-02', 'user_id' => 2],
             ['title' => 'Csirkemell saláta',            'description' => 'Grillezett csirkemell friss zöldsalátával, paradicsommal és öntettel. Egészséges és könnyű ebéd vagy vacsora.', 'prep_time' => 25, 'difficulty' => 0, 'servings' => 2, 'created_at' => '2026-03-06', 'user_id' => 2],
             ['title' => 'Töltött paprika',              'description' => 'Darálthúsos töltött paprika paradicsomos szószban. A paprikákat rizses-húsos töltelékkel töltjük, majd paradicsomlében főzzük.', 'prep_time' => 75, 'difficulty' => 1, 'servings' => 6, 'created_at' => '2026-03-10', 'user_id' => 2],
@@ -34,7 +38,7 @@ class RecipeSeeder extends Seeder
             ['title' => 'Dobos torta',                  'description' => 'Klasszikus dobos torta karamellréteggel. Vékony lapok között vajkrém, a tetején roppanós karamell.', 'prep_time' => 120, 'difficulty' => 2, 'servings' => 10, 'created_at' => '2026-04-06', 'user_id' => 2],
             ['title' => 'Káposztás tészta',             'description' => 'Pirított káposztás metélttészta. Az apróra vágott káposztát zsíron pirítjuk, majd összekeverjük a főtt tésztával.', 'prep_time' => 35, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-04-09', 'user_id' => 2],
 
-            // User 3 - receptek 21-30
+            // User 3 - recipes 21-30
             ['title' => 'Sertésborda rántva',           'description' => 'Ropogósra rántott sertésborda citrommal. A hússzeleteket kiklopfoljuk, panírozzuk és bő olajban kisütjük.', 'prep_time' => 35, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-04-16', 'user_id' => 3],
             ['title' => 'Paradicsomleves',              'description' => 'Tejfölös paradicsomleves bazsalikommal. A paradicsomot hagymával és fűszerekkel főzzük, majd simára turmixoljuk.', 'prep_time' => 40, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-04-20', 'user_id' => 3],
             ['title' => 'Töltött káposzta',             'description' => 'Savanyú káposztába töltött darált hús rizzsel. A tölteléket füstölt hússal és kolbásszal együtt főzzük.', 'prep_time' => 120, 'difficulty' => 2, 'servings' => 6, 'created_at' => '2026-04-24', 'user_id' => 3],
@@ -46,7 +50,7 @@ class RecipeSeeder extends Seeder
             ['title' => 'Bakonyi sertésborda',          'description' => 'Gombás-tejfölös bakonyi sertésborda. A húst gombás szósszal borítjuk, sütőben sütjük készre.', 'prep_time' => 60, 'difficulty' => 1, 'servings' => 4, 'created_at' => '2026-05-19', 'user_id' => 3],
             ['title' => 'Krumplifőzelék',               'description' => 'Hagyományos krumplifőzelék rántással. A burgonyát sós vízben főzzük, rántással sűrítjük.', 'prep_time' => 40, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-05-23', 'user_id' => 3],
 
-            // User 4 - receptek 31-40
+            // User 4 - recipes 31-40
             ['title' => 'Gombapörkölt',                 'description' => 'Szaftos gombapörkölt tejföllel. A gombát hagymás-paprikás alapon pároljuk, tejföllel dúsítjuk.', 'prep_time' => 45, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-05-28', 'user_id' => 4],
             ['title' => 'Túrógombóc',                   'description' => 'Édes túrógombóc tejföllel és cukorral. A túróból készült gombócokat zsemlemorzsába forgatjuk.', 'prep_time' => 45, 'difficulty' => 1, 'servings' => 4, 'created_at' => '2026-06-01', 'user_id' => 4],
             ['title' => 'Húsleves',                     'description' => 'Arany húsleves gazdag zöldségekkel és csigatésztával. A húst és zöldségeket lassan főzzük, hogy az ízek kioldódjanak.', 'prep_time' => 150, 'difficulty' => 1, 'servings' => 8, 'created_at' => '2026-06-05', 'user_id' => 4],
@@ -58,7 +62,7 @@ class RecipeSeeder extends Seeder
             ['title' => 'Gyümölcsleves',                'description' => 'Hideg gyümölcsleves tejszínnel. Vegyes gyümölcsökből készült édes leves, amelyet hidegen tálalunk.', 'prep_time' => 30, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-06-29', 'user_id' => 4],
             ['title' => 'Puliszka',                     'description' => 'Krémes puliszka sajttal és tejföllel. A kukoricadarát sós vízben főzzük sűrűre, sajttal megszórjuk.', 'prep_time' => 30, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-07-02', 'user_id' => 4],
 
-            // User 5 - receptek 41-50
+            // User 5 - recipes 41-50
             ['title' => 'Sertésszelet paradicsommal',   'description' => 'Sült sertésszelet paradicsomos szószban sajttal. A húst megsütjük, paradicsommal és reszelt sajttal borítjuk.', 'prep_time' => 45, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-07-06', 'user_id' => 5],
             ['title' => 'Babgulyás',                    'description' => 'Kiadós babgulyás füstölt csülökkel. A babot és a húst együtt főzzük paprikás alapon.', 'prep_time' => 150, 'difficulty' => 1, 'servings' => 6, 'created_at' => '2026-07-10', 'user_id' => 5],
             ['title' => 'Kakaós csiga',                 'description' => 'Puha kakaós csiga cukormázzal. A kelt tésztát kakaóval és cukorral töltjük, felcsavarjuk és megsütjük.', 'prep_time' => 90, 'difficulty' => 1, 'servings' => 8, 'created_at' => '2026-07-14', 'user_id' => 5],
@@ -70,7 +74,7 @@ class RecipeSeeder extends Seeder
             ['title' => 'Csülkös bableves',             'description' => 'Gazdag bableves csülökkel és kolbásszal. A babot és csülköt együtt főzzük zöldségekkel.', 'prep_time' => 180, 'difficulty' => 2, 'servings' => 6, 'created_at' => '2026-08-08', 'user_id' => 5],
             ['title' => 'Lecsó',                        'description' => 'Hagyományos magyar lecsó paprikából és paradicsomból. Kolbásszal és tojással gazdagítva.', 'prep_time' => 40, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-08-12', 'user_id' => 5],
 
-            // User 6 - receptek 51-60
+            // User 6 - recipes 51-60
             ['title' => 'Burgonyafőzelék',              'description' => 'Sűrű burgonyafőzelék rántással és petrezselyemmel. A burgonyát főzzük, rántással sűrítjük.', 'prep_time' => 40, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-08-17', 'user_id' => 6],
             ['title' => 'Csirkemell rolád',             'description' => 'Sajtos-sonkás csirkemell rolád. A csirkemellet kiklopfoljuk, sajttal és sonkával töltjük, feltekerjük.', 'prep_time' => 60, 'difficulty' => 1, 'servings' => 4, 'created_at' => '2026-08-21', 'user_id' => 6],
             ['title' => 'Paradicsomos csirkemell',      'description' => 'Paradicsomos szószban sült csirkemell sajttal. A húst paradicsommal és reszelt sajttal borítjuk.', 'prep_time' => 45, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-08-25', 'user_id' => 6],
@@ -82,7 +86,7 @@ class RecipeSeeder extends Seeder
             ['title' => 'Kolbászos lecsós tészta',      'description' => 'Lecsóval és kolbásszal készült tésztaétel. A lecsót kolbásszal gazdagítjuk, tésztával tálaljuk.', 'prep_time' => 40, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-09-16', 'user_id' => 6],
             ['title' => 'Zabkása',                      'description' => 'Gyümölcsös zabkása mézzel és dióval. A zabpelyhet tejjel főzzük, gyümölccsel és mézzel ízesítjük.', 'prep_time' => 15, 'difficulty' => 0, 'servings' => 2, 'created_at' => '2026-09-20', 'user_id' => 6],
 
-            // User 7 - receptek 61-70
+            // User 7 - recipes 61-70
             ['title' => 'Sertésragu leves',             'description' => 'Gazdag sertésragu leves zöldségekkel. A sertéshúst hagymával és zöldségekkel főzzük.', 'prep_time' => 90, 'difficulty' => 1, 'servings' => 6, 'created_at' => '2026-01-02', 'user_id' => 7],
             ['title' => 'Csirkés Caesar saláta',        'description' => 'Grillezett csirkés Caesar saláta parmezánnal és krutonnal. Római saláta, parmezán és Caesar öntet.', 'prep_time' => 30, 'difficulty' => 0, 'servings' => 2, 'created_at' => '2026-01-10', 'user_id' => 7],
             ['title' => 'Rakott cukkini',               'description' => 'Rakott cukkini darált hússal és sajttal. A cukkinit rétegezzük hússal és sajttal, sütőben sütjük.', 'prep_time' => 60, 'difficulty' => 1, 'servings' => 6, 'created_at' => '2026-01-17', 'user_id' => 7],
@@ -94,7 +98,7 @@ class RecipeSeeder extends Seeder
             ['title' => 'Mártásos csirkemell',          'description' => 'Gombás-tejszínes mártásos csirkemell. A csirkét gombás tejszínes szósszal borítjuk.', 'prep_time' => 45, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-02-28', 'user_id' => 7],
             ['title' => 'Diós kalács',                  'description' => 'Ünnepi diós kalács élesztős tésztából. A tésztát diós töltelékkel töltjük és felcsavarjuk.', 'prep_time' => 120, 'difficulty' => 2, 'servings' => 10, 'created_at' => '2026-03-12', 'user_id' => 7],
 
-            // User 8 - receptek 71-80
+            // User 8 - recipes 71-80
             ['title' => 'Zöldséges csirke stir fry',    'description' => 'Gyors zöldséges csirke wokban sütve. A csirkét és zöldségeket magas hőfokon pirítjuk.', 'prep_time' => 25, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-03-19', 'user_id' => 8],
             ['title' => 'Paradicsomos bab',             'description' => 'Fűszeres paradicsomos bab kolbásszal. A babot paradicsomos szószban főzzük kolbásszal.', 'prep_time' => 40, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-03-25', 'user_id' => 8],
             ['title' => 'Sajtos-tejfölös melegszendvics','description' => 'Sütőben sült sajtos-tejfölös melegszendvics. A kenyérre tejfölös-sajtos keveréket kenünk.', 'prep_time' => 20, 'difficulty' => 0, 'servings' => 2, 'created_at' => '2026-03-30', 'user_id' => 8],
@@ -106,7 +110,7 @@ class RecipeSeeder extends Seeder
             ['title' => 'Chilis bab',                   'description' => 'Fűszeres chilis bab darált hússal. A babot és húst chilivel és fűszerekkel főzzük.', 'prep_time' => 50, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-05-10', 'user_id' => 8],
             ['title' => 'Túrós palacsinta',             'description' => 'Édes túróval töltött palacsinta tejföllel. A palacsintákat édes túróval töltjük és megsütjük.', 'prep_time' => 40, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-05-19', 'user_id' => 8],
 
-            // User 9 - receptek 81-90
+            // User 9 - recipes 81-90
             ['title' => 'Borsos tokány',                'description' => 'Fekete borsos sertés tokány tejszínnel. A húst vastag szeletekre vágjuk, borssal és tejszínnel főzzük.', 'prep_time' => 60, 'difficulty' => 1, 'servings' => 4, 'created_at' => '2026-05-24', 'user_id' => 9],
             ['title' => 'Sütőben sült csirkecomb',      'description' => 'Ropogósra sült csirkecomb fűszerekkel. A combokat fűszerezzük és sütőben aranybarnára sütjük.', 'prep_time' => 60, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-05-30', 'user_id' => 9],
             ['title' => 'Karfiol gratin',               'description' => 'Sajtos karifol gratin tejszínnel. A karifolt sajtos tejszínes szósszal borítjuk és megsütjük.', 'prep_time' => 50, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-06-07', 'user_id' => 9],
@@ -118,7 +122,7 @@ class RecipeSeeder extends Seeder
             ['title' => 'Paradicsomos tészta',          'description' => 'Egyszerű paradicsomos tészta bazsalikommal. A paradicsomot fokhagymával és bazsalikommal főzzük.', 'prep_time' => 25, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-07-16', 'user_id' => 9],
             ['title' => 'Diós sütemény',                'description' => 'Omlós diós sütemény porcukorral. A tésztába darált diót keverünk, sütőben kisütjük.', 'prep_time' => 60, 'difficulty' => 1, 'servings' => 10, 'created_at' => '2026-07-22', 'user_id' => 9],
 
-            // User 10 - receptek 91-100
+            // User 10 - recipes 91-100
             ['title' => 'Sertésszűz pecsenye',          'description' => 'Sütőben sült sertésszűz fűszerekkel. A húst fűszerezzük és sütőben lassan megsütjük.', 'prep_time' => 60, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-07-30', 'user_id' => 10],
             ['title' => 'Zöldborsós rizs',              'description' => 'Zöldborsós rizs hagymával. A rizst hagymán pirítjuk, zöldborsóval és vízzel főzzük.', 'prep_time' => 30, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-08-04', 'user_id' => 10],
             ['title' => 'Tojásos nokedli',              'description' => 'Tojásos nokedli tejföllel. A nokedlit tojással és tejföllel keverjük össze.', 'prep_time' => 25, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-08-10', 'user_id' => 10],
@@ -130,14 +134,14 @@ class RecipeSeeder extends Seeder
             ['title' => 'Epres tiramisu',               'description' => 'Epres tiramisu mascarponéval. A piskótát kávéba áztatjuk, eperrel és krémmel rétegezzük.', 'prep_time' => 45, 'difficulty' => 1, 'servings' => 8, 'created_at' => '2026-09-15', 'user_id' => 10],
             ['title' => 'Zöldséges omlett',             'description' => 'Zöldséges omlett sajttal. A tojásba paprikát, paradicsomot és sajtot keverünk.', 'prep_time' => 15, 'difficulty' => 0, 'servings' => 2, 'created_at' => '2026-09-20', 'user_id' => 10],
 
-            // User 1 (admin) - receptek 101-105
+            // User 1 (admin) - recipes 101-105
             ['title' => 'Hortobágyi palacsinta',        'description' => 'Csirkeraguval töltött palacsinta paprikás-tejfölös szósszal. A vékony palacsintákat fűszeres csirkeraguval töltjük, tejfölös-paprikás szósszal leöntjük, majd sütőben átsütjük.', 'prep_time' => 75, 'difficulty' => 1, 'servings' => 6, 'created_at' => '2026-09-24', 'user_id' => 1],
             ['title' => 'Újházy-tyúkhúsleves',           'description' => 'Gazdag tyúkhúsleves zöldségekkel, gombával és csigatésztával. A lassú főzésnek köszönhetően az ízek mélyen összeérnek, a hús omlósra fő.', 'prep_time' => 150, 'difficulty' => 1, 'servings' => 6, 'created_at' => '2026-09-26', 'user_id' => 1],
             ['title' => 'Brassói aprópecsenye',          'description' => 'Erdélyi sertéshúsos-burgonyás egytálétel fokhagymával. A húst és a burgonyát együtt pirítjuk, fokhagymával és pirospaprikával ízesítjük.', 'prep_time' => 60, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-09-27', 'user_id' => 1],
             ['title' => 'Somlói galuska',                'description' => 'Klasszikus magyar desszert háromféle piskótával, vaníliasodóval és csokoládéöntettel. Dióval és tejszínhabbal gazdagon tálalva.', 'prep_time' => 90, 'difficulty' => 1, 'servings' => 8, 'created_at' => '2026-09-29', 'user_id' => 1],
             ['title' => 'Debreceni gulyás',              'description' => 'Kolbászos-burgonyás gulyásleves debreceni módra. A füstölt kolbász és a pirospaprika adja jellegzetes, füstös ízét.', 'prep_time' => 120, 'difficulty' => 1, 'servings' => 6, 'created_at' => '2026-10-01', 'user_id' => 1],
 
-            // Receptek 106-121: ázsiai, halas, italok, befőttek, gyümölcsök
+            // Recipes 106-121: Asian, fish, drinks, preserves, fruit
             ['title' => 'Garnélás pad thai',             'description' => 'Thai pirított rizstészta garnélával, tojással és földimogyoróval. Édes-savanykás szójás szósszal, wokban készül.', 'prep_time' => 30, 'difficulty' => 1, 'servings' => 4, 'created_at' => '2026-09-21', 'user_id' => 8],
             ['title' => 'Teriyaki lazac szezámmaggal',   'description' => 'Serpenyőben sült lazac mézes-szójás teriyaki mázzal, párolt rizzsel és brokkolival, pirított szezámmaggal megszórva.', 'prep_time' => 35, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-09-23', 'user_id' => 9],
             ['title' => 'Szezámos-mogyorós tofu tál',    'description' => 'Ropogósra sült tofu pirított zöldségekkel, gyömbéres szójaszósszal, rizzsel, földimogyoróval és szezámmaggal.', 'prep_time' => 30, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-09-23', 'user_id' => 10],
@@ -156,10 +160,7 @@ class RecipeSeeder extends Seeder
             ['title' => 'Garnélás sült rizs',            'description' => 'Ázsiai pirított rizs garnélával, tojással, zöldségekkel és szójaszósszal, szezámmaggal megszórva.', 'prep_time' => 30, 'difficulty' => 0, 'servings' => 4, 'created_at' => '2026-09-28', 'user_id' => 4],
         ];
 
-        // Kategóriák receptenként, névvel megadva (olvashatóbb, mint az ID-k):
-        // recept ID => [ételtípus(ok), étkezés(ek), étrend(ek), konyha(k)]
-        // Az első ételtípus határozza meg az alapértelmezett képet.
-        // Az allergéneket az IngredientRecipeSeeder számolja ki a hozzávalókból.
+        // recipe ID => [food types, meal times, diets, cuisines]
         $categories = [
             1   => [['Leves'],               ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Gulyásleves
             2   => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Mindenevő'],                        ['Magyar']],  // Csirkepörkölt
@@ -284,13 +285,12 @@ class RecipeSeeder extends Seeder
             121 => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Pescetáriánus'],                    ['Ázsiai']],  // Garnélás sült rizs
         ];
 
-        // Név => ID párosok a kategória táblákból
         $foodTypeIds = DB::table('food_type')->pluck('id', 'name');
         $mealTimeIds = DB::table('meal_time')->pluck('id', 'name');
         $dietIds = DB::table('diet')->pluck('id', 'name');
         $cuisineIds = DB::table('cuisine')->pluck('id', 'name');
 
-        // Alapértelmezett kép az első ételtípus alapján
+        // food type => default image
         $thumbnailMap = [
             'Leves'    => 'images/recipes/default/soup_thumbnail.svg',
             'Főétel'   => 'images/recipes/default/main_course_thumbnail.svg',
@@ -306,7 +306,6 @@ class RecipeSeeder extends Seeder
             'Gyümölcs' => 'images/recipes/default/fruit_thumbnail.svg',
         ];
 
-        // Receptek beszúrása. A kép kötelező, ezért már itt megkapják (a recept ID-ja a tömbbeli sorszám + 1)
         foreach ($recipes as $index => $recipe) {
             $recipe['thumbnail'] = $thumbnailMap[$categories[$index + 1][0][0]];
             $recipe['updated_at'] = $recipe['created_at'];

@@ -1,13 +1,9 @@
-/* ===== HERO SZEKCIÓ ===== */
+/* ===== HERO SECTION ===== */
 .hero-section {
     background-image: url('../../images/hero_background.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    /* A hero "felcsúszik" a lebegő fejléc mögé, hogy a háttérkép a képernyő legtetejéig érjen.
-       70px = a fejléc magassága (58px) + a távolsága a tetejétől (12px). A negatív margin
-       ennyivel feljebb húzza, a padding-top pedig ugyanennyivel megnő, így a hero tartalma
-       ugyanott marad, ahol eddig volt. A fejléc z-index-e (1000) miatt az marad felül. */
     margin-top: -70px;
     padding: calc(64px + 70px) 0 64px;
     width: 100vw;
@@ -78,7 +74,6 @@
     color: var(--color-hero-highlight);
 }
 
-/* Ez a sortörés csak mobilon aktív, hogy a cím pontosan 3 sorra törjön */
 .mobile-break {
     display: none;
 }
@@ -107,22 +102,6 @@
     color: var(--color-cta-hover);
 }
 
-.btn-secondary {
-    background-color: transparent;
-    color: var(--color-dark-brown);
-    padding: 12px 28px;
-    border-radius: 4px;
-    text-decoration: none;
-    font-weight: 500;
-    border: 2px solid var(--color-dark-brown);
-    transition: all 0.3s;
-}
-
-.btn-secondary:hover {
-    background-color: var(--color-dark-brown);
-    color: var(--color-white);
-}
-
 .hero-image {
     flex: 2.5;
     background: transparent;
@@ -141,8 +120,7 @@
     margin-bottom: -180px;
 }
 
-/* ===== SZEKCIÓK ===== */
-.latest-section,
+/* ===== SECTIONS ===== */
 .recipes-section {
     max-width: 1200px;
     margin: 0 auto;
@@ -150,31 +128,16 @@
     position: relative;
 }
 
-/* Saját / Kedvenc receptek oldalon a szekció egy .card-stack-ben van (cím + vissza link
-   felette), ott a térközöket a card-stack adja - a főoldali padding felesleges, és
-   el is tolná a keresőt/kártyákat a címhez képest */
 .card-stack .recipes-section {
     width: 100%;
     padding: 0;
 }
 
-/* a kereső főoldali 3rem felső margója itt túl nagy rés lenne a cím alatt */
 .card-stack .recipes-section .search-bar {
     margin-top: 0;
 }
 
-.section-title {
-    font-size: 1.8rem;
-    margin-bottom: 30px;
-    text-align: center;
-    color: var(--color-heading);
-    border-bottom: 3px solid var(--color-border-dark);
-    display: inline-block;
-    padding-bottom: 8px;
-}
-
-/* ===== MODERN KERESŐ SÁV - doboz (a benne lévő mezők/gombok osztályai az app.css-ben vannak,
-   mert a fejléc görgetős keresője is ugyanazokat használja) ===== */
+/* ===== SEARCH BAR ===== */
 .search-bar {
     max-width: 720px;
     margin: 3rem 0 2rem;
@@ -185,22 +148,11 @@
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-/* A kártyák feletti kereső (recipes-section) vékonyabb, mint a fejléc/hero-beli változat,
-   és olyan széles, mint a receptkártyák sora (a 720px-es korlátot feloldjuk, így a szekció
-   teljes szélességét kitölti - ugyanazt, amit a .recipe-gallery is) */
 .recipes-section .search-bar {
     max-width: none;
     padding: 0.5rem;
 }
 
-/* Csak maga a kereső mező (szövegdoboz) legyen kiemelve narancs kerettel,
-   nem az egész sáv (szűrők/rendezés/keresés gomb marad az eredeti, visszafogott stílusban) */
-/* A keret szándékosan egy árnyalattal világosabb a Keresés gomb narancsánál (#e67e22):
-   a vékony vonal fehér alapon sötétebbnek hat, mint ugyanaz a szín a nagy, kitöltött
-   gombon - így a kettő szemre egyforma */
-/* Az app.css-ben a sor align-items: center - úgy minden elem a saját tartalma szerinti
-   magasságot kapja, és a keresőmező (keret + más sormagasság) eltért a gomboktól.
-   A stretch a sor legmagasabb eleméhez nyújtja mindet, így biztosan egyformák */
 .recipes-section .search-bar .search-row {
     align-items: stretch;
 }
@@ -208,34 +160,23 @@
 .recipes-section .search-bar .search-input-group {
     border: 2px solid #ec9243;
     border-radius: 4px;
-    /* csak oldalt van margó: a függőleges margó a stretch mellett alacsonyabbá
-       tenné a mezőt a gomboknál */
     margin: 0 0.25rem;
-    /* nem tölti ki a teljes sort (app.css-ben flex: 1), csak ~480px széles,
-       de keskeny képernyőn tud ennél kisebb is lenni (a flex-shrink 1) */
     flex: 0 1 480px;
 }
 
-/* A mező nagyítója akkora legyen, mint a gombok ikonja (app.css-ben 1.1em, a gomboké 1em) */
 .recipes-section .search-bar .search-input-icon {
     width: 1em;
     height: 1em;
 }
 
-/* A margin-left: auto flexboxban "elnyeli" az összes szabad helyet a gomb bal oldalán,
-   így a Szűrők (és utána a Rendezés) a sor jobb szélére tolódik */
 .recipes-section .search-bar .btn-filters {
     margin-left: auto;
 }
 
-/* Nagyobb rés a keresőmező és a Keresés gomb között: a mező 0.25rem-es margójához
-   ez még 0.25rem-et ad, így összesen 0.5rem */
 .recipes-section .search-bar .btn-search {
     margin-left: 0.25rem;
 }
 
-/* A Szűrők és Rendezés között 0.5rem rés van (ugyanannyi, mint a mező és a Keresés gomb
-   között). Az elválasztó vonal itt nem kell, mert a két gomb saját szürke háttere már elválasztja őket */
 .recipes-section .search-bar .search-divider {
     display: none;
 }
@@ -249,11 +190,6 @@
     padding-bottom: 0.5rem;
 }
 
-/* A gombok belső szegélye (padding) mind a négy irányban azonos. A line-height is kell
-   hozzá: az örökölt 1.6-os sormagasság a szöveg fölé/alá még kb. 5-5px üres helyet tenne,
-   így fent/lent szemre nagyobb lenne a szegély, mint oldalt. Az 1.25 (= 20px) a legkisebb
-   érték, amibe a Szűrők gomb számláló buborékja (1.25rem) még belefér - kisebbnél a gomb
-   megnőne, amikor a buborék megjelenik */
 .recipes-section .search-bar .btn-search,
 .recipes-section .search-bar .btn-filters,
 .recipes-section .search-bar .btn-sort {
@@ -261,8 +197,6 @@
     line-height: 1.25;
 }
 
-/* a gombok kerekítése egyezzen a keresőmezőével (4px) - az app.css közös
-   gombstílusa border-radius: 0-t ad nekik */
 .recipes-section .search-bar .btn-search,
 .recipes-section .search-bar .btn-filters,
 .recipes-section .search-bar .btn-sort {
@@ -274,9 +208,6 @@
     background: var(--color-primary);
 }
 
-/* Ugyanaz az árnyék, mint a receptkártyák gombjain (app.css, .card-actions): így "megnyomható"
-   gombnak hatnak, hoverre picit erősebb. A transition-be a box-shadow is bekerül, hogy az
-   árnyék is fokozatosan váltson, ne csak a háttérszín. */
 .recipes-section .search-bar .btn-search,
 .recipes-section .search-bar .btn-filters,
 .recipes-section .search-bar .btn-sort {
@@ -295,9 +226,6 @@
     background: var(--color-primary-hover);
 }
 
-/* Amikor a fejléc görgetős keresője aktív, a főoldal saját keresősávja (desktopon a kártyák
-   feletti, mobilon a hero-beli) elhalványul - különben az áttetsző fejlécen át is látszana.
-   A helye megmarad (visibility, nem display), hogy a tartalom ne csússzon feljebb */
 header.scrolled ~ main .recipes-section .search-bar,
 header.scrolled ~ main .mobile-search-sticky .search-bar {
     opacity: 0;
@@ -305,8 +233,7 @@ header.scrolled ~ main .mobile-search-sticky .search-bar {
     pointer-events: none;
 }
 
-/* ===== SZŰRŐ CSOPORTOK (Szűrők modal - a modal-keret alapstílusa app.css-ben van,
-   mert a Profil oldal is használja a fiók törlése megerősítéséhez) ===== */
+/* ===== FILTER GROUPS ===== */
 .filter-group {
     margin-bottom: 1.5rem;
 }
@@ -329,23 +256,17 @@ header.scrolled ~ main .mobile-search-sticky .search-bar {
     color: var(--color-text-light);
 }
 
-/* Az opciók "kapszulák" egymás mellett, sorba törve - rövidebb modal, kevesebb görgetés */
 .filter-options {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
 }
 
-/* position: relative - a benne lévő, abszolút pozicionált (rejtett) checkbox ehhez
-   igazodik, nem valamelyik távoli szülőhöz (különben fókuszáláskor ugrálhat a modal) */
 .filter-chip {
     position: relative;
     cursor: pointer;
 }
 
-/* A valódi checkbox láthatatlan, de a helyén marad: így billentyűzettel (Tab + Szóköz)
-   továbbra is kezelhető, és a képernyőolvasó is checkboxként olvassa fel.
-   (display: none-nal ezek elvesznének.) */
 .filter-chip input {
     position: absolute;
     opacity: 0;
@@ -355,7 +276,6 @@ header.scrolled ~ main .mobile-search-sticky .search-bar {
 }
 
 .filter-chip span {
-    /* inline-flex: az ikon és a szöveg egy sorban, függőlegesen középre igazítva */
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
@@ -372,36 +292,27 @@ header.scrolled ~ main .mobile-search-sticky .search-bar {
     border-color: var(--color-primary);
 }
 
-/* "+" = szomszéd-kombinátor: a bepipált input UTÁN KÖZVETLENÜL következő span-t
-   színezi ki. Ezért kell az inputnak a span előtt lennie a HTML-ben. */
 .filter-chip input:checked + span {
     background: var(--color-primary);
     border-color: var(--color-primary);
     color: var(--color-white);
 }
 
-/* Bepipált (narancs hátterű) kapszulán a narancs ikon nem látszana, ezért fehérre színezzük:
-   brightness(0) előbb feketévé teszi, az invert(1) pedig megfordítja fehérre.
-   (Az <img>-ként betöltött SVG-re a CSS color nem hat, ezért kell a filter.) */
 .filter-chip input:checked + span .category-icon {
     filter: brightness(0) invert(1);
 }
 
-/* Kiegészítő megjegyzés a kapszulán belül, pl. "(alapértelmezett)" - kisebb és halványabb,
-   hogy ne vonja el a figyelmet a fő szövegről. Kijelölt (narancs) kapszulán is olvasható marad,
-   mert a színt a szülő span-től örökli, csak áttetszőbb. */
 .chip-note {
     font-size: 0.8em;
     opacity: 0.75;
 }
 
-/* Billentyűzetes fókusz jelzése (egérkattintásra nem jelenik meg) */
 .filter-chip input:focus-visible + span {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
 }
 
-/* ===== AKTÍV SZŰRŐK (a kereső alatt, a kártyák felett) ===== */
+/* ===== ACTIVE FILTERS ===== */
 .active-filters {
     display: flex;
     flex-wrap: wrap;
@@ -409,7 +320,6 @@ header.scrolled ~ main .mobile-search-sticky .search-bar {
     gap: 0.5rem;
 }
 
-/* :empty = nincs benne semmi (nincs aktív szűrő) - ilyenkor ne foglaljon helyet az alsó margó */
 .active-filters:not(:empty) {
     margin-bottom: 1.5rem;
 }
@@ -446,7 +356,7 @@ header.scrolled ~ main .mobile-search-sticky .search-bar {
     color: var(--color-text);
 }
 
-/* ===== GOMBOK A MODALBAN / a modal alatti "Összes recept" link ===== */
+/* ===== MODAL BUTTONS ===== */
 .btn-apply {
     padding: 0.6rem 1.25rem;
     background-color: var(--color-primary);
@@ -508,7 +418,7 @@ header.scrolled ~ main .mobile-search-sticky .search-bar {
     to { transform: rotate(360deg); }
 }
 
-/* ===== LOAD MORE GOMB ===== */
+/* ===== LOAD MORE BUTTON ===== */
 .btn-load-more {
     display: block;
     margin: 2rem auto;
@@ -534,29 +444,25 @@ header.scrolled ~ main .mobile-search-sticky .search-bar {
     cursor: wait;
 }
 
-/* ===== MOBIL-SPECIFIKUS - DESKTOPON REJTVE ===== */
+/* ===== MOBILE-ONLY ELEMENTS ===== */
 @media (min-width: 769px) {
     .mobile-search-sticky {
         display: none;
     }
 }
 
-/* ===== MOBIL NÉZET - főoldal ===== */
+/* ===== MOBILE VIEW ===== */
 @media (max-width: 768px) {
     .hero-image {
         display: none !important;
     }
 
-    /* Kereső a hero-ban, közvetlenül a cím alatt, a szövegoszlop szélességéhez igazítva.
-       Kisebb a felső margó, mert mobilon nincs alcím a cím és a kereső között */
     .mobile-search-sticky {
         display: block;
         width: 100%;
         margin-top: 1rem;
     }
 
-    /* Nincs külső fehér doboz: a mező és a gombok közvetlenül a hero háttéren ülnek
-       (különben "doboz a dobozban" hatású lenne a fehér mező a fehér keretben) */
     .mobile-search-sticky .search-bar {
         max-width: none;
         width: 100%;
@@ -567,12 +473,6 @@ header.scrolled ~ main .mobile-search-sticky .search-bar {
         box-shadow: none;
     }
 
-    /* Mobil kereső: [ mező | narancs keresés gomb ] [szűrők] [rendezés]
-       A mező és a keresés gomb egy egységnek látszik: a mezőnek csak a bal sarkai,
-       a gombnak csak a jobb sarkai kerekek, és nincs köztük rés. A sorrendet az
-       "order" adja (a HTML-ben a keresés gomb a sor végén van).
-       A sor alapból (app.css) fehér hátterű és overflow: hidden - itt átlátszó, és a
-       kilógás engedett, hogy az elemek árnyéka ne vágódjon le */
     .mobile-search-sticky .search-row {
         gap: 0.4rem;
         background: none;
@@ -580,8 +480,6 @@ header.scrolled ~ main .mobile-search-sticky .search-bar {
         overflow: visible;
     }
 
-    /* Három egyforma fehér, lekerekített, árnyékos elem (mező, szűrők, rendezés),
-       a narancs Keresés gomb a kiemelés. 8px sarok, mint a fejléc keresőjében */
     .mobile-search-sticky .search-input-group {
         flex: 1;
         min-width: 0;
@@ -616,7 +514,7 @@ header.scrolled ~ main .mobile-search-sticky .search-bar {
 
     .mobile-search-sticky .btn-search {
         order: 1;
-        margin-left: -0.4rem; /* a sor gap-jét visszavesszük: a gomb a mezőhöz tapad */
+        margin-left: -0.4rem;
         border-radius: 0 8px 8px 0;
     }
 
@@ -636,22 +534,11 @@ header.scrolled ~ main .mobile-search-sticky .search-bar {
         height: 1.1rem;
     }
 
-    /* Hero szekció - mobilon a 100vw helyett a szülő (main) paddingjéből "kitörős"
-       negatív margós megoldás, mert a 100vw mobil nézetben/emulációban szélesebb
-       tud lenni a ténylegesen látható képernyőnél, és ez okozta a kilógást */
     .hero-section {
         width: auto;
         margin-left: -1rem;
         margin-right: -1rem;
-        /* Mobilon a fejléc 53px magas + 8px távolság a tetejétől = 61px (l. fent, desktopon 70px) */
         margin-top: -61px;
-        /* A hero a képernyő kb. 2/3-át foglalja el, és a cím + kereső függőlegesen a közepén
-           van (justify-content: center egy oszlop irányú flexben = függőleges közép).
-           A vh a régi böngészőknek kell, a svh a mobil címsorral együtt számolt "kis" képernyő-
-           magasság - ha a böngésző ismeri, felülírja az előzőt.
-           A felső padding a fejléc helye (61px), az alsó (60px) pedig a halványító átmenet
-           (::after) egy részének helye. Az alsó padding csökkentése lejjebb tolja a tartalmat:
-           minden 2px-nyi csökkentés 1px-szel lejjebb viszi (a különbség fele-fele oszlik el). */
         min-height: 65vh;
         min-height: 65svh;
         padding: 61px 1rem 60px;
@@ -681,8 +568,6 @@ header.scrolled ~ main .mobile-search-sticky .search-bar {
         flex-direction: column;
         align-items: stretch;
         gap: 1.5rem;
-        /* 20px = a .recipes-section oldalsó paddingje, így a hero szövege és keresője
-           pontosan egy vonalba kerül az alatta lévő receptkártyák széleivel */
         padding: 0 20px;
         justify-content: flex-start;
         order: 1;
@@ -691,15 +576,13 @@ header.scrolled ~ main .mobile-search-sticky .search-bar {
     .hero-text {
         flex: 0 0 auto;
         text-align: left;
-        padding-left: 0; /* a desktopos bal padding mobilon aszimmetrikussá tette a keresőt */
+        padding-left: 0;
     }
 
     .hero-title {
         font-size: 1.8rem;
     }
 
-    /* A "Próbáld ki..." szlogen mobilon nem jelenik meg - keskeny képernyőn sok sort
-       foglalna, és a cím + kereső így tisztábban kiemelkedik */
     .hero-subtitle {
         display: none;
     }
@@ -708,23 +591,14 @@ header.scrolled ~ main .mobile-search-sticky .search-bar {
         display: inline;
     }
 
-    /* Alsó kereső sáv elrejtése mobilon (a hero-ban lévő sticky verzió jelenik meg helyette) */
     .recipes-section .search-bar {
         display: none;
     }
 
-    /* A kártyák közvetlenül a hero alatt kezdődnek. A hero alját nem kurtítjuk, hogy a
-       színátmenetes "elhalványulás" (.hero-section::after) teljes hosszában megmaradjon */
-    /* margin-top: -1rem -> a kártyák egy picit feljebb csúsznak, rá a hero halványuló aljára.
-       A hero maga (háttérkép, magasság, átmenet) nem változik, csak a kártyák mozdulnak.
-       z-index: 6 -> a hero halványító rétege (::after) z-index: 5, enélkül az átfedő sávban
-       a kártyák teteje "bekoszolódna" a ráfestett krémszínű átmenettől */
     .recipes-section {
         padding-top: 0;
     }
 
-    /* Csak a főoldalon (ahol a szekció közvetlenül a hero után jön): a Saját/Kedvenc
-       receptek oldal is ezt a fájlt tölti be, ott a cím alá csúszna */
     .hero-section + .recipes-section {
         margin-top: -1rem;
         z-index: 6;

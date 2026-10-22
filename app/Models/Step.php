@@ -6,13 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Step extends Model
 {
-     protected $table = 'step';
+    protected $table = 'step';
 
-     protected $primaryKey = 'id';
+    public $timestamps = false;
 
-     public $timestamps = false;
-
-     protected $fillable = [
+    protected $fillable = [
         'description',
         'recipe_id',
         'position',

@@ -8,8 +8,6 @@ class StepCategory extends Model
 {
     protected $table = 'step_category';
 
-    protected $primaryKey = 'id';
-
     public $timestamps = false;
 
     protected $fillable = [

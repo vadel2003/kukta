@@ -8,8 +8,6 @@ class MealTime extends Model
 {
     protected $table = 'meal_time';
 
-    protected $primaryKey = 'id';
-
     public $timestamps = false;
 
     protected $fillable = [

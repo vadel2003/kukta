@@ -10,8 +10,8 @@
     @php
         $isEdit = isset($recipe);
 
-        // Lépések előkészítése szerkesztéshez (position szerint rendezve)
         $stepValues = [];
+        $ingredientValues = [];
         if ($isEdit) {
             foreach ($recipe->steps->sortBy('position') as $step) {
                 $stepValues[] = [
@@ -19,20 +19,24 @@
                     'step_category_id' => $step->step_category_id,
                 ];
             }
-        }
-
-        // Alapanyagok előkészítése szerkesztéshez
-        $ingredientValues = [];
-        if ($isEdit) {
-            foreach ($recipe->ingredients as $index => $ingredient) {
-                $ingredientValues[$index] = [
-                    'id' => $ingredient->id,
+            foreach ($recipe->ingredients as $ingredient) {
+                $ingredientValues[] = [
                     'name' => $ingredient->name,
                     'quantity' => $ingredient->pivot->quantity,
                     'unit' => $ingredient->pivot->unit,
                 ];
             }
         }
+        $stepCount = max(3, count(old('steps', $stepValues)));
+        $ingredientCount = max(3, count(old('ingredients', $ingredientValues)));
+
+        $categoryGroups = [
+            'meal_times' => ['Napszak', $mealTimes, 'mealTimes', true],
+            'food_types' => ['Étel típusa', $foodTypes, 'foodTypes', true],
+            'diets' => ['Étrend', $diets, 'diets', true],
+            'free_from' => ['Mentesség', $freeFroms, 'freeFroms', false],
+            'cuisines' => ['Konyha', $cuisines, 'cuisines', true],
+        ];
     @endphp
 
     <div class="card-stack">
@@ -45,523 +49,353 @@
             <p class="form-success">{{ session('success') }}</p>
         @endif
 
-    <form method="POST" action="{{ $isEdit ? route('recipes.update', $recipe->id) : route('recipes.store') }}" enctype="multipart/form-data" class="form-sections">
-        @csrf
-        @if ($isEdit)
-            @method('PUT')
-        @endif
+        <form method="POST" action="{{ $isEdit ? route('recipes.update', $recipe->id) : route('recipes.store') }}" enctype="multipart/form-data" class="form-sections">
+            @csrf
+            @if ($isEdit)
+                @method('PUT')
+            @endif
 
-        <div class="grid-2col">
-        <div class="content-card">
-            <h2 class="content-title">
-                <span class="title-icon"><i data-lucide="clipboard-list"></i></span>
-                Alapadatok
-            </h2>
+            <div class="grid-2col">
+                <div class="content-card">
+                    <h2 class="content-title">
+                        <span class="title-icon"><i data-lucide="clipboard-list"></i></span>
+                        Alapadatok
+                    </h2>
 
-            <div class="form-group">
-                <label for="title">Recept címe <span class="form-error">*</span></label>
-                <div class="field-control">
-                    {{-- textarea (nem input), hogy a teljes 100 karakter látsszon; az Entert a lenti JS tiltja, mert a cím egysoros adat --}}
-                    <textarea name="title" id="title" rows="2" required minlength="5" maxlength="100" autofocus>{{ old('title', $recipe->title ?? '') }}</textarea>
-                    <small class="char-counter">0 / 100</small>
-                </div>
-                @error('title')
-                    <span class="form-error">{{ $message }}</span>
-                @enderror
-            </div>
+                    <div class="form-group">
+                        <label for="title">Recept címe <span class="form-error">*</span></label>
+                        <div class="field-control">
+                            <textarea name="title" id="title" rows="2" required minlength="5" maxlength="100" autofocus>{{ old('title', $recipe->title ?? '') }}</textarea>
+                            <small class="char-counter">0 / 100</small>
+                        </div>
+                        @error('title')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
 
-            <div class="form-group">
-                <label for="description">Leírás <span class="form-error">*</span></label>
-                <div class="field-control">
-                    <textarea name="description" id="description" rows="18" required minlength="5" maxlength="1000">{{ old('description', $recipe->description ?? '') }}</textarea>
-                    <small class="char-counter">0 / 1000</small>
-                </div>
-                @error('description')
-                    <span class="form-error">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <label for="prep_time">Elkészítési idő (perc) <span class="form-error">*</span></label>
-                <input type="number" name="prep_time" id="prep_time" value="{{ old('prep_time', $recipe->prep_time ?? '') }}" required min="3" max="1440">
-                @error('prep_time')
-                    <span class="form-error">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <label for="difficulty">Nehézség <span class="form-error">*</span></label>
-                <select name="difficulty" id="difficulty" required>
-                    <option value="">-- Válassz --</option>
-                    {{-- value = a szám (0/1/2), ez kerül az adatbázisba; a felirat a megnevezés.
-                         (string) összehasonlítás: az old() szöveget ad vissza ("0"), a modell számot (0) -
-                         így mindkettő ugyanúgy "0" lesz, és az üres "" sem egyezik a 0-val. --}}
-                    @foreach (\App\Models\Recipe::DIFFICULTIES as $value => $label)
-                        <option value="{{ $value }}" {{ (string) old('difficulty', $recipe->difficulty ?? '') === (string) $value ? 'selected' : '' }}>{{ ucfirst($label) }}</option>
-                    @endforeach
-                </select>
-                @error('difficulty')
-                    <span class="form-error">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <label for="servings">Adag <span class="form-error">*</span></label>
-                <input type="number" name="servings" id="servings" value="{{ old('servings', $recipe->servings ?? '') }}" required min="1" max="50">
-                @error('servings')
-                    <span class="form-error">{{ $message }}</span>
-                @enderror
-            </div>
-        </div>
-
-        <div class="content-card">
-            <h2 class="content-title">
-                <span class="title-icon"><i data-lucide="image"></i></span>
-                Kép <span class="form-error">*</span>
-            </h2>
-
-            <div>
-                <h3 class="image-section-title">Tölts fel saját képet</h3>
-                <p class="field-hint">JPG, PNG vagy WebP kép. Kiválasztás után körbevághatod.</p>
-                {{-- Hiba miatti visszatöltéskor a böngésző biztonsági okból nem tölti vissza a
-                     fájlmezőt, ezért szólunk, ha a felhasználó előzőleg saját képet választott.
-                     old() csak hibás beküldés utáni visszairányításkor tartalmaz adatot. --}}
-                @if (old('had_upload') === '1')
-                    <p class="form-warning">
-                        Az űrlap hiba miatt visszatöltődött. A feltöltött képet a böngésző nem tudja megőrizni, kérjük, válaszd ki újra!
-                    </p>
-                @endif
-                {{-- a JS állítja 1-re, ha saját képet választott (így tudjuk, kell-e a fenti figyelmeztetés) --}}
-                <input type="hidden" name="had_upload" value="0" class="had-upload">
-                <label class="upload-box">
-                    <input type="file" name="thumbnail_image" accept="image/jpeg,image/png,image/webp" class="upload-input">
-                    <img src="{{ asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="" class="upload-placeholder">
-                    <span class="upload-hint">+</span>
-                </label>
-                @error('thumbnail_image')
-                    <span class="form-error">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="image-section">
-                <h3 class="image-section-title">Vagy válassz előre definiált képet</h3>
-                <div class="image-picker">
-                    {{-- Az alapképek listája a Recipe modellben van (Recipe::DEFAULT_IMAGES), mert a validáció is azt használja --}}
-                    @foreach (\App\Models\Recipe::DEFAULT_IMAGES as $imageValue => $imageLabel)
-                        @php
-                            $imagePath = public_path($imageValue);
-                        @endphp
-                        {{-- ha egy fájl hiányzik a mappából, kihagyjuk (ne legyen törött kép) --}}
-                        @continue(!is_file($imagePath))
-                        <label class="image-option">
-                            {{-- a rádiógomb láthatatlan, de ez küldi az értéket; a stílust a mögötte lévő kártya kapja (CSS :checked + ...) --}}
-                            <input type="radio" name="default_image" value="{{ $imageValue }}" class="image-option-input"
-                                {{ old('default_image', $recipe->thumbnail ?? '') == $imageValue ? 'checked' : '' }}>
-                            <span class="image-option-card">
-                                {{-- ?v=... : ha a képfájl változik, a böngésző nem a régit mutatja a cache-ből --}}
-                                <img src="{{ asset($imageValue) }}?v={{ filemtime($imagePath) }}" alt="">
-                                <span class="image-option-label">{{ $imageLabel }}</span>
-                            </span>
-                        </label>
-                    @endforeach
-                </div>
-                @error('default_image')
-                    <span class="form-error">{{ $message }}</span>
-                @enderror
-            </div>
-        </div>
-        </div>
-
-        <div class="content-card">
-            <h2 class="content-title">
-                <span class="title-icon"><i data-lucide="chef-hat"></i></span>
-                Elkészítés lépései <span class="form-error">*</span>
-            </h2>
-            <p class="field-hint">Legalább 3 lépés kell, mindegyikhez válassz kategóriát. Az üres sorok nem mentődnek.</p>
-
-            <div class="form-group">
-                <div id="steps-container">
-                    @php
-                        // Ha szerkesztés van, a meglévő lépések; ha nincs, 3 üres mező
-                        $stepCount = $isEdit && count($stepValues) > 0 ? count($stepValues) : 3;
-                    @endphp
-                    @for ($i = 0; $i < $stepCount; $i++)
-                        <div class="step-item">
-                            <label>{{ $i + 1 }}. lépés</label>
-                            <input type="text" name="steps[{{ $i }}][description]" value="{{ old('steps.' . $i . '.description', $stepValues[$i]['description'] ?? '') }}" placeholder="Add meg a(z) {{ $i + 1 }}. lépést" minlength="5" maxlength="1000">
+                    <div class="form-group">
+                        <label for="description">Leírás <span class="form-error">*</span></label>
+                        <div class="field-control">
+                            <textarea name="description" id="description" rows="18" required minlength="5" maxlength="1000">{{ old('description', $recipe->description ?? '') }}</textarea>
                             <small class="char-counter">0 / 1000</small>
-                            <select name="steps[{{ $i }}][step_category_id]">
-                                <option value="">-- Kategória --</option>
-                                @foreach ($stepCategories as $category)
-                                    <option value="{{ $category->id }}" {{ old('steps.' . $i . '.step_category_id', $stepValues[$i]['step_category_id'] ?? '') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('steps.' . $i . '.description')
-                                <span class="form-error">{{ $message }}</span>
-                            @enderror
-                            <button type="button" class="remove-step" title="Lépés eltávolítása">×</button>
                         </div>
-                    @endfor
+                        @error('description')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prep_time">Elkészítési idő (perc) <span class="form-error">*</span></label>
+                        <input type="number" name="prep_time" id="prep_time" value="{{ old('prep_time', $recipe->prep_time ?? '') }}" required min="3" max="1440">
+                        @error('prep_time')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="difficulty">Nehézség <span class="form-error">*</span></label>
+                        <select name="difficulty" id="difficulty" required>
+                            <option value="">-- Válassz --</option>
+                            @foreach (\App\Models\Recipe::DIFFICULTIES as $value => $label)
+                                <option value="{{ $value }}" {{ (string) old('difficulty', $recipe->difficulty ?? '') === (string) $value ? 'selected' : '' }}>{{ ucfirst($label) }}</option>
+                            @endforeach
+                        </select>
+                        @error('difficulty')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="servings">Adag <span class="form-error">*</span></label>
+                        <input type="number" name="servings" id="servings" value="{{ old('servings', $recipe->servings ?? '') }}" required min="1" max="50">
+                        @error('servings')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
                 </div>
-                @error('steps')
-                    <span class="form-error">{{ $message }}</span>
-                @enderror
-                <button type="button" id="add-step" class="btn-outline">+ Lépés hozzáadása</button>
-            </div>
-        </div>
 
-        <div class="content-card">
-            <h2 class="content-title">
-                <span class="title-icon"><i data-lucide="cooking-pot"></i></span>
-                Alapanyagok <span class="form-error">*</span>
-            </h2>
-            <p class="field-hint">Legalább 3 alapanyag kell, mennyiséggel és mértékegységgel. Válassz a listából, vagy írd be az új alapanyag nevét, ha nincs benne. Az üres sorok nem mentődnek.</p>
+                <div class="content-card">
+                    <h2 class="content-title">
+                        <span class="title-icon"><i data-lucide="image"></i></span>
+                        Kép <span class="form-error">*</span>
+                    </h2>
 
-            <div class="form-group">
-                <div id="ingredients">
-                    @php
-                        // Ha szerkesztés van, a meglévő alapanyagok; ha nincs, 3 üres mező
-                        $ingredientCount = $isEdit && count($ingredientValues) > 0 ? count($ingredientValues) : 3;
-                    @endphp
-                    @for ($i = 0; $i < $ingredientCount; $i++)
-                        <div class="ingredient-item">
-                            <input type="text" name="ingredients[{{ $i }}][name]" list="ingredient-options" value="{{ old('ingredients.' . $i . '.name', $ingredientValues[$i]['name'] ?? '') }}" placeholder="Alapanyag neve" minlength="2" maxlength="50">
-                            <small class="char-counter">0 / 50</small>
+                    <div>
+                        <h3 class="image-section-title">Tölts fel saját képet</h3>
+                        <p class="field-hint">JPG, PNG vagy WebP kép. Kiválasztás után körbevághatod.</p>
+                        @if (old('had_upload') === '1')
+                            <p class="form-warning">
+                                Az űrlap hiba miatt visszatöltődött. A feltöltött képet a böngésző nem tudja megőrizni, kérjük, válaszd ki újra!
+                            </p>
+                        @endif
+                        <input type="hidden" name="had_upload" value="0" class="had-upload">
+                        <label class="upload-box">
+                            <input type="file" name="thumbnail_image" accept="image/jpeg,image/png,image/webp" class="upload-input">
+                            <img src="{{ asset('images/recipes/default/recipe_placeholder.jpg') }}" alt="" class="upload-placeholder">
+                            <span class="upload-hint">+</span>
+                        </label>
+                        @error('thumbnail_image')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
 
-                            <input type="number" name="ingredients[{{ $i }}][quantity]" step="0.01" min="0.1" max="1.7976931348623157e308" placeholder="Mennyiség" value="{{ old('ingredients.' . $i . '.quantity', $ingredientValues[$i]['quantity'] ?? '') }}">
-
-                            <select name="ingredients[{{ $i }}][unit]">
-                                <option value="">-- Mértékegység --</option>
-                                {{-- Az érték a mértékegység száma, a felirat a neve (IngredientRecipe::UNITS).
-                                     (string) === (string): szövegként hasonlítunk, különben az üres érték (null)
-                                     a PHP-ban egyenlő lenne a 0-val, és a "g" lenne kiválasztva. --}}
-                                @foreach (\App\Models\IngredientRecipe::UNITS as $unitId => $unitName)
-                                    <option value="{{ $unitId }}" {{ (string) old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') === (string) $unitId ? 'selected' : '' }}>{{ $unitName }}</option>
-                                @endforeach
-                            </select>
-
-                            <button type="button" class="remove-ingredient" title="Alapanyag eltávolítása">×</button>
-
-                            @error('ingredients.' . $i . '.name')
-                                <span class="form-error">{{ $message }}</span>
-                            @enderror
-                            @error('ingredients.' . $i . '.quantity')
-                                <span class="form-error">{{ $message }}</span>
-                            @enderror
-                            @error('ingredients.' . $i . '.unit')
-                                <span class="form-error">{{ $message }}</span>
-                            @enderror
+                    <div class="image-section">
+                        <h3 class="image-section-title">Vagy válassz előre definiált képet</h3>
+                        <div class="image-picker">
+                            @foreach (\App\Models\Recipe::DEFAULT_IMAGES as $imageValue => $imageLabel)
+                                @continue(!is_file(public_path($imageValue)))
+                                <label class="image-option">
+                                    <input type="radio" name="default_image" value="{{ $imageValue }}" class="image-option-input"
+                                        {{ old('default_image', $recipe->thumbnail ?? '') == $imageValue ? 'checked' : '' }}>
+                                    <span class="image-option-card">
+                                        <img src="{{ asset($imageValue) }}?v={{ filemtime(public_path($imageValue)) }}" alt="">
+                                        <span class="image-option-label">{{ $imageLabel }}</span>
+                                    </span>
+                                </label>
+                            @endforeach
                         </div>
-                    @endfor
+                        @error('default_image')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
                 </div>
-
-                <datalist id="ingredient-options">
-                    @foreach ($ingredients as $ingredient)
-                        <option value="{{ $ingredient->name }}"></option>
-                    @endforeach
-                </datalist>
-
-                <button type="button" id="add-ingredient" class="btn-outline">+ Alapanyag hozzáadása</button>
-
-                @error('ingredients')
-                    <span class="form-error">{{ $message }}</span>
-                @enderror
-            </div>
-        </div>
-
-        <div class="content-card">
-            <h2 class="content-title">
-                <span class="title-icon"><i data-lucide="tags"></i></span>
-                Kategóriák
-            </h2>
-
-            <div>
-                <h3 style="margin-bottom: 0.25rem;">Napszak <span class="form-error">*</span></h3>
-                <div class="checkbox-group">
-                    @foreach ($mealTimes as $mealTime)
-                        <label>
-                            <input type="checkbox" name="meal_times[]" value="{{ $mealTime->id }}"
-                                {{ (is_array(old('meal_times')) && in_array($mealTime->id, old('meal_times'))) || ($isEdit && $recipe->mealTimes->contains($mealTime->id)) ? 'checked' : '' }}>
-                            {{ $mealTime->name }}
-                        </label>
-                    @endforeach
-                </div>
-                @error('meal_times')
-                    <span class="form-error">{{ $message }}</span>
-                @enderror
             </div>
 
-            <div style="margin-top: 1rem;">
-                <h3 style="margin-bottom: 0.25rem;">Étel típusa <span class="form-error">*</span></h3>
-                <div class="checkbox-group">
-                    @foreach ($foodTypes as $foodType)
-                        <label>
-                            <input type="checkbox" name="food_types[]" value="{{ $foodType->id }}"
-                                {{ (is_array(old('food_types')) && in_array($foodType->id, old('food_types'))) || ($isEdit && $recipe->foodTypes->contains($foodType->id)) ? 'checked' : '' }}>
-                            {{ $foodType->name }}
-                        </label>
-                    @endforeach
+            <div class="content-card">
+                <h2 class="content-title">
+                    <span class="title-icon"><i data-lucide="chef-hat"></i></span>
+                    Elkészítés lépései <span class="form-error">*</span>
+                </h2>
+                <p class="field-hint">Legalább 3 lépés kell, mindegyikhez válassz kategóriát. Az üres sorok nem mentődnek.</p>
+
+                <div class="form-group">
+                    <div id="steps-container">
+                        @for ($i = 0; $i < $stepCount; $i++)
+                            <div class="step-item">
+                                <label>{{ $i + 1 }}. lépés</label>
+                                <input type="text" name="steps[{{ $i }}][description]" value="{{ old('steps.' . $i . '.description', $stepValues[$i]['description'] ?? '') }}" placeholder="Add meg a(z) {{ $i + 1 }}. lépést" minlength="5" maxlength="1000">
+                                <small class="char-counter">0 / 1000</small>
+                                <select name="steps[{{ $i }}][step_category_id]">
+                                    <option value="">-- Kategória --</option>
+                                    @foreach ($stepCategories as $category)
+                                        <option value="{{ $category->id }}" {{ old('steps.' . $i . '.step_category_id', $stepValues[$i]['step_category_id'] ?? '') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('steps.' . $i . '.description')
+                                    <span class="form-error">{{ $message }}</span>
+                                @enderror
+                                <button type="button" class="remove-row" title="Lépés eltávolítása">×</button>
+                            </div>
+                        @endfor
+                    </div>
+                    @error('steps')
+                        <span class="form-error">{{ $message }}</span>
+                    @enderror
+                    <button type="button" id="add-step" class="btn-outline">+ Lépés hozzáadása</button>
                 </div>
-                @error('food_types')
-                    <span class="form-error">{{ $message }}</span>
-                @enderror
             </div>
 
-            <div style="margin-top: 1rem;">
-                <h3 style="margin-bottom: 0.25rem;">Étrend <span class="form-error">*</span></h3>
-                <div class="checkbox-group">
-                    {{-- Checkbox + diets[] név: így több étrend is bejelölhető, a [] miatt a PHP tömbként kapja meg.
-                         Ha a form hibával tér vissza, az old() értékek (a legutóbbi pipák) élveznek elsőbbséget. --}}
-                    @foreach ($diets as $diet)
-                        @php
-                            $isChecked = is_array(old('diets'))
-                                ? in_array($diet->id, old('diets'))
-                                : $isEdit && $recipe->diets->contains($diet->id);
-                        @endphp
-                        <label>
-                            <input type="checkbox" name="diets[]" value="{{ $diet->id }}" {{ $isChecked ? 'checked' : '' }}>
-                            {{ $diet->name }}
-                        </label>
-                    @endforeach
+            <div class="content-card">
+                <h2 class="content-title">
+                    <span class="title-icon"><i data-lucide="cooking-pot"></i></span>
+                    Alapanyagok <span class="form-error">*</span>
+                </h2>
+                <p class="field-hint">Legalább 3 alapanyag kell, mennyiséggel és mértékegységgel. Válassz a listából, vagy írd be az új alapanyag nevét, ha nincs benne. Az üres sorok nem mentődnek.</p>
+
+                <div class="form-group">
+                    <div id="ingredients">
+                        @for ($i = 0; $i < $ingredientCount; $i++)
+                            <div class="ingredient-item">
+                                <input type="text" name="ingredients[{{ $i }}][name]" list="ingredient-options" value="{{ old('ingredients.' . $i . '.name', $ingredientValues[$i]['name'] ?? '') }}" placeholder="Alapanyag neve" minlength="2" maxlength="50">
+                                <small class="char-counter">0 / 50</small>
+
+                                <input type="number" name="ingredients[{{ $i }}][quantity]" step="0.01" min="0.1" max="10000" placeholder="Mennyiség" value="{{ old('ingredients.' . $i . '.quantity', $ingredientValues[$i]['quantity'] ?? '') }}">
+
+                                <select name="ingredients[{{ $i }}][unit]">
+                                    <option value="">-- Mértékegység --</option>
+                                    @foreach (\App\Models\IngredientRecipe::UNITS as $unitId => $unitName)
+                                        <option value="{{ $unitId }}" {{ (string) old('ingredients.' . $i . '.unit', $ingredientValues[$i]['unit'] ?? '') === (string) $unitId ? 'selected' : '' }}>{{ $unitName }}</option>
+                                    @endforeach
+                                </select>
+
+                                <button type="button" class="remove-row" title="Alapanyag eltávolítása">×</button>
+
+                                @error('ingredients.' . $i . '.name')
+                                    <span class="form-error">{{ $message }}</span>
+                                @enderror
+                                @error('ingredients.' . $i . '.quantity')
+                                    <span class="form-error">{{ $message }}</span>
+                                @enderror
+                                @error('ingredients.' . $i . '.unit')
+                                    <span class="form-error">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        @endfor
+                    </div>
+
+                    <datalist id="ingredient-options">
+                        @foreach ($ingredients as $ingredient)
+                            <option value="{{ $ingredient->name }}"></option>
+                        @endforeach
+                    </datalist>
+
+                    <button type="button" id="add-ingredient" class="btn-outline">+ Alapanyag hozzáadása</button>
+
+                    @error('ingredients')
+                        <span class="form-error">{{ $message }}</span>
+                    @enderror
                 </div>
-                @error('diets')
-                    <span class="form-error">{{ $message }}</span>
-                @enderror
             </div>
 
-            <div style="margin-top: 1rem;">
-                <h3 style="margin-bottom: 0.25rem;">Mentesség</h3>
-                <p class="field-hint">Jelöld be, amitől a recept mentes.</p>
-                {{-- Szerkesztésnél azok vannak bepipálva, amelyektől a recept mentes. Ha a form hibával
-                     tér vissza, az old() értékek (a felhasználó legutóbbi pipái) élveznek elsőbbséget. --}}
-                <div class="checkbox-group">
-                    @foreach ($freeFroms as $freeFrom)
-                        @php
-                            $isFree = is_array(old('free_from'))
-                                ? in_array($freeFrom->id, old('free_from'))
-                                : $isEdit && $recipe->freeFroms->contains($freeFrom->id);
-                        @endphp
-                        <label>
-                            <input type="checkbox" name="free_from[]" value="{{ $freeFrom->id }}" {{ $isFree ? 'checked' : '' }}>
-                            <img src="{{ asset($freeFrom->thumbnail) }}" alt="" class="category-icon">
-                            {{ $freeFrom->name }}
-                        </label>
-                    @endforeach
-                </div>
-                @error('free_from')
-                    <span class="form-error">{{ $message }}</span>
-                @enderror
+            <div class="content-card">
+                <h2 class="content-title">
+                    <span class="title-icon"><i data-lucide="tags"></i></span>
+                    Kategóriák
+                </h2>
+
+                @foreach ($categoryGroups as $field => [$title, $items, $relation, $required])
+                    <div class="category-group">
+                        <h3>{{ $title }} @if ($required)<span class="form-error">*</span>@endif</h3>
+                        @if ($field === 'free_from')
+                            <p class="field-hint">Jelöld be, amitől a recept mentes.</p>
+                        @endif
+                        <div class="checkbox-group">
+                            @foreach ($items as $item)
+                                @php
+                                    $isChecked = is_array(old($field))
+                                        ? in_array($item->id, old($field))
+                                        : $isEdit && $recipe->$relation->contains($item->id);
+                                @endphp
+                                <label>
+                                    <input type="checkbox" name="{{ $field }}[]" value="{{ $item->id }}" {{ $isChecked ? 'checked' : '' }}>
+                                    @if ($item->thumbnail)
+                                        <img src="{{ asset($item->thumbnail) }}" alt="" class="category-icon">
+                                    @endif
+                                    {{ $item->name }}
+                                </label>
+                            @endforeach
+                        </div>
+                        @error($field)
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+                @endforeach
             </div>
 
-            <div style="margin-top: 1rem;">
-                <h3 style="margin-bottom: 0.25rem;">Konyha <span class="form-error">*</span></h3>
-                <div class="checkbox-group">
-                    @foreach ($cuisines as $cuisine)
-                        <label>
-                            <input type="checkbox" name="cuisines[]" value="{{ $cuisine->id }}"
-                                {{ (is_array(old('cuisines')) && in_array($cuisine->id, old('cuisines'))) || ($isEdit && $recipe->cuisines->contains($cuisine->id)) ? 'checked' : '' }}>
-                            {{ $cuisine->name }}
-                        </label>
-                    @endforeach
-                </div>
-                @error('cuisines')
-                    <span class="form-error">{{ $message }}</span>
-                @enderror
-            </div>
-        </div>
-
-        <button type="submit" class="btn-cook btn-cook-primary btn-recipe-submit">{{ $isEdit ? 'Módosítások mentése' : 'Recept feltöltése' }}</button>
-    </form>
+            <button type="submit" class="btn-cook btn-cook-primary btn-recipe-submit">{{ $isEdit ? 'Módosítások mentése' : 'Recept feltöltése' }}</button>
+        </form>
     </div>
 
     @include('partials.image-cropper')
 
     <script>
-        // A cím textarea, de egysoros adat: Enterre ne törjön sort,
-        // beillesztett sortörés helyett pedig szóköz kerüljön bele
+        const recipeForm = document.querySelector('.btn-recipe-submit').form;
+        const recipeHasThumbnail = @json($isEdit && !empty($recipe->thumbnail));
         const titleInput = document.getElementById('title');
-        titleInput.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') e.preventDefault();
-        });
-        titleInput.addEventListener('input', function () {
-            if (this.value.includes('\n')) this.value = this.value.replace(/\n/g, ' ');
-        });
-
-        // Saját kép előnézet
         const thumbnailInput = document.querySelector('.upload-input');
         const thumbnailPreview = document.querySelector('.upload-placeholder');
         const defaultImageRadios = document.querySelectorAll('.image-option-input');
         const hadUploadInput = document.querySelector('.had-upload');
-        // Fájl kiválasztása után a közös vágó ablak nyílik meg, és egy 1240x800-as,
-        // tömörített JPEG kerül a file inputba (partials/image-cropper.blade.php).
-        // Az arány (1.55 : 1) a recept kártyák képéhez igazodik (.recipe-image: kb. 308x200 px),
-        // és megegyezik az alapképek arányával (.image-option-card img: aspect-ratio 1.55).
-        // A méretet a RecipeController validációja is ellenőrzi - ha itt változik, ott is kell!
+        const stepsContainer = document.getElementById('steps-container');
+        const ingredientsContainer = document.getElementById('ingredients');
+
+        /**
+         * Renumbers the field names of the rows (steps[0]..., ingredients[0]...), and the labels of the steps.
+         * At least 3 rows must remain, so the remove buttons are disabled at 3 rows.
+         */
+        function renumberRows(container) {
+            Array.from(container.children).forEach((row, index) => {
+                row.querySelectorAll('input, select').forEach(field => {
+                    field.name = field.name.replace(/\[\d+\]/, '[' + index + ']');
+                });
+                if (container === stepsContainer) {
+                    row.querySelector('label').textContent = (index + 1) + '. lépés';
+                    row.querySelector('input').placeholder = 'Add meg a(z) ' + (index + 1) + '. lépést';
+                }
+            });
+            container.querySelectorAll('.remove-row').forEach(button => {
+                button.disabled = container.children.length <= 3;
+            });
+        }
+
+        /**
+         * Adds a new, empty row as a copy of the last row.
+         */
+        function addRow(container) {
+            const newRow = container.lastElementChild.cloneNode(true);
+            newRow.querySelectorAll('input, select').forEach(field => {
+                field.value = '';
+            });
+            newRow.querySelectorAll('.form-error').forEach(error => error.remove());
+            const counter = newRow.querySelector('.char-counter');
+            counter.textContent = '0 / ' + newRow.querySelector('input').maxLength;
+            counter.classList.remove('char-counter--visible');
+            container.appendChild(newRow);
+            renumberRows(container);
+        }
+
+        titleInput.addEventListener('keydown', event => {
+            if (event.key === 'Enter') event.preventDefault();
+        });
+        titleInput.addEventListener('input', () => {
+            if (titleInput.value.includes('\n')) titleInput.value = titleInput.value.replace(/\n/g, ' ');
+        });
+
         const thumbnailCropper = setupImageCropper({
             input: thumbnailInput,
             width: 1240,
             height: 800,
             quality: 0.85,
-            onApply: function (blob) {
+            onApply: blob => {
                 thumbnailPreview.src = URL.createObjectURL(blob);
                 thumbnailPreview.style.opacity = '1';
                 hadUploadInput.value = '1';
-                // saját kép választásakor az alapkép-választás törlődik (a szerver úgyis a feltöltöttet menti)
-                defaultImageRadios.forEach(radio => radio.checked = false);
+                defaultImageRadios.forEach(radio => {
+                    radio.checked = false;
+                });
             },
         });
 
-        // alapkép választásakor a feltöltött saját kép törlődik, hogy egyértelmű legyen, melyik lesz mentve
         defaultImageRadios.forEach(radio => {
-            radio.addEventListener('change', function () {
+            radio.addEventListener('change', () => {
                 thumbnailCropper.clear();
                 thumbnailPreview.style.opacity = '0';
                 hadUploadInput.value = '0';
             });
         });
 
-        document.getElementById('add-step').addEventListener('click', function() {
-            const container = document.getElementById('steps-container');
-            const steps = container.querySelectorAll('.step-item');
-            const lastStep = steps[steps.length - 1];
-            const newStep = lastStep.cloneNode(true);
+        document.getElementById('add-step').addEventListener('click', () => addRow(stepsContainer));
+        document.getElementById('add-ingredient').addEventListener('click', () => addRow(ingredientsContainer));
 
-            // Input és select érték törlése
-            const input = newStep.querySelector('input');
-            input.value = '';
-            const select = newStep.querySelector('select');
-            if (select) select.value = '';
-
-            // Hibaüzenet törlése (ha volt előzőleg)
-            newStep.querySelectorAll('span').forEach(s => s.remove());
-
-            // Karakterszámláló visszaállítása
-            const stepCounter = newStep.querySelector('.char-counter');
-            if (stepCounter) stepCounter.textContent = '0 / ' + input.maxLength;
-
-            container.appendChild(newStep);
-            relabelSteps();
-            updateStepRemoveButtons();
+        [stepsContainer, ingredientsContainer].forEach(container => {
+            container.addEventListener('click', event => {
+                const removeButton = event.target.closest('.remove-row');
+                if (!removeButton || container.children.length <= 3) return;
+                removeButton.parentElement.remove();
+                renumberRows(container);
+            });
+            renumberRows(container);
         });
 
-        // Lépés sor eltávolítása
-        document.getElementById('steps-container').addEventListener('click', function(e) {
-            const btn = e.target.closest('.remove-step');
-            if (!btn) return;
-            const rows = this.querySelectorAll('.step-item');
-            if (rows.length <= 3) return;
-            btn.closest('.step-item').remove();
-            relabelSteps();
-            updateStepRemoveButtons();
-        });
-
-        // Lépések címkéinek és neveinek újraszámozása
-        function relabelSteps() {
-            document.querySelectorAll('#steps-container .step-item').forEach((row, index) => {
-                row.querySelector('label').textContent = (index + 1) + '. lépés';
-                const input = row.querySelector('input');
-                input.name = 'steps[' + index + '][description]';
-                input.placeholder = 'Add meg a(z) ' + (index + 1) + '. lépést';
-                const select = row.querySelector('select');
-                if (select) select.name = 'steps[' + index + '][step_category_id]';
-            });
-        }
-
-        // × gombok letiltása, ha csak 3 lépés van (eltüntetés helyett, hogy mindig ott legyenek)
-        function updateStepRemoveButtons() {
-            const rows = document.querySelectorAll('#steps-container .step-item');
-            const canRemove = rows.length > 3;
-            rows.forEach(function(row) {
-                const btn = row.querySelector('.remove-step');
-                if (btn) btn.disabled = !canRemove;
-            });
-        }
-
-        // Alapanyag sor hozzáadása
-        document.getElementById('add-ingredient').addEventListener('click', function() {
-            const container = document.getElementById('ingredients');
-            const rows = container.querySelectorAll('.ingredient-item');
-            const lastRow = rows[rows.length - 1];
-            const newRow = lastRow.cloneNode(true);
-
-            newRow.querySelector('input[name*="[name]"]').value = '';
-            newRow.querySelector('input[name*="[quantity]"]').value = '';
-            newRow.querySelector('select[name*="[unit]"]').value = '';
-
-            newRow.querySelectorAll('span').forEach(s => s.remove());
-
-            // Karakterszámláló visszaállítása
-            const ingCounter = newRow.querySelector('.char-counter');
-            if (ingCounter) ingCounter.textContent = '0 / ' + newRow.querySelector('input[name*="[name]"]').maxLength;
-
-            container.appendChild(newRow);
-            reindexIngredients();
-            updateIngredientRemoveButtons();
-        });
-
-        // Alapanyag sor eltávolítása
-        document.getElementById('ingredients').addEventListener('click', function(e) {
-            const btn = e.target.closest('.remove-ingredient');
-            if (!btn) return;
-            const rows = this.querySelectorAll('.ingredient-item');
-            if (rows.length <= 3) return;
-            btn.closest('.ingredient-item').remove();
-            reindexIngredients();
-            updateIngredientRemoveButtons();
-        });
-
-        // Alapanyag sorok újraindexelése
-        function reindexIngredients() {
-            const rows = document.querySelectorAll('#ingredients .ingredient-item');
-            rows.forEach((row, index) => {
-                row.querySelector('input[name*="[name]"]').name = 'ingredients[' + index + '][name]';
-                row.querySelector('input[name*="[quantity]"]').name = 'ingredients[' + index + '][quantity]';
-                row.querySelector('select[name*="[unit]"]').name = 'ingredients[' + index + '][unit]';
-            });
-        }
-
-        // × gombok letiltása, ha csak 3 alapanyag van (eltüntetés helyett, hogy mindig ott legyenek)
-        function updateIngredientRemoveButtons() {
-            const rows = document.querySelectorAll('#ingredients .ingredient-item');
-            const canRemove = rows.length > 3;
-            rows.forEach(function(row) {
-                const btn = row.querySelector('.remove-ingredient');
-                if (btn) btn.disabled = !canRemove;
-            });
-        }
-
-        // Beküldés előtti ellenőrzés: azok a szabályok, amelyek több mezőt együtt néznek, ezért
-        // HTML attribútummal (required, min...) nem adhatók meg. Ugyanazok, mint a RecipeController-ben.
-        // Miért a gomb "click" eseménye, és nem a form "submit"-ja? A kattintás a böngésző saját
-        // ellenőrzése ELŐTT fut le, így az itt beállított hibákat a böngésző a többivel együtt,
-        // a saját hibabuborékában jeleníti meg (az Enter is "kattintásnak" számít a gombon).
-        // setCustomValidity('szöveg') hibásnak jelöli a mezőt, setCustomValidity('') törli a hibát.
-        const recipeForm = document.querySelector('.btn-recipe-submit').form;
-        const recipeHasThumbnail = @json($isEdit && !empty($recipe->thumbnail));
-
-        document.querySelector('.btn-recipe-submit').addEventListener('click', function () {
-            // Az előző próbálkozás hibáinak törlése, mindent újra ellenőrzünk
+        document.querySelector('.btn-recipe-submit').addEventListener('click', () => {
             recipeForm.querySelectorAll('input, select').forEach(field => field.setCustomValidity(''));
 
-            // Lépések: kitöltött lépéshez kategória kell; legalább 3, legfeljebb 50 lépés
-            const stepRows = [...document.querySelectorAll('#steps-container .step-item')];
+            const stepRows = Array.from(stepsContainer.children);
             const filledSteps = stepRows.filter(row => row.querySelector('input').value.trim() !== '');
-            filledSteps.forEach(function (row) {
+            filledSteps.forEach(row => {
                 const category = row.querySelector('select');
-                if (category && category.value === '') category.setCustomValidity('Minden lépéshez válassz kategóriát!');
+                if (category.value === '') category.setCustomValidity('Minden lépéshez válassz kategóriát!');
             });
             if (filledSteps.length < 3) {
-                // A hibát az első üres lépés kapja (mindig van, mert legalább 3 sor van)
                 const emptyStep = stepRows.find(row => !filledSteps.includes(row));
                 emptyStep.querySelector('input').setCustomValidity('Adj meg legalább 3 lépést!');
             } else if (filledSteps.length > 50) {
                 filledSteps[50].querySelector('input').setCustomValidity('Legfeljebb 50 lépést adhatsz meg!');
             }
 
-            // Alapanyagok: kitöltött névhez mennyiség és mértékegység kell; legalább 3 alapanyag
-            const ingredientRows = [...document.querySelectorAll('#ingredients .ingredient-item')];
+            const ingredientRows = Array.from(ingredientsContainer.children);
             const filledIngredients = ingredientRows.filter(row => row.querySelector('input[name*="[name]"]').value.trim() !== '');
-            filledIngredients.forEach(function (row) {
+            filledIngredients.forEach(row => {
                 const quantity = row.querySelector('input[name*="[quantity]"]');
                 const unit = row.querySelector('select');
                 if (quantity.value === '') quantity.setCustomValidity('Minden alapanyaghoz adj meg mennyiséget!');
@@ -572,30 +406,22 @@
                 emptyIngredient.querySelector('input[name*="[name]"]').setCustomValidity('Adj meg legalább 3 alapanyagot!');
             }
 
-            // Kategóriák: mindegyik csoportból legalább egyet be kell jelölni (a mentesség nem kötelező)
             const requiredGroups = {
                 'meal_times[]': 'Válassz legalább egy napszakot!',
                 'food_types[]': 'Válassz legalább egy ételtípust!',
                 'diets[]': 'Válassz legalább egy étrendet!',
                 'cuisines[]': 'Válassz legalább egy konyhát!',
             };
-            for (const [name, message] of Object.entries(requiredGroups)) {
-                const boxes = recipeForm.querySelectorAll('input[name="' + name + '"]');
-                if (![...boxes].some(box => box.checked)) boxes[0].setCustomValidity(message);
-            }
+            Object.entries(requiredGroups).forEach(([name, message]) => {
+                const boxes = Array.from(recipeForm.querySelectorAll('input[name="' + name + '"]'));
+                if (!boxes.some(box => box.checked)) boxes[0].setCustomValidity(message);
+            });
 
-            // Kép: saját feltöltés vagy alapkép kell (szerkesztésnél a meglévő kép is elég).
-            // A hiba az első alapképet kapja, mert a feltöltő mező rejtett (display: none),
-            // rejtett mező mellé pedig a böngésző nem tud hibabuborékot rajzolni.
             const hasUpload = thumbnailInput.files.length > 0;
-            const hasDefault = [...defaultImageRadios].some(radio => radio.checked);
+            const hasDefault = Array.from(defaultImageRadios).some(radio => radio.checked);
             if (!hasUpload && !hasDefault && !recipeHasThumbnail) {
                 defaultImageRadios[0].setCustomValidity('Tölts fel saját képet, vagy válassz egy alapképet!');
             }
         });
-
-        // Induláskor elrejtjük a felesleges × gombokat
-        updateStepRemoveButtons();
-        updateIngredientRemoveButtons();
     </script>
 @endsection

@@ -4,485 +4,435 @@
 @section('bodyClass', 'assistant-page')
 
 @push('styles')
-    {{-- A szóbuborék betűtípusa (Cormorant Garamond) az assistant.css elején van, helyi fájlból --}}
     <link rel="stylesheet" href="{{ asset('css/assistant/assistant.css') }}?v={{ filemtime(public_path('css/assistant/assistant.css')) }}">
 @endpush
 
 @section('content')
-<div class="assistant" style="--assistant-bg-image: url('{{ $recipe->thumbnail_url }}');">
+    <div class="assistant" style="--assistant-bg-image: url('{{ $recipe->thumbnail_url }}');">
+        <a href="{{ route('recipes.show', $recipe->id) }}" class="assistant-close" aria-label="Kilépés az asszisztensből"><i data-lucide="x"></i></a>
 
-    <a href="{{ route('recipes.show', $recipe->id) }}" class="assistant-close" aria-label="Kilépés az asszisztensből"><i data-lucide="x"></i></a>
-
-    {{-- -1. lépés: leírás + háttérkép --}}
-    <section class="assistant-screen is-active">
-        <div class="assistant-intro" style="background-image: url('{{ $recipe->thumbnail_url }}');">
-            <div class="assistant-intro-content">
-                <div class="assistant-intro-card assistant-greeting-card">
-                    {{-- Asszisztens figura (Lottie). Egyetlen példány: a JS a nyitó és a záró képernyő
-                         .assistant-figure-slot helyőrzője között mozgatja (lásd showScreen). --}}
-                    <div class="assistant-figure-slot">
-                        <div class="assistant-figure" id="assistantFigure"
-                             data-src="{{ asset('lottie/asszisztens.json') }}?v={{ filemtime(public_path('lottie/asszisztens.json')) }}">
-                            <div class="assistant-figure-anim" role="img" aria-label="Kukta asszisztens, a borsó főzősegéd"></div>
-                            <div class="assistant-figure-bubble" aria-live="polite"></div>
+        <section class="assistant-screen is-active">
+            <div class="assistant-intro" style="background-image: url('{{ $recipe->thumbnail_url }}');">
+                <div class="assistant-intro-content">
+                    <div class="assistant-intro-card assistant-greeting-card">
+                        <div class="assistant-figure-slot">
+                            <div class="assistant-figure" id="assistantFigure"
+                                data-src="{{ asset('lottie/assistant.json') }}?v={{ filemtime(public_path('lottie/assistant.json')) }}">
+                                <div class="assistant-figure-anim" role="img" aria-label="Kukta asszisztens, a borsó főzősegéd"></div>
+                                <div class="assistant-figure-bubble" aria-live="polite"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="assistant-intro-card assistant-intro-overlay">
-                    <h1>{{ $recipe->title }}</h1>
-                    <p>{{ $recipe->description }}</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- 0. lépés: hozzávalók --}}
-    <section class="assistant-screen">
-        <div class="assistant-ingredients">
-            <div class="content-card assistant-ingredients-card">
-                <h2 class="assistant-heading">Hozzávalók</h2>
-                <div class="ingredient-pages" id="ingredientPages"></div>
-                <div class="page-dots" id="ingredientDots"></div>
-            </div>
-        </div>
-    </section>
-
-    {{-- 1..n. lépések --}}
-    @foreach ($recipe->steps as $step)
-        <section class="assistant-screen">
-            <div class="assistant-step">
-                <div class="content-card assistant-step-card">
-                    <div class="assistant-step-number">{{ $loop->iteration }}</div>
-                    <x-step-animation :category="$step->stepCategory" />
-                    <p class="assistant-step-text">{{ $step->description }}</p>
+                    <div class="assistant-intro-card assistant-intro-overlay">
+                        <h1>{{ $recipe->title }}</h1>
+                        <p>{{ $recipe->description }}</p>
+                    </div>
                 </div>
             </div>
         </section>
-    @endforeach
 
-    {{-- Befejezés: csak animáció (a figura "Jó étvágyat!" buborékkal köszön el) + értékelés + gomb --}}
-    <section class="assistant-screen assistant-screen-finish">
-        <div class="assistant-finish">
-            <div class="content-card assistant-finish-card">
-                <div class="assistant-figure-slot"></div>
-
-                <form id="assistantRatingForm" data-authenticated="{{ auth()->check() ? '1' : '0' }}" data-rate-link="{{ route('recipes.rate.link', $recipe->id) }}" action="{{ route('recipes.rate', $recipe->id) }}" method="POST" class="assistant-rating">
-                    @csrf
-                    <div class="assistant-stars">
-                        @for ($i = 1; $i <= 5; $i++)
-                            <label class="assistant-star">
-                                <input type="radio" name="score" value="{{ $i }}" {{ $userRating && $userRating->score == $i ? 'checked' : '' }}>
-                                <span class="assistant-star-icon {{ $userRating && $i <= $userRating->score ? 'filled' : '' }}">★</span>
-                            </label>
-                        @endfor
-                    </div>
-                    <p class="assistant-rating-status" id="assistantRatingStatus">
-                        {{ $userRating ? 'A te értékelésed: ' . $userRating->score . ' csillag' : 'Értékeld a receptet!' }}
-                    </p>
-                </form>
-
-                <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-cook btn-cook-primary">Vissza a recepthez</a>
+        <section class="assistant-screen">
+            <div class="assistant-ingredients">
+                <div class="content-card assistant-ingredients-card">
+                    <h2 class="assistant-heading">Hozzávalók</h2>
+                    <div class="ingredient-pages" id="ingredientPages"></div>
+                    <div class="page-dots" id="ingredientDots"></div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    {{-- Navigáció: nagy, oldalra rögzített nyilak, teljes magasságú hover-zónával --}}
-    <nav class="assistant-nav">
-        <div class="assistant-nav-zone assistant-nav-zone-prev">
-            <button type="button" id="assistantPrev" class="btn-assistant-nav btn-assistant-prev" aria-label="Vissza"><i data-lucide="chevron-left"></i></button>
-        </div>
-        <div class="assistant-nav-zone assistant-nav-zone-next">
-            <button type="button" id="assistantNext" class="btn-assistant-nav btn-assistant-next" aria-label="Tovább"><i data-lucide="chevron-right"></i></button>
-        </div>
-    </nav>
-    <span class="assistant-progress" id="assistantProgress"></span>
-
-    {{-- Rejtett hozzávaló lista – ebből épít lapokat a JS --}}
-    <ul id="ingredientList" hidden>
-        @foreach ($recipe->ingredients as $ingredient)
-            <li class="ai-ingredient">
-                <span class="ai-ingredient-qty">{{ str_replace('.', ',', (float) $ingredient->pivot->quantity) }} {{ \App\Models\IngredientRecipe::UNITS[$ingredient->pivot->unit] ?? '' }}</span>
-                <span class="ai-ingredient-name">{{ $ingredient->name }}</span>
-            </li>
+        @foreach ($recipe->steps as $step)
+            <section class="assistant-screen">
+                <div class="assistant-step">
+                    <div class="content-card assistant-step-card">
+                        <div class="assistant-step-number">{{ $loop->iteration }}</div>
+                        <x-step-animation :category="$step->stepCategory" />
+                        <p class="assistant-step-text">{{ $step->description }}</p>
+                    </div>
+                </div>
+            </section>
         @endforeach
-    </ul>
-</div>
 
-{{-- Lottie lejátszó (v5.12.2, a lépés-animációkhoz) - csak ezen az oldalon kell, ezért itt töltjük be.
-     Helyben tárolva (public/js), hogy ne menjen kérés külső szerverre (GDPR) --}}
-<script src="{{ asset('js/lottie.min.js') }}"></script>
-<script src="{{ asset('js/assistant-figure.js') }}?v={{ filemtime(public_path('js/assistant-figure.js')) }}"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // ===== 0. Hosszú lépés-szövegek szétosztása, ha nem férnének ki egy képernyőn =====
-    // (a screens listát csak EZUTÁN olvassuk ki, hogy a felosztott képernyők is benne legyenek)
-    repaginateLongSteps();
+        <section class="assistant-screen assistant-screen-finish">
+            <div class="assistant-finish">
+                <div class="content-card assistant-finish-card">
+                    <div class="assistant-figure-slot"></div>
 
-    function repaginateLongSteps() {
-        const stepScreens = Array.from(document.querySelectorAll('.assistant-screen'))
-            .filter(s => s.querySelector('.assistant-step'));
+                    <form id="assistantRatingForm" data-authenticated="{{ Auth::check() ? '1' : '0' }}" data-rate-link="{{ route('recipes.rate.link', $recipe->id) }}" action="{{ route('recipes.rate', $recipe->id) }}" method="POST" class="assistant-rating">
+                        @csrf
+                        <div class="assistant-stars">
+                            @for ($i = 1; $i <= 5; $i++)
+                                <label class="assistant-star">
+                                    <input type="radio" name="score" value="{{ $i }}" {{ $userRating && $userRating->score == $i ? 'checked' : '' }}>
+                                    <span class="assistant-star-icon {{ $userRating && $i <= $userRating->score ? 'filled' : '' }}">★</span>
+                                </label>
+                            @endfor
+                        </div>
+                        <p class="assistant-rating-status" id="assistantRatingStatus">
+                            {{ $userRating ? 'A te értékelésed: ' . $userRating->score . ' csillag' : 'Értékeld a receptet!' }}
+                        </p>
+                    </form>
 
-        stepScreens.forEach(screenEl => {
-            const wasActive = screenEl.classList.contains('is-active');
-            if (!wasActive) {
-                screenEl.style.visibility = 'hidden';
-                screenEl.classList.add('is-active');
+                    <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-cook btn-cook-primary">Vissza a recepthez</a>
+                </div>
+            </div>
+        </section>
+
+        <nav class="assistant-nav">
+            <div class="assistant-nav-zone assistant-nav-zone-prev">
+                <button type="button" id="assistantPrev" class="btn-assistant-nav btn-assistant-prev" aria-label="Vissza"><i data-lucide="chevron-left"></i></button>
+            </div>
+            <div class="assistant-nav-zone assistant-nav-zone-next">
+                <button type="button" id="assistantNext" class="btn-assistant-nav btn-assistant-next" aria-label="Tovább"><i data-lucide="chevron-right"></i></button>
+            </div>
+        </nav>
+        <span class="assistant-progress" id="assistantProgress"></span>
+
+        <ul id="ingredientList" hidden>
+            @foreach ($recipe->ingredients as $ingredient)
+                <li class="assistant-ingredient">
+                    <span class="assistant-ingredient-qty">{{ str_replace('.', ',', (float) $ingredient->pivot->quantity) }} {{ \App\Models\IngredientRecipe::UNITS[$ingredient->pivot->unit] ?? '' }}</span>
+                    <span class="assistant-ingredient-name">{{ $ingredient->name }}</span>
+                </li>
+            @endforeach
+        </ul>
+    </div>
+
+    <script src="{{ asset('js/lottie.min.js') }}?v={{ filemtime(public_path('js/lottie.min.js')) }}"></script>
+    <script src="{{ asset('js/assistant-figure.js') }}?v={{ filemtime(public_path('js/assistant-figure.js')) }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            /** Swipes shorter than this (px) do not change the page. */
+            const SWIPE_MIN = 50;
+            /** The gap of .ingredient-grid (px). */
+            const GRID_GAP = 12;
+            /** The margin-bottom of .ingredient-grid (px). */
+            const GRID_MARGIN_BOTTOM = 16;
+            /** Space reserved for the page dots (px): .page-dot height + .page-dots margin-top. */
+            const DOTS_RESERVE = 24;
+
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const prevButton = document.getElementById('assistantPrev');
+            const nextButton = document.getElementById('assistantNext');
+            const nextZone = nextButton.closest('.assistant-nav-zone');
+            const progress = document.getElementById('assistantProgress');
+            const figureElement = document.getElementById('assistantFigure');
+            const pagesContainer = document.getElementById('ingredientPages');
+            const ingredientsScreen = pagesContainer.closest('.assistant-screen');
+            const dotsContainer = document.getElementById('ingredientDots');
+            const items = Array.from(document.querySelectorAll('#ingredientList .assistant-ingredient'));
+            const stepAnimations = [];
+
+            let screens = [];
+            let current = 0;
+            let currentIngredientPage = 0;
+            let figure = null;
+            let touchStartX = 0;
+            let touchStartY = 0;
+
+            /**
+             * Measures a hidden screen by making it active but invisible during the measurement.
+             *
+             * @param {HTMLElement} screen
+             * @param {function(): *} measure the function that does the measuring
+             * @returns {*} the return value of measure()
+             */
+            function measureScreen(screen, measure) {
+                const wasActive = screen.classList.contains('is-active');
+                if (!wasActive) {
+                    screen.style.visibility = 'hidden';
+                    screen.classList.add('is-active');
+                }
+
+                const result = measure();
+
+                if (!wasActive) {
+                    screen.classList.remove('is-active');
+                    screen.style.visibility = '';
+                }
+                return result;
             }
 
-            const stepEl = screenEl.querySelector('.assistant-step');
-            const ratio = stepEl.scrollHeight / screenEl.clientHeight;
+            /**
+             * Splits step texts that do not fit on one screen into several consecutive screens.
+             */
+            function repaginateLongSteps() {
+                document.querySelectorAll('.assistant-screen').forEach(screen => {
+                    const stepElement = screen.querySelector('.assistant-step');
+                    if (!stepElement) return;
 
-            if (!wasActive) {
-                screenEl.classList.remove('is-active');
-                screenEl.style.visibility = '';
-            }
+                    const ratio = measureScreen(screen, () => stepElement.scrollHeight / screen.clientHeight);
+                    if (ratio <= 1.05) return;
 
-            if (ratio > 1.05) {
-                const partCount = Math.ceil(ratio);
-                const textEl = screenEl.querySelector('.assistant-step-text');
-                const parts = splitTextIntoParts(textEl.textContent.trim(), partCount);
-                if (parts.length > 1) {
-                    textEl.textContent = parts[0];
-                    let insertAfter = screenEl;
-                    for (let i = 1; i < parts.length; i++) {
-                        const clone = screenEl.cloneNode(true);
+                    const textElement = screen.querySelector('.assistant-step-text');
+                    const parts = splitTextIntoParts(textElement.textContent.trim(), Math.ceil(ratio));
+                    if (parts.length <= 1) return;
+
+                    textElement.textContent = parts[0];
+                    let insertAfter = screen;
+                    parts.slice(1).forEach(part => {
+                        const clone = screen.cloneNode(true);
                         clone.classList.remove('is-active');
-                        clone.style.visibility = '';
-                        clone.querySelector('.assistant-step-text').textContent = parts[i];
+                        clone.querySelector('.assistant-step-text').textContent = part;
                         insertAfter.insertAdjacentElement('afterend', clone);
                         insertAfter = clone;
+                    });
+                });
+            }
+
+            /**
+             * Splits a text into roughly equal parts at sentence boundaries (by words if there are not enough sentences).
+             *
+             * @param {string} text
+             * @param {number} count the number of parts
+             * @returns {string[]}
+             */
+            function splitTextIntoParts(text, count) {
+                let chunks = text.match(/[^.!?]+[.!?]+["')\]]*\s*|[^.!?]+$/g) || [text];
+                if (chunks.length < count) {
+                    chunks = text.match(/\S+\s*/g) || [text];
+                }
+
+                const target = text.length / count;
+                const parts = [];
+                let part = '';
+                chunks.forEach(chunk => {
+                    part += chunk;
+                    if (part.length >= target && parts.length < count - 1) {
+                        parts.push(part.trim());
+                        part = '';
                     }
+                });
+                if (part.trim()) parts.push(part.trim());
+                return parts;
+            }
+
+            /**
+             * Shows the given screen: starts its step animation, moves the figure and updates the counter.
+             */
+            function showScreen(index) {
+                const previous = current;
+                current = index;
+                screens.forEach((screen, i) => screen.classList.toggle('is-active', i === index));
+                prevButton.disabled = current === 0;
+                const isLast = current === screens.length - 1;
+                nextZone.style.visibility = isLast ? 'hidden' : 'visible';
+                progress.textContent = (current + 1) + ' / ' + screens.length;
+
+                if (!reduceMotion) {
+                    stepAnimations.forEach(item => {
+                        if (item.screen === screens[index]) {
+                            item.animation.goToAndPlay(0, true);
+                        } else {
+                            item.animation.stop();
+                        }
+                    });
                 }
+
+                const figureSlot = screens[index].querySelector('.assistant-figure-slot');
+                if (figureSlot) figureSlot.appendChild(figureElement);
+
+                if (figure && isLast && previous === index - 1) figure.goodbye();
+                if (figure && index === 0 && previous !== 0) figure.sayHello();
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
-        });
-    }
 
-    // Egy hosszú szöveget mondatok mentén, kb. egyenlő méretű darabokra vág.
-    // Ha nincs elég mondathatár (pl. egyetlen hosszú, vesszős mondat), szavanként vágunk.
-    function splitTextIntoParts(text, n) {
-        let chunks = text.match(/[^.!?]+[.!?]+["')\]]*\s*|[^.!?]+$/g) || [text];
-        if (chunks.length < n) {
-            chunks = text.match(/\S+\s*/g) || [text];
-        }
-
-        const target = text.length / n;
-        const parts = [];
-        let current = '';
-        chunks.forEach(chunk => {
-            current += chunk;
-            if (current.length >= target && parts.length < n - 1) {
-                parts.push(current.trim());
-                current = '';
+            /**
+             * Number of columns in the ingredient grid, based on the screen width.
+             */
+            function getColumns() {
+                if (window.innerWidth >= 1024) return 3;
+                if (window.innerWidth >= 768) return 2;
+                return 1;
             }
-        });
-        if (current.trim()) parts.push(current.trim());
-        return parts;
-    }
 
-    // Esc gombra kilépés az asszisztensből, ugyanoda, ahova a bezárás (X) gomb vezet
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-            document.querySelector('.assistant-close').click();
-        }
-    });
+            /**
+             * How many ingredient rows fit on the ingredients screen next to the heading, paddings and dots.
+             */
+            function computeRowsPerPage(columns) {
+                if (items.length === 0) return 1;
 
-    // ===== Lépés-animációk (Lottie) =====
-    // A felosztás (repaginateLongSteps) UTÁN töltjük be, hogy a klónozott képernyők is saját animációt kapjanak.
-    // Mindet előre betöltjük, de nem indítjuk el - a showScreen() indítja mindig csak az aktuálisat.
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const stepAnimations = []; // { screen, anim } párok
+                return measureScreen(ingredientsScreen, () => {
+                    const heading = document.querySelector('.assistant-heading');
+                    const headingSpace = heading.offsetHeight + parseFloat(getComputedStyle(heading).marginBottom);
 
-    if (window.lottie) {
-        document.querySelectorAll('.step-animation').forEach(function (el) {
-            const anim = lottie.loadAnimation({
-                container: el,
-                renderer: 'svg',
-                loop: true,
-                autoplay: false,
-                path: el.dataset.src,
+                    const testGrid = document.createElement('div');
+                    testGrid.className = 'ingredient-grid';
+                    testGrid.style.gridTemplateColumns = 'repeat(' + columns + ', 1fr)';
+                    testGrid.appendChild(items[0].cloneNode(true));
+                    pagesContainer.appendChild(testGrid);
+                    const itemHeight = testGrid.firstChild.getBoundingClientRect().height || 50;
+                    pagesContainer.removeChild(testGrid);
+
+                    const card = pagesContainer.closest('.assistant-ingredients-card');
+                    const cardStyle = getComputedStyle(card);
+                    const wrapperStyle = getComputedStyle(card.parentElement);
+                    const paddingSpace = parseFloat(cardStyle.paddingTop) + parseFloat(cardStyle.paddingBottom)
+                        + parseFloat(wrapperStyle.paddingTop) + parseFloat(wrapperStyle.paddingBottom);
+
+                    const available = ingredientsScreen.clientHeight - paddingSpace - headingSpace - DOTS_RESERVE - GRID_MARGIN_BOTTOM;
+                    return Math.max(1, Math.floor((available + GRID_GAP) / (itemHeight + GRID_GAP)));
+                });
+            }
+
+            /**
+             * Splits the ingredients into pages by the number of rows that fit, with page dots.
+             */
+            function renderIngredientPages() {
+                const columns = getColumns();
+                const perPage = columns * computeRowsPerPage(columns);
+                const pageCount = Math.max(1, Math.ceil(items.length / perPage));
+                currentIngredientPage = Math.min(currentIngredientPage, pageCount - 1);
+
+                pagesContainer.innerHTML = '';
+                dotsContainer.innerHTML = '';
+
+                for (let page = 0; page < pageCount; page++) {
+                    const grid = document.createElement('div');
+                    grid.className = 'ingredient-grid';
+                    grid.style.gridTemplateColumns = 'repeat(' + columns + ', 1fr)';
+                    items.slice(page * perPage, (page + 1) * perPage).forEach(item => grid.appendChild(item));
+                    pagesContainer.appendChild(grid);
+
+                    const dot = document.createElement('button');
+                    dot.type = 'button';
+                    dot.className = 'page-dot';
+                    dot.setAttribute('aria-label', (page + 1) + '. oldal');
+                    dot.addEventListener('click', () => {
+                        currentIngredientPage = page;
+                        showIngredientPage(page);
+                    });
+                    dotsContainer.appendChild(dot);
+                }
+
+                dotsContainer.style.display = pageCount <= 1 ? 'none' : '';
+                showIngredientPage(currentIngredientPage);
+            }
+
+            /**
+             * Shows the given ingredient page.
+             */
+            function showIngredientPage(page) {
+                pagesContainer.querySelectorAll('.ingredient-grid').forEach((grid, i) => {
+                    grid.style.display = i === page ? 'grid' : 'none';
+                });
+                dotsContainer.querySelectorAll('.page-dot').forEach((dot, i) => dot.classList.toggle('is-active', i === page));
+            }
+
+            repaginateLongSteps();
+            screens = Array.from(document.querySelectorAll('.assistant-screen'));
+
+            document.querySelectorAll('.step-animation').forEach(element => {
+                const animation = lottie.loadAnimation({
+                    container: element,
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: false,
+                    path: element.dataset.src,
+                });
+                if (reduceMotion) {
+                    animation.addEventListener('DOMLoaded', () => animation.goToAndStop(50, true));
+                }
+                stepAnimations.push({ screen: element.closest('.assistant-screen'), animation: animation });
             });
-            // Csökkentett mozgás: lejátszás helyett egy beszédes állóképet mutatunk
-            if (reduceMotion) {
-                anim.addEventListener('DOMLoaded', function () { anim.goToAndStop(50, true); });
-            }
-            stepAnimations.push({ screen: el.closest('.assistant-screen'), anim: anim });
-        });
-    }
 
-    // ===== 1. Képernyők közötti navigáció =====
-    const screens = Array.from(document.querySelectorAll('.assistant-screen'));
-    const prevBtn = document.getElementById('assistantPrev');
-    const nextBtn = document.getElementById('assistantNext');
-    const nextZone = nextBtn.closest('.assistant-nav-zone');
-    const progress = document.getElementById('assistantProgress');
-    let current = 0;
+            fetchJson(figureElement.dataset.src)
+                .then(data => {
+                    figure = createAssistant(figureElement, data);
+                    setTimeout(() => figure.hello(), 300);
+                })
+                .catch(error => console.error('Error:', error));
 
-    // ===== Asszisztens figura (nyitó + záró képernyő) =====
-    // Betöltjük a JSON-t, és létrehozzuk a figurát. A hello() egyszer, betöltéskor fut le
-    // (ekkor a nyitó képernyő látszik) - lapozáskor nem indul újra.
-    const figureEl = document.getElementById('assistantFigure');
-    let figure = null;
-    if (window.lottie && figureEl) {
-        fetch(figureEl.dataset.src)
-            .then(r => r.json())
-            .then(data => {
-                figure = createAssistant(figureEl, data);
-                setTimeout(() => figure.hello(), 300);
-            })
-            .catch(error => console.error('Hiba:', error));
-    }
+            prevButton.addEventListener('click', () => {
+                if (screens[current] === ingredientsScreen && currentIngredientPage > 0) {
+                    currentIngredientPage--;
+                    showIngredientPage(currentIngredientPage);
+                    return;
+                }
+                if (current > 0) showScreen(current - 1);
+            });
 
-    function showScreen(index) {
-        const previous = current;
-        current = index;
-        screens.forEach((s, i) => s.classList.toggle('is-active', i === index));
-        prevBtn.disabled = (current === 0);
-        const isLast = current === screens.length - 1;
-        nextZone.style.visibility = isLast ? 'hidden' : 'visible';
-        progress.textContent = (current + 1) + ' / ' + screens.length;
+            nextButton.addEventListener('click', () => {
+                const pageCount = pagesContainer.querySelectorAll('.ingredient-grid').length;
+                if (screens[current] === ingredientsScreen && currentIngredientPage < pageCount - 1) {
+                    currentIngredientPage++;
+                    showIngredientPage(currentIngredientPage);
+                    return;
+                }
+                if (current < screens.length - 1) showScreen(current + 1);
+            });
 
-        // Az új képernyő animációja elölről indul, a többi megáll (csökkentett mozgásnál nem nyúlunk hozzájuk)
-        if (!reduceMotion) {
-            stepAnimations.forEach(function (item) {
-                if (item.screen === screens[index]) {
-                    item.anim.goToAndPlay(0, true);
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Escape') document.querySelector('.assistant-close').click();
+                if (event.key === 'ArrowLeft') prevButton.click();
+                if (event.key === 'ArrowRight') nextButton.click();
+            });
+
+            document.addEventListener('touchstart', event => {
+                touchStartX = event.changedTouches[0].clientX;
+                touchStartY = event.changedTouches[0].clientY;
+            }, { passive: true });
+
+            document.addEventListener('touchend', event => {
+                const deltaX = event.changedTouches[0].clientX - touchStartX;
+                const deltaY = event.changedTouches[0].clientY - touchStartY;
+                if (Math.abs(deltaX) < SWIPE_MIN || Math.abs(deltaX) < Math.abs(deltaY) * 1.5) return;
+                if (deltaX < 0) {
+                    nextButton.click();
                 } else {
-                    item.anim.stop();
+                    prevButton.click();
                 }
-            });
-        }
+            }, { passive: true });
 
-        // A figura átkerül az új képernyő helyőrzőjébe (ha van benne ilyen)
-        const figureSlot = screens[index].querySelector('.assistant-figure-slot');
-        if (figureSlot && figureEl) figureSlot.appendChild(figureEl);
-
-        // Az utolsó lépésről a záró képernyőre lépve elköszön
-        if (figure && isLast && previous === index - 1) figure.goodbye();
-
-        // A nyitó képernyőre visszalapozva újra a "Szia!..." szöveg látszik (ne a "Jó étvágyat!")
-        if (figure && index === 0 && previous !== 0) figure.sayHello();
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // Ha épp a hozzávalók képernyőn vagyunk és van még hozzávaló-oldal,
-    // a nyilak először azok között lapozzanak, csak utána váltsanak képernyőt.
-    prevBtn.addEventListener('click', () => {
-        const ingredientsScreen = pagesContainer.closest('.assistant-screen');
-        if (screens[current] === ingredientsScreen && currentPage > 0) {
-            currentPage--;
-            showIngredientPage(currentPage);
-            return;
-        }
-        if (current > 0) showScreen(current - 1);
-    });
-
-    nextBtn.addEventListener('click', () => {
-        const ingredientsScreen = pagesContainer.closest('.assistant-screen');
-        if (screens[current] === ingredientsScreen) {
-            const pageCount = pagesContainer.querySelectorAll('.ingredient-grid').length;
-            if (currentPage < pageCount - 1) {
-                currentPage++;
-                showIngredientPage(currentPage);
-                return;
-            }
-        }
-        if (current < screens.length - 1) showScreen(current + 1);
-    });
-
-    // Bal/jobb nyíl gombokkal is ugyanaz, mint a prev/next gombra kattintva
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'ArrowLeft') prevBtn.click();
-        if (e.key === 'ArrowRight') nextBtn.click();
-    });
-
-    // Húzás (swipe) érintőképernyőn: balra húzva Tovább, jobbra húzva Vissza - ugyanúgy,
-    // mintha a gombra koppintanánk (így a hozzávaló-oldalak lapozása is ugyanígy működik).
-    // Megjegyezzük, hol kezdődött az érintés, és az elengedéskor megnézzük, merre mozdult az ujj.
-    const SWIPE_MIN = 50; // px - ennél rövidebb mozdulat nem számít húzásnak (pl. sima koppintás)
-    let touchStartX = 0;
-    let touchStartY = 0;
-
-    // passive: true -> jelezzük a böngészőnek, hogy nem tiltjuk le a görgetést,
-    // így az érintés figyelése nem lassítja a kijelző reagálását
-    document.addEventListener('touchstart', function (e) {
-        touchStartX = e.changedTouches[0].clientX;
-        touchStartY = e.changedTouches[0].clientY;
-    }, { passive: true });
-
-    document.addEventListener('touchend', function (e) {
-        const dx = e.changedTouches[0].clientX - touchStartX;
-        const dy = e.changedTouches[0].clientY - touchStartY;
-        // Csak akkor lapozunk, ha a mozdulat elég hosszú ÉS inkább vízszintes, mint függőleges
-        // (egy kicsit ferde függőleges húzás ne lapozzon véletlenül)
-        if (Math.abs(dx) < SWIPE_MIN || Math.abs(dx) < Math.abs(dy) * 1.5) return;
-        if (dx < 0) nextBtn.click();
-        else prevBtn.click();
-    }, { passive: true });
-
-    // A gomb körüli teljes hover-zóna is kattintható, nem csak a kör maga
-    document.querySelectorAll('.assistant-nav-zone').forEach(function (zone) {
-        zone.addEventListener('click', function (e) {
-            if (e.target === zone) zone.querySelector('button').click();
-        });
-    });
-
-    // ===== 2. Hozzávalók lapozása (dinamikus, a tényleges helyhez igazítva) =====
-    const pagesContainer = document.getElementById('ingredientPages');
-    const dotsContainer = document.getElementById('ingredientDots');
-    const items = Array.from(document.querySelectorAll('#ingredientList .ai-ingredient'));
-    const GRID_GAP = 12;              // .ingredient-grid gap
-    const GRID_MARGIN_BOTTOM = 16;    // .ingredient-grid margin-bottom
-    const DOTS_RESERVE = 24;          // .page-dot magassága + .page-dots margin-top (mindig fenntartjuk a helyét)
-    let currentPage = 0;
-
-    function getColumns() {
-        const w = window.innerWidth;
-        if (w >= 1024) return 3; // desktop + tablet fekvő
-        if (w >= 768)  return 2; // tablet álló
-        return 1;                // mobil
-    }
-
-    // Megméri, hány sor fér ki ténylegesen a képernyőn a fejléc és a pöttyök helye után.
-    // A képernyő ilyenkor gyakran display:none (nem az aktív lépés), ezért mérés idejére
-    // átmenetileg "aktívvá" tesszük (láthatatlanul), majd visszaállítjuk.
-    function computeRowsPerPage(cols) {
-        if (items.length === 0) return 1;
-
-        const screenEl = pagesContainer.closest('.assistant-screen');
-        const wasActive = screenEl.classList.contains('is-active');
-        if (!wasActive) {
-            screenEl.style.visibility = 'hidden';
-            screenEl.classList.add('is-active');
-        }
-
-        const heading = document.querySelector('.assistant-heading');
-        const headingStyle = getComputedStyle(heading);
-        const headingSpace = heading.offsetHeight + parseFloat(headingStyle.marginBottom);
-
-        const testGrid = document.createElement('div');
-        testGrid.className = 'ingredient-grid';
-        testGrid.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
-        testGrid.appendChild(items[0].cloneNode(true));
-        pagesContainer.appendChild(testGrid);
-        const itemHeight = testGrid.firstChild.getBoundingClientRect().height || 50;
-        pagesContainer.removeChild(testGrid);
-
-        // A kártya és a köré tett doboz függőleges paddingje is elveszi a helyet (mobilon
-        // alul a navigációs nyilaknak is hely van hagyva) - ezt a CSS-ből olvassuk ki
-        const card = pagesContainer.closest('.assistant-ingredients-card');
-        const wrapper = card.parentElement;
-        const cardStyle = getComputedStyle(card);
-        const wrapperStyle = getComputedStyle(wrapper);
-        const paddingSpace = parseFloat(cardStyle.paddingTop) + parseFloat(cardStyle.paddingBottom)
-            + parseFloat(wrapperStyle.paddingTop) + parseFloat(wrapperStyle.paddingBottom);
-
-        const available = screenEl.clientHeight - paddingSpace - headingSpace - DOTS_RESERVE - GRID_MARGIN_BOTTOM;
-        const rows = Math.floor((available + GRID_GAP) / (itemHeight + GRID_GAP));
-
-        if (!wasActive) {
-            screenEl.classList.remove('is-active');
-            screenEl.style.visibility = '';
-        }
-
-        return Math.max(1, rows);
-    }
-
-    function renderIngredientPages() {
-        const cols = getColumns();
-        const perPage = cols * computeRowsPerPage(cols);
-        const pageCount = Math.max(1, Math.ceil(items.length / perPage));
-        currentPage = Math.min(currentPage, pageCount - 1);
-
-        pagesContainer.innerHTML = '';
-        dotsContainer.innerHTML = '';
-
-        for (let p = 0; p < pageCount; p++) {
-            const page = document.createElement('div');
-            page.className = 'ingredient-grid';
-            page.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
-            items.slice(p * perPage, (p + 1) * perPage).forEach(item => page.appendChild(item));
-            pagesContainer.appendChild(page);
-
-            const dot = document.createElement('button');
-            dot.type = 'button';
-            dot.className = 'page-dot';
-            dot.setAttribute('aria-label', (p + 1) + '. oldal');
-            dot.addEventListener('click', () => { currentPage = p; showIngredientPage(p); });
-            dotsContainer.appendChild(dot);
-        }
-
-        dotsContainer.style.display = (pageCount <= 1) ? 'none' : '';
-        showIngredientPage(currentPage);
-    }
-
-    function showIngredientPage(p) {
-        const pages = pagesContainer.querySelectorAll('.ingredient-grid');
-        pages.forEach((pg, i) => pg.style.display = (i === p) ? 'grid' : 'none');
-        dotsContainer.querySelectorAll('.page-dot').forEach((d, i) => d.classList.toggle('is-active', i === p));
-    }
-
-    renderIngredientPages();
-    window.addEventListener('resize', renderIngredientPages);
-
-    // ===== 3. Értékelés: hover-kitöltés + beküldés =====
-    const ratingForm = document.getElementById('assistantRatingForm');
-    if (ratingForm) {
-        const isAuthenticated = ratingForm.dataset.authenticated === '1';
-        const rateLink = ratingForm.dataset.rateLink;
-        const starLabels = Array.from(ratingForm.querySelectorAll('.assistant-star'));
-
-        // Hover: balról az adott csillagig narancsra vált (bejelentkezés nélkül is)
-        starLabels.forEach(label => {
-            label.addEventListener('mouseenter', function () {
-                const hoverValue = parseInt(this.querySelector('input').value);
-                starLabels.forEach(l => {
-                    const starValue = parseInt(l.querySelector('input').value);
-                    l.querySelector('.assistant-star-icon').classList.toggle('filled', starValue <= hoverValue);
+            document.querySelectorAll('.assistant-nav-zone').forEach(zone => {
+                zone.addEventListener('click', event => {
+                    if (event.target === zone) zone.querySelector('button').click();
                 });
             });
-        });
 
-        ratingForm.addEventListener('mouseleave', function () {
-            const checked = ratingForm.querySelector('input[name="score"]:checked');
-            const checkedValue = checked ? parseInt(checked.value) : 0;
-            starLabels.forEach(l => {
-                const starValue = parseInt(l.querySelector('input').value);
-                l.querySelector('.assistant-star-icon').classList.toggle('filled', starValue <= checkedValue);
-            });
-        });
+            renderIngredientPages();
+            window.addEventListener('resize', renderIngredientPages);
 
-        ratingForm.addEventListener('change', function (e) {
-            if (!e.target.matches('input[name="score"]')) return;
-            const value = e.target.value;
+            const ratingForm = document.getElementById('assistantRatingForm');
+            const ratingStarLabels = Array.from(ratingForm.querySelectorAll('.assistant-star'));
 
-            // Bejelentkezés nélkül: átirányítjuk a link-alapú útvonalra, ami
-            // bejelentkeztet, majd sikeres belépés után visszahozza és menti az értékelést.
-            if (!isAuthenticated) {
-                window.location.href = rateLink + '?score=' + value;
-                return;
+            /**
+             * Fills the rating stars up to the given score.
+             */
+            function fillRatingStars(score) {
+                ratingStarLabels.forEach(label => {
+                    const starValue = parseInt(label.querySelector('input').value);
+                    label.querySelector('.assistant-star-icon').classList.toggle('filled', starValue <= score);
+                });
             }
 
-            fetch(ratingForm.action, {
-                method: 'POST',
-                body: new FormData(ratingForm),
-                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (!data.success) return;
-                ratingForm.querySelectorAll('.assistant-star-icon').forEach((icon, i) => {
-                    icon.classList.toggle('filled', i < value);
-                });
-                document.getElementById('assistantRatingStatus').textContent =
-                    'Köszönjük az értékelést! (' + value + ' csillag)';
-            })
-            .catch(() => {});
-        });
-    }
+            ratingStarLabels.forEach(label => {
+                label.addEventListener('mouseenter', () => fillRatingStars(parseInt(label.querySelector('input').value)));
+            });
 
-    // Kezdő képernyő
-    showScreen(0);
-});
-</script>
+            ratingForm.addEventListener('mouseleave', () => {
+                const checked = ratingForm.querySelector('input[name="score"]:checked');
+                fillRatingStars(checked ? parseInt(checked.value) : 0);
+            });
+
+            ratingForm.addEventListener('change', event => {
+                const score = parseInt(event.target.value);
+
+                if (ratingForm.dataset.authenticated !== '1') {
+                    window.location.href = ratingForm.dataset.rateLink + '?score=' + score;
+                    return;
+                }
+
+                fetchJson(ratingForm.action, { method: 'POST', body: new FormData(ratingForm) })
+                    .then(() => {
+                        fillRatingStars(score);
+                        document.getElementById('assistantRatingStatus').textContent = 'Köszönjük az értékelést! (' + score + ' csillag)';
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+
+            showScreen(0);
+        });
+    </script>
 @endsection

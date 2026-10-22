@@ -1,6 +1,5 @@
-{{-- Lépéskategória Lottie animációja. Használat: <x-step-animation :category="$step->stepCategory" />
-     Csak egy üres div-et renderel, az animációt a JS tölti bele a data-src alapján.
-     Ha nincs kategória (vagy hozzá animáció), nem renderel semmit. --}}
+{{-- Lottie animation of a step category: <x-step-animation :category="$step->stepCategory" />
+     An empty div; the JS loads the animation from data-src. Renders nothing if the category has no animation. --}}
 @props(['category'])
 
 @php
@@ -8,7 +7,6 @@
 @endphp
 
 @if ($file && file_exists(public_path($file)))
-    {{-- ?v=filemtime: a fájl hosszú ideig cache-elődik, így ha lecseréled, új URL-t kap --}}
     <div class="step-animation"
          data-src="{{ asset($file) }}?v={{ filemtime(public_path($file)) }}"
          role="img"

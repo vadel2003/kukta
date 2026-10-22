@@ -7,8 +7,6 @@
     <title>Kukta - @yield('title', 'Főoldal')</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}?v={{ filemtime(public_path('images/favicon.svg')) }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
-    {{-- Az admin/asszisztens css és az aloldal saját css-e ide kerül be (@push('styles')),
-         mindig ez után az app.css után, tehát felül tudja írni azt --}}
     @stack('styles')
     <script src="{{ asset('js/lucide.min.js') }}?v={{ filemtime(public_path('js/lucide.min.js')) }}"></script>
 </head>
@@ -16,7 +14,7 @@
     <header>
         <div class="header-left">
             <a href="{{ route('home') }}">
-                <img src="{{ asset('images/kukta-sapka.svg') }}?v={{ filemtime(public_path('images/kukta-sapka.svg')) }}" alt="" class="logo">
+                <img src="{{ asset('images/kukta-hat.svg') }}?v={{ filemtime(public_path('images/kukta-hat.svg')) }}" alt="" class="logo">
                 <span class="logo-text">Kukta</span>
             </a>
         </div>
@@ -28,13 +26,11 @@
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Receptek keresése kulcsszó szerint..." class="search-input">
                 </div>
                 <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
-                <button type="button" class="btn-filters" onclick="openModal('filtersModal')"><i data-lucide="filter"></i> Szűrők <span class="filter-count" hidden></span></button>
+                <button type="button" class="btn-filters" data-modal-open="filtersModal"><i data-lucide="filter"></i> Szűrők <span class="filter-count" hidden></span></button>
                 <span class="search-divider"></span>
-                <button type="button" class="btn-sort" onclick="openModal('sortModal')"><i data-lucide="arrow-up-down"></i> Rendezés</button>
+                <button type="button" class="btn-sort" data-modal-open="sortModal"><i data-lucide="arrow-up-down"></i> Rendezés</button>
             </div>
         </form>
-
-        <span class="hamburger"><i data-lucide="menu"></i></span>
 
         <div class="header-right">
             @auth
@@ -44,8 +40,6 @@
                         <i data-lucide="chevron-down" class="dropdown-arrow"></i>
                     </div>
                     <div class="dropdown-menu">
-                        {{-- A fehér doboz külön elem, mert a .dropdown-menu felső paddingje átlátszó
-                             "híd" az avatar és a menü között (hogy az egér ne essen le a hoverről) --}}
                         <div class="dropdown-panel">
                             <a href="{{ route('profile.index') }}"><i data-lucide="user"></i> Profil</a>
                             <a href="{{ route('recipes.create') }}"><i data-lucide="plus"></i> Új recept</a>
@@ -84,10 +78,8 @@
                 </div>
             @endauth
         </div>
-
     </header>
 
-    {{-- Mobil oldalsó menü panel --}}
     <div class="mobile-menu-overlay">
         <div class="mobile-menu-header">
             <span class="mobile-menu-title">Menü</span>
@@ -132,40 +124,62 @@
         <i data-lucide="arrow-up"></i>
     </button>
 
-    {{-- Közös megerősítő ablak a böngésző confirm() ablaka helyett. Bármelyik form
-         használhatja: <form ... data-confirm="Üzenet" data-confirm-title="Cím (opcionális)">
-         - beküldéskor ez az ablak jön fel, és csak az "Igen, törlöm" küldi el a formot. --}}
+    {{-- Shared confirmation dialog. Usage: <form ... data-confirm="Message" data-confirm-title="Title (optional)"> --}}
     <div id="confirmModal" class="modal">
         <div class="modal-content modal-small">
             <div class="modal-header">
                 <h3 class="confirm-modal-title"></h3>
-                <button type="button" class="close-btn" onclick="closeModal('confirmModal')">&times;</button>
+                <button type="button" class="close-btn" data-modal-close>&times;</button>
             </div>
             <div class="modal-body">
                 <p class="confirm-modal-message"></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-outline" onclick="closeModal('confirmModal')">Mégse</button>
-                <button type="button" class="btn-delete" onclick="submitConfirmedForm()">Igen, törlöm</button>
+                <button type="button" class="btn-outline" data-modal-close>Mégse</button>
+                <button type="button" id="confirmModalSubmit" class="btn-delete">Igen, törlöm</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Modal kezelő függvények
+        let currentPage = 1;
+        let formToConfirm = null;
+
+        /**
+         * Opens a modal by its ID.
+         */
         function openModal(modalId) {
             const modal = document.getElementById(modalId);
             if (modal) modal.classList.add('active');
         }
 
+        /**
+         * Closes a modal by its ID.
+         */
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             if (modal) modal.classList.remove('active');
         }
 
-        // ===== SZŰRŐK: számláló a Szűrők gombokon + aktív szűrő címkék =====
-        // A bepipált checkboxokból rajzoljuk ki, így oldalbetöltéskor és AJAX-os
-        // szűrés után is mindig azt mutatja, ami épp be van kapcsolva.
+        /**
+         * AJAX request to the app that returns the parsed JSON response.
+         * Rejects if the response status is not OK (e.g. expired session or validation error).
+         */
+        function fetchJson(url, options = {}) {
+            options.headers = {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            };
+            return fetch(url, options).then(response => {
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                return response.json();
+            });
+        }
+
+        /**
+         * Updates the counter on the Filters buttons and the active filter chips from the checked filters.
+         */
         function updateFilterSummary() {
             const form = document.getElementById('searchForm');
             const box = document.getElementById('activeFilters');
@@ -173,24 +187,23 @@
 
             const checked = form.querySelectorAll('#filtersModal input[type="checkbox"]:checked');
 
-            document.querySelectorAll('.btn-filters').forEach(function (btn) {
-                const badge = btn.querySelector('.filter-count');
+            document.querySelectorAll('.btn-filters').forEach(button => {
+                const badge = button.querySelector('.filter-count');
                 if (badge) {
                     badge.textContent = checked.length;
                     badge.hidden = checked.length === 0;
                 }
-                btn.classList.toggle('has-filters', checked.length > 0);
+                button.classList.toggle('has-filters', checked.length > 0);
             });
 
             box.innerHTML = '';
-            checked.forEach(function (input) {
+            checked.forEach(input => {
                 const chip = document.createElement('button');
                 chip.type = 'button';
                 chip.className = 'active-filter';
                 chip.title = 'Szűrő eltávolítása';
-                // textContent: a szöveg sima szövegként kerül be, nem HTML-ként
                 chip.textContent = input.dataset.label + ' ✕';
-                chip.addEventListener('click', function () {
+                chip.addEventListener('click', () => {
                     input.checked = false;
                     form.requestSubmit();
                 });
@@ -198,136 +211,123 @@
             });
 
             if (checked.length > 1) {
-                const clearBtn = document.createElement('button');
-                clearBtn.type = 'button';
-                clearBtn.className = 'active-filters-clear';
-                clearBtn.textContent = 'Összes törlése';
-                clearBtn.addEventListener('click', function () {
+                const clearButton = document.createElement('button');
+                clearButton.type = 'button';
+                clearButton.className = 'active-filters-clear';
+                clearButton.textContent = 'Összes törlése';
+                clearButton.addEventListener('click', () => {
                     clearFilterCheckboxes();
                     form.requestSubmit();
                 });
-                box.appendChild(clearBtn);
+                box.appendChild(clearButton);
             }
         }
 
-        // A Szűrők modal összes pipájának kivétele (a modal "Szűrők törlése" gombja is ezt hívja)
+        /**
+         * Unchecks every filter in the Filters modal.
+         */
         function clearFilterCheckboxes() {
-            document.querySelectorAll('#filtersModal input[type="checkbox"]').forEach(function (input) {
+            document.querySelectorAll('#filtersModal input[type="checkbox"]').forEach(input => {
                 input.checked = false;
             });
         }
 
-        updateFilterSummary();
-
-        // Ahol nincs Szűrők/Rendezés modal (pl. recept oldal), ott a fejléc Szűrők és Rendezés
-        // gombja (és az elválasztó vonalak) nem csinálnának semmit - elrejtjük őket
-        if (!document.getElementById('filtersModal')) {
-            document.querySelectorAll('.header-search .btn-filters, .header-search .btn-sort, .header-search .search-divider').forEach(function (el) {
-                el.style.display = 'none';
-            });
-        }
-
-        // Modal bezárása ha a háttérre (overlay-re) kattintunk
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.classList.remove('active');
-            }
-        }
-
-        // Közös megerősítő ablak (#confirmModal): melyik formot kell elküldeni "Igen"-re
-        let formToConfirm = null;
-
+        /**
+         * Opens the shared confirmation dialog. Its confirm button submits the given form.
+         */
         function openConfirmModal(form, title, message) {
             formToConfirm = form;
-            // textContent (nem innerHTML): a szöveg (pl. recept címe) sima szövegként kerül be, kódként nem futhat le
             document.querySelector('.confirm-modal-title').textContent = title;
             document.querySelector('.confirm-modal-message').textContent = message;
             openModal('confirmModal');
         }
 
-        function submitConfirmedForm() {
-            // form.submit() nem vált ki újabb 'submit' eseményt, így az ablak nem nyílik fel újra
-            if (formToConfirm) formToConfirm.submit();
+        /**
+         * Character counter under maxlength fields, visible from 80% of the limit.
+         */
+        function updateCounter(field) {
+            const counter = field.parentElement.querySelector('.char-counter');
+            if (!counter) return;
+            counter.textContent = field.value.length + ' / ' + field.maxLength;
+            counter.classList.toggle('char-counter--visible', field.value.length >= field.maxLength * 0.8);
         }
 
-        // Minden data-confirm attribútumos form beküldését "elkapjuk" (a document szintjén,
-        // így az utólag - pl. "További receptek" gombbal - betöltött formokra is működik)
-        document.addEventListener('submit', function (e) {
-            const form = e.target;
+        document.addEventListener('click', event => {
+            const openButton = event.target.closest('[data-modal-open]');
+            if (openButton) openModal(openButton.dataset.modalOpen);
+
+            const closeButton = event.target.closest('[data-modal-close]');
+            if (closeButton) closeButton.closest('.modal').classList.remove('active');
+
+            if (event.target.classList.contains('modal')) event.target.classList.remove('active');
+        });
+
+        updateFilterSummary();
+
+        const filtersResetButton = document.querySelector('#filtersModal .btn-reset');
+        if (filtersResetButton) filtersResetButton.addEventListener('click', clearFilterCheckboxes);
+
+        document.querySelectorAll('#sortModal input[name="sort"]').forEach(radio => {
+            radio.addEventListener('change', () => radio.form.requestSubmit());
+        });
+
+        if (!document.getElementById('filtersModal')) {
+            document.querySelectorAll('.header-search .btn-filters, .header-search .btn-sort, .header-search .search-divider').forEach(element => {
+                element.style.display = 'none';
+            });
+        }
+
+        document.getElementById('confirmModalSubmit').addEventListener('click', () => {
+            if (formToConfirm) formToConfirm.submit();
+        });
+
+        document.addEventListener('submit', event => {
+            const form = event.target;
             if (!form.dataset.confirm) return;
-            e.preventDefault();
+            event.preventDefault();
             openConfirmModal(form, form.dataset.confirmTitle || 'Biztosan folytatod?', form.dataset.confirm);
         });
 
-        // Mobilon minden recept-kereső mezőben rövid helykitöltő szöveg legyen, mert a keskeny
-        // mezőben a hosszú ("Receptek keresése kulcsszó szerint...") levágódna. A placeholder
-        // a HTML-ben van, CSS-sel nem lehet átírni - ezért itt, betöltéskor cseréljük le.
         if (window.matchMedia('(max-width: 768px)').matches) {
-            document.querySelectorAll('.search-input').forEach(function (input) {
+            document.querySelectorAll('.search-input').forEach(input => {
                 input.placeholder = 'Keresés...';
             });
         } else if (window.matchMedia('(max-width: 1200px)').matches) {
-            // 1200px alatt a fejléc gombjai már csak ikonok (l. app.css), a fejléc mezője
-            // pedig keskeny - itt csak a fejlécben kell a rövid szöveg, a többi kereső elfér
             document.querySelector('.header-search .search-input').placeholder = 'Keresés...';
         }
 
-        // Scroll figyelés - kereső sáv megjelenítése header-ben
-        // Egyszer, betöltéskor mérjük le a viszonyítási pontot:
-        // desktopon a hero kép (serpenyő) félmagassága, hogy már korábban beúszon a fejléc keresője,
-        // mobilon (ahol nincs hero kép) a saját sticky keresősáv pozíciója a viszonyítási pont
         const heroImage = document.querySelector('.hero-image');
         const desktopSearchBar = document.querySelector('.recipes-section .search-bar');
         const mobileSearchBar = document.querySelector('.mobile-search-sticky .search-bar');
         const isMobileHero = !(heroImage && heroImage.offsetHeight > 0);
-        const referenceEl = isMobileHero
+        const referenceElement = isMobileHero
             ? ((mobileSearchBar && mobileSearchBar.offsetHeight > 0) ? mobileSearchBar : desktopSearchBar)
             : heroImage;
         const header = document.querySelector('header');
-        if (referenceEl && header) {
-            const referenceRect = referenceEl.getBoundingClientRect();
+        if (referenceElement && header) {
+            const referenceRect = referenceElement.getBoundingClientRect();
             const searchBarOffset = isMobileHero
                 ? referenceRect.top + window.scrollY
-                : referenceRect.top + window.scrollY + referenceEl.offsetHeight / 2;
-            // A fejléc lebeg (a képernyő tetejétől kis távolságra van), ezért nem a magassága,
-            // hanem az alsó széle számít: a kereső akkor bújik alá, amikor ezt eléri
+                : referenceRect.top + window.scrollY + referenceElement.offsetHeight / 2;
             const headerBottom = header.getBoundingClientRect().bottom;
-            // px - ennyivel görgessünk lejjebb, mielőtt a fejléc keresője beúszik.
-            // Mobilon 0: ott a hero keresője maga tűnik el a fejléc alatt, és rögtön
-            // a helyére kell úsznia a fejlécbelinek, különben egy ideig egyik sem látszik
-            const isMobile = window.matchMedia('(max-width: 768px)').matches;
-            const extraDelay = isMobile ? 0 : 80;
+            const extraDelay = window.matchMedia('(max-width: 768px)').matches ? 0 : 80;
 
-            window.addEventListener('scroll', function() {
-                header.classList.toggle('scrolled',
-                    window.scrollY >= searchBarOffset - headerBottom + extraDelay);
+            window.addEventListener('scroll', () => {
+                header.classList.toggle('scrolled', window.scrollY >= searchBarOffset - headerBottom + extraDelay);
             });
         }
 
-        // AJAX form submit kezelés - a fejléc keresője, a mobil hero-beli kereső és a
-        // desktop kereső (#searchForm) is ide tartozik, hogy sose töltődjön újra az oldal
-        const searchForms = document.querySelectorAll('.header-search, #searchForm, .mobile-search-sticky form');
-        searchForms.forEach(function (form) {
-            form.addEventListener('submit', function (e) {
+        document.querySelectorAll('.header-search, #searchForm, .mobile-search-sticky form').forEach(form => {
+            form.addEventListener('submit', event => {
                 const gallery = document.getElementById('recipe-gallery');
-                // Ha az aktuális oldalon nincs galéria a DOM-ban, nincs mit lecserélni -
-                // hagyjuk, hogy a form simán navigáljon a saját action-je szerint
                 if (!gallery) return;
 
-                // A form saját action-je dönti el, HOVA keresünk (főoldal / saját receptek /
-                // kedvencek - mindegyiknek saját #searchForm-ja van). Ha ez másik oldalra mutat,
-                // mint ahol épp vagyunk (pl. a fejléc keresője egy másik oldalról a főoldalra
-                // keres), hagyjuk simán navigálni ahelyett, hogy a jelenlegi oldal galériáját
-                // cserélnénk le másik oldal találataira.
                 const targetUrl = form.action.split('#')[0];
                 const targetPath = new URL(targetUrl, window.location.href).pathname;
                 if (targetPath !== window.location.pathname) return;
 
-                e.preventDefault();
+                event.preventDefault();
 
-                // A fejléc és a mobil hero keresője csak a keresőszót tartalmazza. Ha az oldalon
-                // van fő kereső űrlap (#searchForm - benne a szűrők és a rendezés), azon keresztül
-                // küldjük el a keresést, hogy a bekapcsolt szűrők ne vesszenek el.
                 const mainForm = document.getElementById('searchForm');
                 if (mainForm && form !== mainForm) {
                     mainForm.querySelector('input[name="search"]').value = form.querySelector('input[name="search"]').value;
@@ -338,265 +338,179 @@
                 const spinner = document.getElementById('loading-spinner');
                 const loadMoreBtn = document.getElementById('load-more-btn');
 
-                // "Load more" állapot reset
-                currentPage = 1;
-                if (loadMoreBtn) {
-                    loadMoreBtn.style.display = 'none';
+                function hideSpinner() {
+                    spinner.style.display = 'none';
+                    gallery.style.opacity = '1';
                 }
 
-                // Loading spinner megjelenítése
+                currentPage = 1;
+                if (loadMoreBtn) loadMoreBtn.style.display = 'none';
                 spinner.style.display = 'flex';
                 gallery.style.opacity = '0.5';
 
-                // AJAX kérés - tömbös paraméterek megfelelő kezelése
-                const formData = new FormData(form);
-                const params = new URLSearchParams();
-                for (const [key, value] of formData.entries()) {
-                    params.append(key, value);
-                }
-                fetch(targetUrl + '?' + params.toString(), {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                    .then(response => response.json())
+                const params = new URLSearchParams(new FormData(form));
+                fetchJson(targetUrl + '?' + params.toString())
                     .then(data => {
                         gallery.innerHTML = data.html;
-                        if (window.lucide) lucide.createIcons();
+                        lucide.createIcons();
 
-                        // A címsor (URL) frissítése a szűrőkkel együtt, oldal-újratöltés nélkül:
-                        // így a "További receptek" gomb és a böngészős frissítés is a szűrt listát adja
                         history.replaceState(null, '', targetUrl + '?' + params.toString() + '#recipes');
 
-                        // Modal bezárása, címkék/számláló frissítése, és minden kereső mező
-                        // (fejléc, mobil, fő kereső) ugyanazt a keresőszót mutassa
                         closeModal('filtersModal');
                         closeModal('sortModal');
                         updateFilterSummary();
-                        document.querySelectorAll('input[name="search"]').forEach(function (input) {
+                        document.querySelectorAll('input[name="search"]').forEach(input => {
                             input.value = params.get('search') || '';
                         });
 
-                        // "Load more" gomb frissítése
-                        if (data.hasMore) {
-                            if (loadMoreBtn) {
-                                loadMoreBtn.style.display = 'block';
-                                loadMoreBtn.disabled = false;
-                                loadMoreBtn.textContent = 'További receptek betöltése...';
-                            }
+                        if (data.hasMore && loadMoreBtn) {
+                            loadMoreBtn.style.display = 'block';
+                            loadMoreBtn.disabled = false;
+                            loadMoreBtn.textContent = 'További receptek betöltése...';
                         }
 
-                        // A kártyák mindig a képernyőn legyenek keresés után (ne a hero maradjon látszódva)
                         const recipesSection = document.getElementById('recipes');
                         if (recipesSection) recipesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-                        // Várakozás a képek betöltődésére
-                        const images = gallery.querySelectorAll('img');
-                        let loadedCount = 0;
-
-                        if (images.length === 0) {
-                            spinner.style.display = 'none';
-                            gallery.style.opacity = '1';
+                        const images = Array.from(gallery.querySelectorAll('img'));
+                        let loadedCount = images.filter(image => image.complete).length;
+                        if (loadedCount === images.length) {
+                            hideSpinner();
                             return;
                         }
-
-                        images.forEach(img => {
-                            if (img.complete) {
+                        images.filter(image => !image.complete).forEach(image => {
+                            image.addEventListener('load', () => {
                                 loadedCount++;
-                            } else {
-                                img.addEventListener('load', () => {
-                                    loadedCount++;
-                                    if (loadedCount === images.length) {
-                                        spinner.style.display = 'none';
-                                        gallery.style.opacity = '1';
-                                    }
-                                });
-                            }
+                                if (loadedCount === images.length) hideSpinner();
+                            });
                         });
-
-                        if (loadedCount === images.length) {
-                            spinner.style.display = 'none';
-                            gallery.style.opacity = '1';
-                        }
                     })
                     .catch(error => {
-                        console.error('Hiba:', error);
-                        spinner.style.display = 'none';
-                        gallery.style.opacity = '1';
+                        console.error('Error:', error);
+                        hideSpinner();
                     });
             });
         });
 
-        // "Load more" gomb kezelése
-        let currentPage = 1;
+        document.addEventListener('click', event => {
+            if (!event.target.matches('#load-more-btn')) return;
 
-        document.addEventListener('click', function(e) {
-            if (!e.target.matches('#load-more-btn')) return;
-            
-            const btn = e.target;
+            const button = event.target;
             const gallery = document.getElementById('recipe-gallery');
             const spinner = document.getElementById('loading-spinner');
-            
+
             currentPage++;
-            btn.disabled = true;
-            btn.textContent = 'Betöltés...';
+            button.disabled = true;
+            button.textContent = 'Betöltés...';
             spinner.style.display = 'flex';
-            
+
             const url = new URL(window.location.href);
             url.searchParams.set('page', currentPage);
-            
-            fetch(url, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-            .then(r => r.json())
-            .then(data => {
-                gallery.insertAdjacentHTML('beforeend', data.html);
-                if (window.lucide) lucide.createIcons();
-                if (!data.hasMore) {
-                    btn.remove();
-                } else {
-                    btn.disabled = false;
-                    btn.textContent = 'További receptek betöltése...';
-                }
-                spinner.style.display = 'none';
-            })
-            .catch(error => {
-                console.error('Hiba:', error);
-                spinner.style.display = 'none';
-                btn.disabled = false;
-                btn.textContent = 'További receptek betöltése...';
-            });
+
+            fetchJson(url)
+                .then(data => {
+                    gallery.insertAdjacentHTML('beforeend', data.html);
+                    lucide.createIcons();
+                    if (!data.hasMore) {
+                        button.remove();
+                    } else {
+                        button.disabled = false;
+                        button.textContent = 'További receptek betöltése...';
+                    }
+                    spinner.style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    spinner.style.display = 'none';
+                    button.disabled = false;
+                    button.textContent = 'További receptek betöltése...';
+                });
         });
 
-        // Scroll to top gomb kezelése
         const scrollToTopBtn = document.getElementById('scrollToTop');
 
         window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 300) {
-                scrollToTopBtn.classList.add('visible');
-            } else {
-                scrollToTopBtn.classList.remove('visible');
-            }
+            scrollToTopBtn.classList.toggle('visible', window.scrollY > 300);
         });
 
         scrollToTopBtn.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // Kedvenc toggle AJAX kezelése
-        document.addEventListener('submit', function(e) {
-            const form = e.target.closest('.card-favorite-form, .banner-favorite-form');
+        document.addEventListener('submit', event => {
+            const form = event.target.closest('.card-favorite-form, .banner-favorite-form');
             if (!form) return;
 
-            e.preventDefault();
+            event.preventDefault();
 
-            const btn = form.querySelector('.btn-favorite-card, .btn-favorite-banner');
+            const button = form.querySelector('.btn-favorite-card, .btn-favorite-banner');
             const badge = form.querySelector('.favorite-badge');
 
-            fetch(form.action, {
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                },
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (!data.success) return;
+            fetchJson(form.action, { method: 'POST' })
+                .then(data => {
+                    if (form.hasAttribute('data-remove-card') && !data.isFavorited) {
+                        const card = form.closest('.recipe-card');
+                        if (card) {
+                            card.remove();
 
-                // Kártya eltávolítása a kedvenc listából törléskor
-                if (form.hasAttribute('data-remove-card') && !data.isFavorited) {
-                    const card = form.closest('.recipe-card');
-                    if (card) {
-                        card.remove();
-
-                        // Ha nincs több kártya, üzenet megjelenítése
-                        const gallery = document.querySelector('.recipe-gallery');
-                        if (gallery && gallery.querySelectorAll('.recipe-card').length === 0) {
-                            const empty = document.createElement('p');
-                            empty.textContent = 'Még nincsenek kedvenc receptjeid.';
-                            gallery.replaceWith(empty);
+                            const gallery = document.querySelector('.recipe-gallery');
+                            if (gallery && gallery.querySelectorAll('.recipe-card').length === 0) {
+                                const empty = document.createElement('p');
+                                empty.textContent = 'Még nincsenek kedvenc receptjeid.';
+                                gallery.replaceWith(empty);
+                            }
+                            return;
                         }
-
-                        return;
                     }
-                }
 
-                btn.classList.toggle('favorited', data.isFavorited);
-                if (badge) badge.textContent = data.favoriteCount;
-                btn.title = data.isFavorited ? 'Kedvenc törlése' : 'Kedvencnek jelölöm';
-                if (window.lucide) lucide.createIcons();
-            })
-            .catch(error => console.error('Hiba:', error));
+                    button.classList.toggle('favorited', data.isFavorited);
+                    if (badge) badge.textContent = data.favoriteCount;
+                    button.title = data.isFavorited ? 'Kedvenc törlése' : 'Kedvencnek jelölöm';
+                    lucide.createIcons();
+                })
+                .catch(error => console.error('Error:', error));
         });
 
-        // Mobil menü toggle
         const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
         const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+        const mobileMenuClose = document.querySelector('.mobile-menu-close');
         const desktopUserTrigger = document.querySelector('header .desktop-user .dropdown-trigger');
 
-        // Az avatar gomb is nyitja/zárja a mobil menüt
-        if (desktopUserTrigger && mobileMenuOverlay) {
-            desktopUserTrigger.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                mobileMenuOverlay.classList.toggle('open');
-            });
-        }
-
-        // Hamburger gomb nyitja/zárja a mobil menüt (ha van ilyen elem)
-        if (mobileMenuBtn && mobileMenuOverlay) {
-            mobileMenuBtn.addEventListener('click', function() {
-                mobileMenuOverlay.classList.toggle('open');
-            });
-        }
-
-        // A panel fejlécében lévő × gomb bezárja a menüt
-        const mobileMenuClose = document.querySelector('.mobile-menu-close');
-        if (mobileMenuClose && mobileMenuOverlay) {
-            mobileMenuClose.addEventListener('click', function() {
-                mobileMenuOverlay.classList.remove('open');
-            });
-        }
-
-        // Kattintás az overlay-n kívül bezárja a menüt (mindig)
-        if (mobileMenuOverlay) {
-            document.addEventListener('click', function(e) {
-                if (mobileMenuOverlay.classList.contains('open') &&
-                    !mobileMenuOverlay.contains(e.target) &&
-                    !(mobileMenuBtn && mobileMenuBtn.contains(e.target)) &&
-                    !(desktopUserTrigger && desktopUserTrigger.contains(e.target))) {
-                    mobileMenuOverlay.classList.remove('open');
-                }
-            });
-        }
-
-        // Karakterszámláló (maxlength-es mezők) - csak akkor jelenik meg,
-        // ha a beírt hossz eléri a limit kb. 80%-át (kevesebb vizuális zaj)
-        function updateCounter(el) {
-            const counter = el.parentElement.querySelector('.char-counter');
-            if (!counter) return;
-            counter.textContent = el.value.length + ' / ' + el.maxLength;
-            counter.classList.toggle('char-counter--visible', el.value.length >= el.maxLength * 0.8);
-        }
-        document.querySelectorAll('input[maxlength], textarea[maxlength]').forEach(updateCounter);
-        document.addEventListener('input', function (e) {
-            if (e.target.matches('input[maxlength], textarea[maxlength]')) updateCounter(e.target);
+        desktopUserTrigger.addEventListener('click', event => {
+            event.preventDefault();
+            event.stopPropagation();
+            mobileMenuOverlay.classList.toggle('open');
         });
 
-        // Tömeges kijelölés + törlés az admin táblázatokban (Alapanyagok/Receptek/
-        // Felhasználók) - egy oldalon mindig csak egy táblázat van, ezért osztály
-        // alapján, ID nélkül működik mindhárom oldalon ugyanezzel a kóddal.
-        document.querySelectorAll('.select-all-checkbox').forEach(function (selectAll) {
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenuOverlay.classList.toggle('open');
+            });
+        }
+
+        mobileMenuClose.addEventListener('click', () => {
+            mobileMenuOverlay.classList.remove('open');
+        });
+
+        document.addEventListener('click', event => {
+            if (mobileMenuOverlay.classList.contains('open') &&
+                !mobileMenuOverlay.contains(event.target) &&
+                !(mobileMenuBtn && mobileMenuBtn.contains(event.target)) &&
+                !desktopUserTrigger.contains(event.target)) {
+                mobileMenuOverlay.classList.remove('open');
+            }
+        });
+
+        document.querySelectorAll('input[maxlength], textarea[maxlength]').forEach(updateCounter);
+        document.addEventListener('input', event => {
+            if (event.target.matches('input[maxlength], textarea[maxlength]')) updateCounter(event.target);
+        });
+
+        document.querySelectorAll('.select-all-checkbox').forEach(selectAll => {
             const table = selectAll.closest('table');
             const checkboxes = table.querySelectorAll('.row-checkbox');
             const bulkForm = document.querySelector('.bulk-delete-form');
             const bulkBtn = bulkForm ? bulkForm.querySelector('.bulk-delete-btn') : null;
-            // A gomb eredeti felirata (pl. "Kijelöltek törlése") - ehhez fűzzük a számlálót, így minden oldal a saját szövegét tartja meg
             const bulkLabel = bulkBtn ? bulkBtn.textContent : '';
 
             function updateBulkButton() {
@@ -608,30 +522,27 @@
                 selectAll.checked = checkboxes.length > 0 && checkedCount === checkboxes.length;
             }
 
-            selectAll.addEventListener('change', function () {
-                checkboxes.forEach(function (cb) { cb.checked = selectAll.checked; });
+            selectAll.addEventListener('change', () => {
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = selectAll.checked;
+                });
                 updateBulkButton();
             });
 
-            checkboxes.forEach(function (cb) {
-                cb.addEventListener('change', updateBulkButton);
-            });
+            checkboxes.forEach(checkbox => checkbox.addEventListener('change', updateBulkButton));
 
             updateBulkButton();
         });
 
-        // Tömeges törlés: a darabszám miatt az üzenet dinamikus, ezért nem data-confirm,
-        // hanem közvetlenül a közös megerősítő ablakot nyitjuk meg
-        document.querySelectorAll('.bulk-delete-form').forEach(function (form) {
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
+        document.querySelectorAll('.bulk-delete-form').forEach(form => {
+            form.addEventListener('submit', event => {
+                event.preventDefault();
                 const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
                 openConfirmModal(form, 'Biztosan törlöd a kijelölt elemeket?', 'A kijelölt ' + checkedCount + ' elem véglegesen törlődik. Ez a művelet nem visszavonható.');
             });
         });
 
-        // Lucide ikonok inicializálása
-        if (window.lucide) lucide.createIcons();
+        lucide.createIcons();
     </script>
 </body>
 </html>

@@ -7,15 +7,16 @@ use Illuminate\Support\Facades\DB;
 
 class FavoriteSeeder extends Seeder
 {
+    /**
+     * Each user favorites 5-15 recipes (the same ones on every run, thanks to mt_srand).
+     */
     public function run(): void
     {
         $favorites = [];
 
         for ($userId = 1; $userId <= 10; $userId++) {
-            // Minden user 5-15 receptet kedvencel
-            $favCount = 5 + ($userId % 11); // 5-15
+            $favCount = 5 + ($userId % 11);
 
-            // Recept ID-k listája, shuffle-ozva determinisztikus seed-del
             $allRecipes = range(1, 100);
             mt_srand($userId * 37);
             shuffle($allRecipes);

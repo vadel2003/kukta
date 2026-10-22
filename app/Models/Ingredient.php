@@ -8,8 +8,6 @@ class Ingredient extends Model
 {
     protected $table = 'ingredient';
 
-    protected $primaryKey = 'id';
-
     public $timestamps = false;
 
     protected $fillable = [

@@ -8,12 +8,18 @@ class Favorite extends Model
 {
     protected $table = 'favorites';
 
-    public $timestamps = true;
-
     protected $fillable = [
         'user_id',
         'recipe_id',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'user_id' => 'integer',
+            'recipe_id' => 'integer',
+        ];
+    }
 
     public function user()
     {
@@ -23,13 +29,5 @@ class Favorite extends Model
     public function recipe()
     {
         return $this->belongsTo(Recipe::class, 'recipe_id');
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'user_id' => 'integer',
-            'recipe_id' => 'integer',
-        ];
     }
 }
