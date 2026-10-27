@@ -594,6 +594,10 @@ body.assistant-page::-webkit-scrollbar {
         margin-right: 120px;
     }
 
+    .assistant-finish-card .assistant-figure {
+        margin-right: 0;
+    }
+
     .assistant-figure-bubble {
         left: 80%;
         max-width: min(150px, calc(50vw - 2rem));

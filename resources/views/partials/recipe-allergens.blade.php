@@ -5,7 +5,7 @@
         <ul class="allergens-list">
             @foreach ($freeFroms as $freeFrom)
                 <li class="allergen-tag">
-                    <img src="{{ asset($freeFrom->thumbnail) }}" alt="" class="category-icon">
+                    <span class="category-icon allergen-icon" style="--allergen-icon: url('{{ asset($freeFrom->thumbnail) }}');"></span>
                     {{ $freeFrom->free_label }}
                 </li>
             @endforeach

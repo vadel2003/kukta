@@ -2282,7 +2282,7 @@ body {
 
     .card-actions {
         gap: 6px 0;
-        margin-top: auto;
+        margin-top: 0;
         padding-top: 0;
     }
 
@@ -2304,6 +2304,7 @@ body {
         display: flex;
         align-items: center;
         gap: 6px;
+        margin-bottom: auto;
     }
 
     .card-title-row h2 {
