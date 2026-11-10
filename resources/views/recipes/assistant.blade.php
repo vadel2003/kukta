@@ -4,7 +4,7 @@
 @section('bodyClass', 'assistant-page')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/assistant/assistant.css') }}?v={{ filemtime(public_path('css/assistant/assistant.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/assistant/assistant.css') }}">
 @endpush
 
 @section('content')
@@ -16,10 +16,9 @@
                 <div class="assistant-intro-content">
                     <div class="assistant-intro-card assistant-greeting-card">
                         <div class="assistant-figure-slot">
-                            <div class="assistant-figure" id="assistantFigure"
-                                data-src="{{ asset('lottie/assistant.json') }}?v={{ filemtime(public_path('lottie/assistant.json')) }}">
-                                <div class="assistant-figure-anim" role="img" aria-label="Kukta asszisztens, a borsó főzősegéd"></div>
-                                <div class="assistant-figure-bubble" aria-live="polite"></div>
+                            <div class="assistant-figure">
+                                <img src="{{ asset('images/assistant-figure.svg') }}" alt="Kukta asszisztens, a borsó főzősegéd" class="assistant-figure-image">
+                                <p class="assistant-figure-bubble">Szia!<br>Én vagyok az asszisztensed.<br>Induljon a főzés!</p>
                             </div>
                         </div>
                     </div>
@@ -46,7 +45,7 @@
                 <div class="assistant-step">
                     <div class="content-card assistant-step-card">
                         <div class="assistant-step-number">{{ $loop->iteration }}</div>
-                        <x-step-animation :category="$step->stepCategory" />
+                        <img src="{{ asset($step->stepCategory->thumbnail) }}" alt="{{ $step->stepCategory->name }}" class="step-image">
                         <p class="assistant-step-text">{{ $step->description }}</p>
                     </div>
                 </div>
@@ -56,7 +55,12 @@
         <section class="assistant-screen assistant-screen-finish">
             <div class="assistant-finish">
                 <div class="content-card assistant-finish-card">
-                    <div class="assistant-figure-slot"></div>
+                    <div class="assistant-figure-slot">
+                        <div class="assistant-figure">
+                            <img src="{{ asset('images/assistant-figure.svg') }}" alt="Kukta asszisztens, a borsó főzősegéd" class="assistant-figure-image">
+                            <p class="assistant-figure-bubble">Jó étvágyat!</p>
+                        </div>
+                    </div>
 
                     <form id="assistantRatingForm" data-authenticated="{{ Auth::check() ? '1' : '0' }}" data-rate-link="{{ route('recipes.rate.link', $recipe->id) }}" action="{{ route('recipes.rate', $recipe->id) }}" method="POST" class="assistant-rating">
                         @csrf
@@ -98,8 +102,6 @@
         </ul>
     </div>
 
-    <script src="{{ asset('js/lottie.min.js') }}?v={{ filemtime(public_path('js/lottie.min.js')) }}"></script>
-    <script src="{{ asset('js/assistant-figure.js') }}?v={{ filemtime(public_path('js/assistant-figure.js')) }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             /** Swipes shorter than this (px) do not change the page. */
@@ -111,22 +113,18 @@
             /** Space reserved for the page dots (px): .page-dot height + .page-dots margin-top. */
             const DOTS_RESERVE = 24;
 
-            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             const prevButton = document.getElementById('assistantPrev');
             const nextButton = document.getElementById('assistantNext');
             const nextZone = nextButton.closest('.assistant-nav-zone');
             const progress = document.getElementById('assistantProgress');
-            const figureElement = document.getElementById('assistantFigure');
             const pagesContainer = document.getElementById('ingredientPages');
             const ingredientsScreen = pagesContainer.closest('.assistant-screen');
             const dotsContainer = document.getElementById('ingredientDots');
             const items = Array.from(document.querySelectorAll('#ingredientList .assistant-ingredient'));
-            const stepAnimations = [];
 
             let screens = [];
             let current = 0;
             let currentIngredientPage = 0;
-            let figure = null;
             let touchStartX = 0;
             let touchStartY = 0;
 
@@ -208,32 +206,14 @@
             }
 
             /**
-             * Shows the given screen: starts its step animation, moves the figure and updates the counter.
+             * Shows the given screen and updates the counter.
              */
             function showScreen(index) {
-                const previous = current;
                 current = index;
                 screens.forEach((screen, i) => screen.classList.toggle('is-active', i === index));
                 prevButton.disabled = current === 0;
-                const isLast = current === screens.length - 1;
-                nextZone.style.visibility = isLast ? 'hidden' : 'visible';
+                nextZone.style.visibility = current === screens.length - 1 ? 'hidden' : 'visible';
                 progress.textContent = (current + 1) + ' / ' + screens.length;
-
-                if (!reduceMotion) {
-                    stepAnimations.forEach(item => {
-                        if (item.screen === screens[index]) {
-                            item.animation.goToAndPlay(0, true);
-                        } else {
-                            item.animation.stop();
-                        }
-                    });
-                }
-
-                const figureSlot = screens[index].querySelector('.assistant-figure-slot');
-                if (figureSlot) figureSlot.appendChild(figureElement);
-
-                if (figure && isLast && previous === index - 1) figure.goodbye();
-                if (figure && index === 0 && previous !== 0) figure.sayHello();
 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
@@ -322,27 +302,6 @@
 
             repaginateLongSteps();
             screens = Array.from(document.querySelectorAll('.assistant-screen'));
-
-            document.querySelectorAll('.step-animation').forEach(element => {
-                const animation = lottie.loadAnimation({
-                    container: element,
-                    renderer: 'svg',
-                    loop: true,
-                    autoplay: false,
-                    path: element.dataset.src,
-                });
-                if (reduceMotion) {
-                    animation.addEventListener('DOMLoaded', () => animation.goToAndStop(50, true));
-                }
-                stepAnimations.push({ screen: element.closest('.assistant-screen'), animation: animation });
-            });
-
-            fetchJson(figureElement.dataset.src)
-                .then(data => {
-                    figure = createAssistant(figureElement, data);
-                    setTimeout(() => figure.hello(), 300);
-                })
-                .catch(error => console.error('Error:', error));
 
             prevButton.addEventListener('click', () => {
                 if (screens[current] === ingredientsScreen && currentIngredientPage > 0) {

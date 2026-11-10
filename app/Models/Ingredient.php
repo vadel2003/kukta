@@ -18,16 +18,6 @@ class Ingredient extends Model
         'fat',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'calories' => 'float',
-            'carbohydrate' => 'float',
-            'protein' => 'float',
-            'fat' => 'float',
-        ];
-    }
-
     public function recipes()
     {
         return $this->belongsToMany(Recipe::class, 'ingredient_recipe', 'ingredient_id', 'recipe_id')

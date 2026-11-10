@@ -2,11 +2,11 @@
      Variables: $searchAction, $searchPlaceholder (optional), $mealTimes, $foodTypes, $diets, $freeFroms, $cuisines. --}}
 @php
     $filterGroups = [
-        'meal_time' => ['Étkezés', $mealTimes],
-        'food_type' => ['Ételtípus', $foodTypes],
-        'diet' => ['Diéta', $diets],
-        'free_from' => ['Érzékenység', $freeFroms],
-        'cuisine' => ['Konyha', $cuisines],
+        ['param' => 'meal_time', 'title' => 'Étkezés', 'items' => $mealTimes],
+        ['param' => 'food_type', 'title' => 'Ételtípus', 'items' => $foodTypes],
+        ['param' => 'diet', 'title' => 'Diéta', 'items' => $diets],
+        ['param' => 'free_from', 'title' => 'Érzékenység', 'items' => $freeFroms],
+        ['param' => 'cuisine', 'title' => 'Konyha', 'items' => $cuisines],
     ];
 @endphp
 <form action="{{ $searchAction }}#recipes" method="GET" id="searchForm">
@@ -32,18 +32,18 @@
                 <button type="button" class="close-btn" data-modal-close>&times;</button>
             </div>
             <div class="modal-body">
-                @foreach ($filterGroups as $param => [$title, $items])
+                @foreach ($filterGroups as $group)
                     <div class="filter-group">
-                        <h4>{{ $title }}</h4>
-                        @if ($param === 'free_from')
+                        <h4>{{ $group['title'] }}</h4>
+                        @if ($group['param'] === 'free_from')
                             <p class="filter-hint">Jelöld be, amit a recept <strong>nem</strong> tartalmazhat.</p>
                         @endif
                         <div class="filter-options">
-                            @foreach ($items as $item)
+                            @foreach ($group['items'] as $item)
                                 <label class="filter-chip">
-                                    <input type="checkbox" name="{{ $param }}[]" value="{{ $item->id }}"
-                                        data-label="{{ $param === 'free_from' ? $item->name . ' nélkül' : $item->name }}"
-                                        {{ in_array($item->id, (array) request($param)) ? 'checked' : '' }}>
+                                    <input type="checkbox" name="{{ $group['param'] }}[]" value="{{ $item->id }}"
+                                        data-label="{{ $group['param'] === 'free_from' ? $item->name . ' nélkül' : $item->name }}"
+                                        {{ in_array($item->id, (array) request($group['param'])) ? 'checked' : '' }}>
                                     <span>
                                         @if ($item->thumbnail)
                                             <img src="{{ asset($item->thumbnail) }}" alt="" class="category-icon">

@@ -137,14 +137,14 @@ class AdminController extends Controller
             abort(403);
         }
 
+        $user->deleteAvatarFile();
         $user->delete();
 
         return redirect()->route('admin.users')->with('success', 'Felhasználó sikeresen törölve!');
     }
 
     /**
-     * The super admin and the current user's own account cannot be deleted. Users are deleted
-     * one by one, so the User model's deleting event (avatar file removal) runs for each of them.
+     * The super admin and the current user's own account cannot be deleted.
      */
     public function bulkDestroyUsers(Request $request)
     {
@@ -153,12 +153,15 @@ class AdminController extends Controller
             'ids.*' => ['integer', 'exists:user,id'],
         ]);
 
-        User::whereIn('id', $validated['ids'])
+        $users = User::whereIn('id', $validated['ids'])
             ->where('is_admin', false)
             ->where('id', '!=', Auth::id())
-            ->get()
-            ->each
-            ->delete();
+            ->get();
+
+        foreach ($users as $user) {
+            $user->deleteAvatarFile();
+            $user->delete();
+        }
 
         return redirect()->route('admin.users')->with('success', 'A kijelölt felhasználók sikeresen törölve!');
     }

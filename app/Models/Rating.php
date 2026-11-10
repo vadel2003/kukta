@@ -16,15 +16,6 @@ class Rating extends Model
         'score',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'user_id' => 'integer',
-            'recipe_id' => 'integer',
-            'score' => 'integer',
-        ];
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

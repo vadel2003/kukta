@@ -6,7 +6,7 @@
             @foreach ($freeFroms as $freeFrom)
                 <li class="allergen-tag">
                     <span class="category-icon allergen-icon" style="--allergen-icon: url('{{ asset($freeFrom->thumbnail) }}');"></span>
-                    {{ $freeFrom->free_label }}
+                    {{ $freeFrom->label }}
                 </li>
             @endforeach
         </ul>

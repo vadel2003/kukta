@@ -75,6 +75,7 @@ class ProfileController extends Controller
         }
 
         Auth::logout();
+        $user->deleteAvatarFile();
         $user->delete();
 
         return redirect()->route('home');

@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Kukta - @yield('title', 'Főoldal')</title>
-    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}?v={{ filemtime(public_path('images/favicon.svg')) }}">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @stack('styles')
-    <script src="{{ asset('js/lucide.min.js') }}?v={{ filemtime(public_path('js/lucide.min.js')) }}"></script>
+    <script src="{{ asset('js/lucide.min.js') }}"></script>
 </head>
 <body class="@yield('bodyClass')">
     <header>
         <div class="header-left">
             <a href="{{ route('home') }}">
-                <img src="{{ asset('images/kukta-hat.svg') }}?v={{ filemtime(public_path('images/kukta-hat.svg')) }}" alt="" class="logo">
+                <img src="{{ asset('images/kukta-hat.svg') }}" alt="" class="logo">
                 <span class="logo-text">Kukta</span>
             </a>
         </div>
@@ -36,7 +36,7 @@
             @auth
                 <div class="dropdown desktop-user">
                     <div class="dropdown-trigger">
-                        <img src="{{ asset('images/profile_icon.svg') }}?v={{ filemtime(public_path('images/profile_icon.svg')) }}" alt="Profil" class="profile-icon">
+                        <img src="{{ asset('images/profile_icon.svg') }}" alt="Profil" class="profile-icon">
                         <i data-lucide="chevron-down" class="dropdown-arrow"></i>
                     </div>
                     <div class="dropdown-menu">
@@ -66,7 +66,7 @@
             @else
                 <div class="dropdown desktop-user">
                     <div class="dropdown-trigger" title="Bejelentkezés">
-                        <img src="{{ asset('images/profile_icon.svg') }}?v={{ filemtime(public_path('images/profile_icon.svg')) }}" alt="Bejelentkezés" class="profile-icon">
+                        <img src="{{ asset('images/profile_icon.svg') }}" alt="Bejelentkezés" class="profile-icon">
                         <i data-lucide="chevron-down" class="dropdown-arrow"></i>
                     </div>
                     <div class="dropdown-menu">

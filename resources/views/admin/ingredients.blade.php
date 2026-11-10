@@ -3,7 +3,7 @@
 @section('title', 'Alapanyagok (admin)')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}?v={{ filemtime(public_path('css/admin/admin.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
 @endpush
 
 @section('content')

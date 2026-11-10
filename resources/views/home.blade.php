@@ -3,7 +3,7 @@
 @section('title', 'Főoldal')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/pages/home.css') }}?v={{ filemtime(public_path('css/pages/home.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/pages/home.css') }}">
 @endpush
 
 @section('content')

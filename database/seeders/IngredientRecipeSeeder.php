@@ -570,20 +570,11 @@ class IngredientRecipeSeeder extends Seeder
             $recipeContains = [];
 
             foreach ($ingredients as [$name, $quantity, $unit]) {
-                if (!isset($ingredientIds[$name])) {
-                    throw new \RuntimeException("Unknown ingredient in recipe {$recipeId}: {$name}");
-                }
-
-                $unitId = array_search($unit, IngredientRecipe::UNITS, true);
-                if ($unitId === false) {
-                    throw new \RuntimeException("Unknown unit in recipe {$recipeId}: {$unit}");
-                }
-
                 $records[] = [
                     'ingredient_id' => $ingredientIds[$name],
                     'recipe_id' => $recipeId,
                     'quantity' => $quantity,
-                    'unit' => $unitId,
+                    'unit' => array_search($unit, IngredientRecipe::UNITS),
                 ];
 
                 foreach ($containsMap as $freeFrom => $names) {
@@ -600,10 +591,7 @@ class IngredientRecipeSeeder extends Seeder
             }
         }
 
-        foreach (array_chunk($records, 200) as $chunk) {
-            DB::table('ingredient_recipe')->insert($chunk);
-        }
-
+        DB::table('ingredient_recipe')->insert($records);
         DB::table('free_from_recipe')->insert($freeFromRecords);
     }
 }

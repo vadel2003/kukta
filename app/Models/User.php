@@ -34,15 +34,6 @@ class User extends Authenticatable
     }
 
     /**
-     * Deletes the avatar file when the user is deleted.
-     * Only triggered by delete() on a loaded model, not by a query delete (User::whereIn(...)->delete()).
-     */
-    protected static function booted(): void
-    {
-        static::deleting(fn (User $user) => $user->deleteAvatarFile());
-    }
-
-    /**
      * Deletes the avatar file from the public folder (if any). Does not change the avatar attribute.
      */
     public function deleteAvatarFile(): void

@@ -3,7 +3,7 @@
 @section('title', $recipe->title)
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/pages/recipe_show.css') }}?v={{ filemtime(public_path('css/pages/recipe_show.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/pages/recipe_show.css') }}">
 @endpush
 
 @section('content')

@@ -8,46 +8,35 @@ use Illuminate\Support\Facades\DB;
 class RatingSeeder extends Seeder
 {
     /**
-     * Each user rates 3-10 recipes of other users with a random score.
+     * Users rate recipes of other users.
      */
     public function run(): void
     {
-        $ratings = [];
-
-        // user ID => IDs of the user's own recipes
-        $userRecipes = [
-            1 => range(1, 10),    // kukta
-            2 => range(11, 20),   // nagyanna
-            3 => range(21, 30),   // kovacsbela
-            4 => range(31, 40),   // szabocsilla
-            5 => range(41, 50),   // tothdaniel
-            6 => range(51, 60),   // molnarera
-            7 => range(61, 70),   // kisstamas
-            8 => range(71, 80),   // feherjudit
-            9 => range(81, 90),   // baloghpetter
-            10 => range(91, 100), // vargazsofia
+        // user ID => [recipe ID => score]
+        $ratings = [
+            1 => [20 => 4, 81 => 1, 82 => 3, 64 => 4],
+            2 => [49 => 2, 82 => 2, 94 => 5, 83 => 1, 42 => 4],
+            3 => [90 => 4, 48 => 3, 7 => 4, 8 => 4, 15 => 4, 87 => 1],
+            4 => [4 => 4, 30 => 5, 88 => 2, 59 => 2, 65 => 1, 87 => 4, 67 => 1],
+            5 => [39 => 5, 56 => 4, 86 => 5, 5 => 2, 8 => 3, 76 => 3, 67 => 3, 52 => 5],
+            6 => [22 => 4, 85 => 3, 93 => 5, 76 => 4, 82 => 3, 74 => 2, 63 => 3, 20 => 5, 1 => 4],
+            7 => [86 => 1, 24 => 1, 32 => 4, 8 => 2, 27 => 3, 41 => 1, 16 => 2, 7 => 2, 89 => 4, 45 => 5],
+            8 => [41 => 5, 27 => 2, 34 => 1],
+            9 => [63 => 1, 46 => 5, 51 => 5, 16 => 1],
+            10 => [67 => 4, 58 => 4, 70 => 4, 77 => 5, 72 => 4],
         ];
 
-        for ($userId = 1; $userId <= 10; $userId++) {
-            $ratingCount = 3 + ($userId % 8);
-
-            $allRecipes = range(1, 100);
-            $ownRecipes = $userRecipes[$userId];
-            $otherRecipes = array_values(array_diff($allRecipes, $ownRecipes));
-
-            mt_srand($userId * 41);
-            shuffle($otherRecipes);
-            $selectedRecipes = array_slice($otherRecipes, 0, $ratingCount);
-
-            foreach ($selectedRecipes as $recipeId) {
-                $ratings[] = [
+        $records = [];
+        foreach ($ratings as $userId => $scores) {
+            foreach ($scores as $recipeId => $score) {
+                $records[] = [
                     'user_id' => $userId,
                     'recipe_id' => $recipeId,
-                    'score' => rand(1, 5),
+                    'score' => $score,
                 ];
             }
         }
 
-        DB::table('rating')->insert($ratings);
+        DB::table('rating')->insert($records);
     }
 }

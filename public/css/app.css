@@ -811,7 +811,7 @@ header.scrolled .header-search .search-row > *:nth-child(5) { animation-delay: 0
     height: 1.2em;
     transform: scale(1.3);
     filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.25));
-    background: url('../images/assistant-icon.svg?v=2') center / contain no-repeat;
+    background: url('../images/assistant-icon.svg') center / contain no-repeat;
 }
 
 .btn-cook-centered {

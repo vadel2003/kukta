@@ -10,11 +10,11 @@ class StepCategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['name' => 'Előkészítés', 'gif_filename' => 'preparation.json'],
-            ['name' => 'Elkészítés', 'gif_filename' => 'making.json'],
-            ['name' => 'Főzés', 'gif_filename' => 'cooking.json'],
-            ['name' => 'Sütés', 'gif_filename' => 'baking.json'],
-            ['name' => 'Tálalás', 'gif_filename' => 'serving.json'],
+            ['name' => 'Előkészítés', 'thumbnail' => 'images/steps/preparation.svg'],
+            ['name' => 'Elkészítés', 'thumbnail' => 'images/steps/making.svg'],
+            ['name' => 'Főzés', 'thumbnail' => 'images/steps/cooking.svg'],
+            ['name' => 'Sütés', 'thumbnail' => 'images/steps/baking.svg'],
+            ['name' => 'Tálalás', 'thumbnail' => 'images/steps/serving.svg'],
         ];
 
         DB::table('step_category')->insert($categories);

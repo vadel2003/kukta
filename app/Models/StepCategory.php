@@ -12,7 +12,7 @@ class StepCategory extends Model
 
     protected $fillable = [
         'name',
-        'gif_filename',
+        'thumbnail',
     ];
 
     public function steps()

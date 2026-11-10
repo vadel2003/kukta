@@ -17,15 +17,6 @@ class Step extends Model
         'step_category_id',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'recipe_id' => 'integer',
-            'position' => 'integer',
-            'step_category_id' => 'integer',
-        ];
-    }
-
     public function recipe()
     {
         return $this->belongsTo(Recipe::class, 'recipe_id');

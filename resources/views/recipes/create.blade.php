@@ -3,7 +3,7 @@
 @section('title', isset($recipe) ? 'Recept szerkesztése' : 'Új recept')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}?v={{ filemtime(public_path('css/admin/admin.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
 @endpush
 
 @section('content')
@@ -31,11 +31,11 @@
         $ingredientCount = max(3, count(old('ingredients', $ingredientValues)));
 
         $categoryGroups = [
-            'meal_times' => ['Napszak', $mealTimes, 'mealTimes', true],
-            'food_types' => ['Étel típusa', $foodTypes, 'foodTypes', true],
-            'diets' => ['Étrend', $diets, 'diets', true],
-            'free_from' => ['Mentesség', $freeFroms, 'freeFroms', false],
-            'cuisines' => ['Konyha', $cuisines, 'cuisines', true],
+            ['field' => 'meal_times', 'title' => 'Napszak', 'items' => $mealTimes, 'relation' => 'mealTimes', 'required' => true],
+            ['field' => 'food_types', 'title' => 'Étel típusa', 'items' => $foodTypes, 'relation' => 'foodTypes', 'required' => true],
+            ['field' => 'diets', 'title' => 'Étrend', 'items' => $diets, 'relation' => 'diets', 'required' => true],
+            ['field' => 'free_from', 'title' => 'Mentesség', 'items' => $freeFroms, 'relation' => 'freeFroms', 'required' => false],
+            ['field' => 'cuisines', 'title' => 'Konyha', 'items' => $cuisines, 'relation' => 'cuisines', 'required' => true],
         ];
     @endphp
 
@@ -143,12 +143,11 @@
                         <h3 class="image-section-title">Vagy válassz előre definiált képet</h3>
                         <div class="image-picker">
                             @foreach (\App\Models\Recipe::DEFAULT_IMAGES as $imageValue => $imageLabel)
-                                @continue(!is_file(public_path($imageValue)))
                                 <label class="image-option">
                                     <input type="radio" name="default_image" value="{{ $imageValue }}" class="image-option-input"
                                         {{ old('default_image', $recipe->thumbnail ?? '') == $imageValue ? 'checked' : '' }}>
                                     <span class="image-option-card">
-                                        <img src="{{ asset($imageValue) }}?v={{ filemtime(public_path($imageValue)) }}" alt="">
+                                        <img src="{{ asset($imageValue) }}" alt="">
                                         <span class="image-option-label">{{ $imageLabel }}</span>
                                     </span>
                                 </label>
@@ -253,21 +252,22 @@
                     Kategóriák
                 </h2>
 
-                @foreach ($categoryGroups as $field => [$title, $items, $relation, $required])
+                @foreach ($categoryGroups as $group)
                     <div class="category-group">
-                        <h3>{{ $title }} @if ($required)<span class="form-error">*</span>@endif</h3>
-                        @if ($field === 'free_from')
+                        <h3>{{ $group['title'] }} @if ($group['required'])<span class="form-error">*</span>@endif</h3>
+                        @if ($group['field'] === 'free_from')
                             <p class="field-hint">Jelöld be, amitől a recept mentes.</p>
                         @endif
                         <div class="checkbox-group">
-                            @foreach ($items as $item)
+                            @foreach ($group['items'] as $item)
                                 @php
-                                    $isChecked = is_array(old($field))
-                                        ? in_array($item->id, old($field))
+                                    $relation = $group['relation'];
+                                    $isChecked = is_array(old($group['field']))
+                                        ? in_array($item->id, old($group['field']))
                                         : $isEdit && $recipe->$relation->contains($item->id);
                                 @endphp
                                 <label>
-                                    <input type="checkbox" name="{{ $field }}[]" value="{{ $item->id }}" {{ $isChecked ? 'checked' : '' }}>
+                                    <input type="checkbox" name="{{ $group['field'] }}[]" value="{{ $item->id }}" {{ $isChecked ? 'checked' : '' }}>
                                     @if ($item->thumbnail)
                                         <img src="{{ asset($item->thumbnail) }}" alt="" class="category-icon">
                                     @endif
@@ -275,7 +275,7 @@
                                 </label>
                             @endforeach
                         </div>
-                        @error($field)
+                        @error($group['field'])
                             <span class="form-error">{{ $message }}</span>
                         @enderror
                     </div>

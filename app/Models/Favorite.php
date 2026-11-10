@@ -6,20 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Favorite extends Model
 {
-    protected $table = 'favorites';
+    protected $table = 'favorite';
 
     protected $fillable = [
         'user_id',
         'recipe_id',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'user_id' => 'integer',
-            'recipe_id' => 'integer',
-        ];
-    }
 
     public function user()
     {

@@ -24,10 +24,10 @@ class RecipeController extends Controller
 
     public function store(Request $request)
     {
-        [$validated, $steps, $ingredients] = $this->validateRecipe($request);
+        $validated = $this->validateRecipe($request);
 
         $recipe = new Recipe(['user_id' => Auth::id()]);
-        $this->saveRecipe($recipe, $request, $validated, $steps, $ingredients);
+        $this->saveRecipe($recipe, $request, $validated);
 
         return redirect()->route('recipes.my')->with('success', 'Recept sikeresen feltöltve!');
     }
@@ -55,11 +55,11 @@ class RecipeController extends Controller
     public function favorites(Request $request)
     {
         $recipes = Recipe::query()
-            ->join('favorites', function ($join) {
-                $join->on('favorites.recipe_id', '=', 'recipe.id')
-                    ->where('favorites.user_id', Auth::id());
+            ->join('favorite', function ($join) {
+                $join->on('favorite.recipe_id', '=', 'recipe.id')
+                    ->where('favorite.user_id', Auth::id());
             })
-            ->select('recipe.*', 'favorites.created_at as favorited_at')
+            ->select('recipe.*', 'favorite.created_at as favorited_at')
             ->with('user')
             ->withCount(['favorites', 'ratings'])
             ->withAvg('ratings', 'score')
@@ -201,9 +201,9 @@ class RecipeController extends Controller
     {
         $recipe = Recipe::where('user_id', Auth::id())->findOrFail($id);
 
-        [$validated, $steps, $ingredients] = $this->validateRecipe($request, $recipe);
+        $validated = $this->validateRecipe($request, $recipe);
 
-        $this->saveRecipe($recipe, $request, $validated, $steps, $ingredients);
+        $this->saveRecipe($recipe, $request, $validated);
 
         return redirect()->route('recipes.my')->with('success', 'Recept sikeresen módosítva!');
     }
@@ -239,7 +239,7 @@ class RecipeController extends Controller
      * Validates the recipe form. Empty step and ingredient rows are skipped.
      *
      * @param  Recipe|null  $recipe  the recipe being edited (if it has an image, uploading a new one is optional)
-     * @return array [validated data, filled steps, filled ingredients]
+     * @return array the validated data, with only the filled step and ingredient rows
      *
      * @throws ValidationException
      */
@@ -319,7 +319,10 @@ class RecipeController extends Controller
             throw ValidationException::withMessages(['ingredients' => 'Adj meg legalább 3 alapanyagot!']);
         }
 
-        return [$validated, $steps, $ingredients];
+        $validated['steps'] = $steps;
+        $validated['ingredients'] = $ingredients;
+
+        return $validated;
     }
 
     /**
@@ -327,7 +330,7 @@ class RecipeController extends Controller
      * Used for both create and update: the old steps and relations are replaced.
      * New ingredients are created with zero nutrition values, to be filled in by the super admin.
      */
-    private function saveRecipe(Recipe $recipe, Request $request, array $validated, array $steps, array $ingredients): void
+    private function saveRecipe(Recipe $recipe, Request $request, array $validated): void
     {
         if ($request->hasFile('thumbnail_image')) {
             $filename = time() . '_' . uniqid() . '.' . $request->file('thumbnail_image')->extension();
@@ -341,7 +344,7 @@ class RecipeController extends Controller
         $recipe->save();
 
         $recipe->steps()->delete();
-        foreach ($steps as $index => $step) {
+        foreach ($validated['steps'] as $index => $step) {
             $recipe->steps()->create([
                 'description' => $step['description'],
                 'step_category_id' => $step['step_category_id'],
@@ -350,7 +353,7 @@ class RecipeController extends Controller
         }
 
         $ingredientData = [];
-        foreach ($ingredients as $ingredient) {
+        foreach ($validated['ingredients'] as $ingredient) {
             $ingredientModel = Ingredient::firstOrCreate(
                 ['name' => $ingredient['name']],
                 ['calories' => 0, 'carbohydrate' => 0, 'protein' => 0, 'fat' => 0]
@@ -371,20 +374,14 @@ class RecipeController extends Controller
 
     /**
      * Rating distribution per star (5 to 1): count and percentage.
-     *
-     * @return array<int, array{count: int, percentage: float}>
      */
     private function ratingDistribution(Recipe $recipe): array
     {
-        $counts = $recipe->ratings()
-            ->selectRaw('score, COUNT(*) as count')
-            ->groupBy('score')
-            ->pluck('count', 'score');
-        $total = $counts->sum();
+        $total = $recipe->ratings->count();
 
         $distribution = [];
         for ($score = 5; $score >= 1; $score--) {
-            $count = $counts[$score] ?? 0;
+            $count = $recipe->ratings->where('score', $score)->count();
             $distribution[$score] = [
                 'count' => $count,
                 'percentage' => $total > 0 ? round($count / $total * 100) : 0,

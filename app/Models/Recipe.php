@@ -45,16 +45,6 @@ class Recipe extends Model
         'user_id',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'user_id' => 'integer',
-            'prep_time' => 'integer',
-            'difficulty' => 'integer',
-            'servings' => 'integer',
-        ];
-    }
-
     /**
      * The difficulty label, e.g. 1 => "közepes".
      */
@@ -64,15 +54,11 @@ class Recipe extends Model
     }
 
     /**
-     * The thumbnail URL ($recipe->thumbnail_url) with the file modification time (?v=...),
-     * so the browser downloads the image again when it changes.
+     * The thumbnail URL ($recipe->thumbnail_url), or the placeholder image if the recipe has none.
      */
     public function getThumbnailUrlAttribute(): string
     {
-        $path = $this->thumbnail ?: 'images/recipes/default/recipe_placeholder.jpg';
-        $file = public_path($path);
-
-        return asset($path) . (is_file($file) ? '?v=' . filemtime($file) : '');
+        return asset($this->thumbnail ?: 'images/recipes/default/recipe_placeholder.jpg');
     }
 
     public function user()

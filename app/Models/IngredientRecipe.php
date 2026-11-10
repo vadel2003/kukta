@@ -38,16 +38,6 @@ class IngredientRecipe extends Model
         'unit',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'ingredient_id' => 'integer',
-            'recipe_id' => 'integer',
-            'quantity' => 'float',
-            'unit' => 'integer',
-        ];
-    }
-
     public function ingredient()
     {
         return $this->belongsTo(Ingredient::class, 'ingredient_id');
