@@ -163,29 +163,12 @@ class RecipeController extends Controller
     }
 
     /**
-     * Rating from a link (GET ?score=1..5), used when a guest clicks a star.
-     * Guests are sent to the login page and redirected back here after login to save the rating.
+     * The "log in to rate" link of guests. The auth middleware sends the guest to the login page,
+     * then back here, and the recipe page opens at its ratings. The rating itself is saved by storeRating() (POST).
      */
-    public function rateViaLink(Request $request, $id)
+    public function loginToRate($id)
     {
-        $recipe = Recipe::findOrFail($id);
-        $score = (int) $request->query('score');
-
-        if ($score < 1 || $score > 5) {
-            return redirect()->route('recipes.assistant', $id);
-        }
-
-        if (!Auth::check()) {
-            return redirect()->guest(route('login'));
-        }
-
-        Rating::updateOrCreate(
-            ['user_id' => Auth::id(), 'recipe_id' => $recipe->id],
-            ['score' => $score]
-        );
-
-        return redirect()->route('recipes.show', $id)
-            ->with('success', "Sikeresen értékelted {$score} csillagra a(z) \"{$recipe->title}\" receptet!");
+        return redirect(route('recipes.show', $id) . '#reviews');
     }
 
     public function edit($id)

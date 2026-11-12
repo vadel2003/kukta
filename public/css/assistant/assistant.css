@@ -430,6 +430,12 @@ body.assistant-page::-webkit-scrollbar {
     color: var(--color-text-light);
 }
 
+.assistant-rating-status a {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: underline;
+}
+
 .assistant-nav-zone {
     position: fixed;
     top: 0;

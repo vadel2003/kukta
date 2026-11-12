@@ -62,20 +62,26 @@
                         </div>
                     </div>
 
-                    <form id="assistantRatingForm" data-authenticated="{{ Auth::check() ? '1' : '0' }}" data-rate-link="{{ route('recipes.rate.link', $recipe->id) }}" action="{{ route('recipes.rate', $recipe->id) }}" method="POST" class="assistant-rating">
-                        @csrf
-                        <div class="assistant-stars">
-                            @for ($i = 1; $i <= 5; $i++)
-                                <label class="assistant-star">
-                                    <input type="radio" name="score" value="{{ $i }}" {{ $userRating && $userRating->score == $i ? 'checked' : '' }}>
-                                    <span class="assistant-star-icon {{ $userRating && $i <= $userRating->score ? 'filled' : '' }}">★</span>
-                                </label>
-                            @endfor
-                        </div>
-                        <p class="assistant-rating-status" id="assistantRatingStatus">
-                            {{ $userRating ? 'A te értékelésed: ' . $userRating->score . ' csillag' : 'Értékeld a receptet!' }}
+                    @auth
+                        <form id="assistantRatingForm" action="{{ route('recipes.rate', $recipe->id) }}" method="POST" class="assistant-rating">
+                            @csrf
+                            <div class="assistant-stars">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <label class="assistant-star">
+                                        <input type="radio" name="score" value="{{ $i }}" {{ $userRating && $userRating->score == $i ? 'checked' : '' }}>
+                                        <span class="assistant-star-icon {{ $userRating && $i <= $userRating->score ? 'filled' : '' }}">★</span>
+                                    </label>
+                                @endfor
+                            </div>
+                            <p class="assistant-rating-status" id="assistantRatingStatus">
+                                {{ $userRating ? 'A te értékelésed: ' . $userRating->score . ' csillag' : 'Értékeld a receptet!' }}
+                            </p>
+                        </form>
+                    @else
+                        <p class="assistant-rating-status">
+                            Az értékeléshez <a href="{{ route('recipes.rate.login', $recipe->id) }}">jelentkezz be</a>
                         </p>
-                    </form>
+                    @endauth
 
                     <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-cook btn-cook-primary">Vissza a recepthez</a>
                 </div>
@@ -215,7 +221,7 @@
                 nextZone.style.visibility = current === screens.length - 1 ? 'hidden' : 'visible';
                 progress.textContent = (current + 1) + ' / ' + screens.length;
 
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.scrollTo(0, 0);
             }
 
             /**
@@ -353,6 +359,12 @@
             renderIngredientPages();
             window.addEventListener('resize', renderIngredientPages);
 
+            showScreen(0);
+        });
+    </script>
+
+    @auth
+        <script>
             const ratingForm = document.getElementById('assistantRatingForm');
             const ratingStarLabels = Array.from(ratingForm.querySelectorAll('.assistant-star'));
 
@@ -378,11 +390,6 @@
             ratingForm.addEventListener('change', event => {
                 const score = parseInt(event.target.value);
 
-                if (ratingForm.dataset.authenticated !== '1') {
-                    window.location.href = ratingForm.dataset.rateLink + '?score=' + score;
-                    return;
-                }
-
                 fetchJson(ratingForm.action, { method: 'POST', body: new FormData(ratingForm) })
                     .then(() => {
                         fillRatingStars(score);
@@ -390,8 +397,6 @@
                     })
                     .catch(error => console.error('Error:', error));
             });
-
-            showScreen(0);
-        });
-    </script>
+        </script>
+    @endauth
 @endsection

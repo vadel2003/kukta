@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/kedvenc-receptek', [RecipeController::class, 'favorites'])->name('recipes.favorites');
     Route::post('/recept/{id}/kedvenc', [RecipeController::class, 'toggleFavorite'])->name('recipes.favorite');
     Route::post('/recept/{id}/ertekeles', [RecipeController::class, 'storeRating'])->name('recipes.rate');
+    Route::get('/recept/{id}/ertekeles', [RecipeController::class, 'loginToRate'])->name('recipes.rate.login');
     Route::get('/recept/{id}/szerkesztes', [RecipeController::class, 'edit'])->name('recipes.edit');
     Route::put('/recept/{id}', [RecipeController::class, 'update'])->name('recipes.update');
     Route::delete('/recept/{id}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
@@ -47,7 +48,6 @@ Route::middleware('auth')->group(function () {
 // Recipes (public)
 Route::get('/recept/{id}', [RecipeController::class, 'show'])->name('recipes.show');
 Route::get('/recept/{id}/asszisztens', [RecipeController::class, 'assistant'])->name('recipes.assistant');
-Route::get('/recept/{id}/ertekeles', [RecipeController::class, 'rateViaLink'])->name('recipes.rate.link');
 
 // Super admin
 Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {

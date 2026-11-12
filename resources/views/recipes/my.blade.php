@@ -13,6 +13,10 @@
             <h1>Saját receptek</h1>
         </div>
 
+        @if (session('success'))
+            <p class="form-success">{{ session('success') }}</p>
+        @endif
+
         @if (!$hasAnyRecipes)
             <p>Még nem töltöttél fel receptet. <a href="{{ route('recipes.create') }}">Tölts fel egyet most!</a></p>
         @else

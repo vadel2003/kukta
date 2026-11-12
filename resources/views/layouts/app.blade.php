@@ -370,7 +370,7 @@
                         }
 
                         const recipesSection = document.getElementById('recipes');
-                        if (recipesSection) recipesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        if (recipesSection) recipesSection.scrollIntoView();
 
                         const images = Array.from(gallery.querySelectorAll('img'));
                         let loadedCount = images.filter(image => image.complete).length;
@@ -434,7 +434,7 @@
         });
 
         scrollToTopBtn.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo(0, 0);
         });
 
         document.addEventListener('submit', event => {

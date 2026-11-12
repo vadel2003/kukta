@@ -166,7 +166,7 @@
             @else
                 <div class="rating-personal">
                     <p class="rating-login-prompt">
-                        Az értékeléshez <a href="{{ route('login') }}">jelentkezz be</a>
+                        Az értékeléshez <a href="{{ route('recipes.rate.login', $recipe->id) }}">jelentkezz be</a>
                     </p>
                 </div>
             @endauth
