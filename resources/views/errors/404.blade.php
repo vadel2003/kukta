@@ -2,9 +2,9 @@
 
 @section('title', '404 - Az oldal nem található')
 
-@push('styles')
+@section('styles')
     <link rel="stylesheet" href="{{ asset('css/pages/404.css') }}">
-@endpush
+@endsection
 
 @section('content')
     <div class="error-page">

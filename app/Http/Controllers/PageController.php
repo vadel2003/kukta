@@ -14,6 +14,14 @@ class PageController extends Controller
         return view('pages.cookies');
     }
 
+    /**
+     * The "OK" button of the cookie notice: remembers it for a year, so the notice is not shown again.
+     */
+    public function acceptCookies()
+    {
+        return back()->withCookie(cookie('cookie_notice_seen', '1', 60 * 24 * 365));
+    }
+
     public function terms()
     {
         return view('pages.terms');

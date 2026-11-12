@@ -2,9 +2,9 @@
 
 @section('title', 'Főoldal')
 
-@push('styles')
+@section('styles')
     <link rel="stylesheet" href="{{ asset('css/pages/home.css') }}">
-@endpush
+@endsection
 
 @section('content')
     <section id="hero" class="hero-section">
@@ -22,9 +22,14 @@
                                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Keresés..." class="search-input">
                                 </div>
                                 <span class="search-divider"></span>
-                                <button type="button" class="btn-filters" data-modal-open="filtersModal"><i data-lucide="filter"></i> Szűrők <span class="filter-count" hidden></span></button>
+                                <button type="button" class="btn-filters {{ $activeFilterCount > 0 ? 'has-filters' : '' }}" popovertarget="filtersModal">
+                                    <i data-lucide="filter"></i> Szűrők
+                                    @if ($activeFilterCount > 0)
+                                        <span class="filter-count">{{ $activeFilterCount }}</span>
+                                    @endif
+                                </button>
                                 <span class="search-divider"></span>
-                                <button type="button" class="btn-sort" data-modal-open="sortModal"><i data-lucide="arrow-up-down"></i> Rendezés</button>
+                                <button type="button" class="btn-sort" popovertarget="sortModal"><i data-lucide="arrow-up-down"></i> Rendezés</button>
                                 <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
                             </div>
                         </form>

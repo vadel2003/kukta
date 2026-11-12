@@ -10,10 +10,7 @@ use App\Models\Recipe;
 use App\Models\StepCategory;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 
 class RecipeController extends Controller
 {
@@ -26,6 +23,11 @@ class RecipeController extends Controller
     {
         $validated = $this->validateRecipe($request);
 
+        $errors = $this->rowErrors($validated);
+        if ($errors) {
+            return back()->withErrors($errors)->withInput();
+        }
+
         $recipe = new Recipe(['user_id' => Auth::id()]);
         $this->saveRecipe($recipe, $request, $validated);
 
@@ -34,48 +36,44 @@ class RecipeController extends Controller
 
     public function myRecipes(Request $request)
     {
-        $recipes = Recipe::where('user_id', Auth::id())
+        $query = Recipe::where('user_id', Auth::id())
             ->withCount(['favorites', 'ratings'])
-            ->withAvg('ratings', 'score')
-            ->searchAndFilter($request)
-            ->applySort($request)
-            ->paginate(21);
+            ->withAvg('ratings', 'score');
+        $this->applyFilters($query, $request);
+        $this->applySort($query, $request);
+        $recipes = $query->paginate(21)->withQueryString();
 
-        return $this->recipeListResponse($request, 'recipes.my', [
+        return view('recipes.my', [
             'recipes' => $recipes,
             'favoriteIds' => Favorite::where('user_id', Auth::id())->pluck('recipe_id')->toArray(),
             'showOwnerActions' => true,
             'hasAnyRecipes' => Recipe::where('user_id', Auth::id())->exists(),
-        ]);
+        ] + $this->filterCategories());
+    }
+
+    public function favorites(Request $request)
+    {
+        $favoriteIds = Favorite::where('user_id', Auth::id())->pluck('recipe_id')->toArray();
+
+        $query = Recipe::whereIn('id', $favoriteIds)
+            ->with('user')
+            ->withCount(['favorites', 'ratings'])
+            ->withAvg('ratings', 'score');
+        $this->applyFilters($query, $request);
+        $this->applySort($query, $request);
+        $recipes = $query->paginate(21)->withQueryString();
+
+        return view('recipes.favorites', [
+            'recipes' => $recipes,
+            'favoriteIds' => $favoriteIds,
+            'hasAnyFavorites' => count($favoriteIds) > 0,
+        ] + $this->filterCategories());
     }
 
     /**
-     * The logged-in user's favorite recipes, sorted by the time they were favorited by default.
+     * Favorites or unfavorites the recipe, then goes back to the same recipe card on the previous page.
      */
-    public function favorites(Request $request)
-    {
-        $recipes = Recipe::query()
-            ->join('favorite', function ($join) {
-                $join->on('favorite.recipe_id', '=', 'recipe.id')
-                    ->where('favorite.user_id', Auth::id());
-            })
-            ->select('recipe.*', 'favorite.created_at as favorited_at')
-            ->with('user')
-            ->withCount(['favorites', 'ratings'])
-            ->withAvg('ratings', 'score')
-            ->searchAndFilter($request)
-            ->applySort($request, 'favorited_at')
-            ->paginate(21);
-
-        return $this->recipeListResponse($request, 'recipes.favorites', [
-            'recipes' => $recipes,
-            'favoriteIds' => $recipes->pluck('id')->toArray(),
-            'removeOnUnfavorite' => true,
-            'hasAnyFavorites' => Favorite::where('user_id', Auth::id())->exists(),
-        ]);
-    }
-
-    public function toggleFavorite(Request $request, $id)
+    public function toggleFavorite($id)
     {
         $recipe = Recipe::findOrFail($id);
 
@@ -92,24 +90,12 @@ class RecipeController extends Controller
             ]);
         }
 
-        if ($request->ajax()) {
-            return response()->json([
-                'isFavorited' => !$existing,
-                'favoriteCount' => $recipe->favorites()->count(),
-            ]);
-        }
-
-        return back();
+        return redirect(url()->previous() . '#recipe-' . $recipe->id);
     }
 
     public function show($id)
     {
-        $recipe = Recipe::with([
-            'user',
-            'steps' => fn ($query) => $query->orderBy('position'),
-            'ingredients',
-            'ratings.user',
-        ])->findOrFail($id);
+        $recipe = Recipe::with(['user', 'steps', 'ingredients', 'ratings'])->findOrFail($id);
 
         $isFavorited = Auth::check() && Favorite::where('user_id', Auth::id())
             ->where('recipe_id', $recipe->id)
@@ -127,10 +113,7 @@ class RecipeController extends Controller
 
     public function assistant($id)
     {
-        $recipe = Recipe::with([
-            'steps' => fn ($query) => $query->orderBy('position')->with('stepCategory'),
-            'ingredients',
-        ])->findOrFail($id);
+        $recipe = Recipe::with(['steps.stepCategory', 'ingredients'])->findOrFail($id);
 
         $averageRating = round($recipe->averageRating() ?? 0, 1);
         $userRating = Auth::check() ? $recipe->ratings()->where('user_id', Auth::id())->first() : null;
@@ -151,15 +134,7 @@ class RecipeController extends Controller
             ['score' => $request->score]
         );
 
-        if ($request->ajax()) {
-            return response()->json([
-                'averageRating' => round($recipe->averageRating(), 1),
-                'ratingCount' => $recipe->ratings()->count(),
-                'distribution' => $this->ratingDistribution($recipe),
-            ]);
-        }
-
-        return redirect()->route('recipes.show', $id)->with('success', 'Értékelés mentve!');
+        return redirect(route('recipes.show', $recipe->id) . '#reviews')->with('success', 'Értékelés mentve!');
     }
 
     /**
@@ -185,6 +160,11 @@ class RecipeController extends Controller
         $recipe = Recipe::where('user_id', Auth::id())->findOrFail($id);
 
         $validated = $this->validateRecipe($request, $recipe);
+
+        $errors = $this->rowErrors($validated);
+        if ($errors) {
+            return back()->withErrors($errors)->withInput();
+        }
 
         $this->saveRecipe($recipe, $request, $validated);
 
@@ -221,10 +201,8 @@ class RecipeController extends Controller
     /**
      * Validates the recipe form. Empty step and ingredient rows are skipped.
      *
-     * @param  Recipe|null  $recipe  the recipe being edited (if it has an image, uploading a new one is optional)
+     * @param  Recipe|null  $recipe  the recipe being edited (it already has an image, so uploading a new one is optional)
      * @return array the validated data, with only the filled step and ingredient rows
-     *
-     * @throws ValidationException
      */
     private function validateRecipe(Request $request, ?Recipe $recipe = null): array
     {
@@ -232,15 +210,15 @@ class RecipeController extends Controller
             'title' => ['required', 'string', 'min:5', 'max:100'],
             'description' => ['required', 'string', 'min:5', 'max:1000'],
             'prep_time' => ['required', 'integer', 'min:3', 'max:1440'],
-            'difficulty' => ['required', 'integer', Rule::in(array_keys(Recipe::DIFFICULTIES))],
+            'difficulty' => ['required', 'integer', 'in:' . implode(',', array_keys(Recipe::DIFFICULTIES))],
             'servings' => ['required', 'integer', 'min:1', 'max:50'],
             'steps' => ['nullable', 'array'],
             'steps.*.description' => ['nullable', 'string', 'min:5', 'max:1000'],
-            'steps.*.step_category_id' => ['nullable', 'integer', 'exists:step_category,id'],
+            'steps.*.step_category_id' => ['nullable', 'required_with:steps.*.description', 'integer', 'exists:step_category,id'],
             'ingredients' => ['nullable', 'array'],
             'ingredients.*.name' => ['nullable', 'string', 'min:2', 'max:50'],
-            'ingredients.*.quantity' => ['nullable', 'numeric', 'decimal:0,2', 'min:0.1', 'max:10000'],
-            'ingredients.*.unit' => ['nullable', 'integer', Rule::in(array_keys(IngredientRecipe::UNITS))],
+            'ingredients.*.quantity' => ['nullable', 'required_with:ingredients.*.name', 'numeric', 'decimal:0,2', 'min:0.1', 'max:10000'],
+            'ingredients.*.unit' => ['nullable', 'required_with:ingredients.*.name', 'integer', 'in:' . implode(',', array_keys(IngredientRecipe::UNITS))],
             'meal_times' => ['required', 'array', 'min:1'],
             'meal_times.*' => ['exists:meal_time,id'],
             'food_types' => ['required', 'array', 'min:1'],
@@ -251,8 +229,8 @@ class RecipeController extends Controller
             'free_from.*' => ['exists:free_from,id'],
             'cuisines' => ['required', 'array', 'min:1'],
             'cuisines.*' => ['exists:cuisine,id'],
-            'thumbnail_image' => ['nullable', Rule::requiredIf(empty($recipe?->thumbnail) && !$request->filled('default_image')), 'image', 'mimes:jpeg,jpg,png,webp', 'dimensions:width=1240,height=800', 'max:2048'],
-            'default_image' => ['nullable', 'string', Rule::in(array_keys(Recipe::DEFAULT_IMAGES))],
+            'thumbnail_image' => [$recipe ? 'nullable' : 'required_without:default_image', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
+            'default_image' => ['nullable', 'string', 'in:' . implode(',', array_keys(Recipe::DEFAULT_IMAGES))],
         ], [
             'meal_times.required' => 'Válassz legalább egy napszakot!',
             'meal_times.min' => 'Válassz legalább egy napszakot!',
@@ -262,50 +240,58 @@ class RecipeController extends Controller
             'diets.min' => 'Válassz legalább egy étrendet!',
             'cuisines.required' => 'Válassz legalább egy konyhát!',
             'cuisines.min' => 'Válassz legalább egy konyhát!',
+            'steps.*.step_category_id.required_with' => 'Minden lépéshez válassz kategóriát!',
+            'ingredients.*.quantity.required_with' => 'Minden alapanyaghoz adj meg mennyiséget!',
             'ingredients.*.quantity.min' => 'A mennyiség legalább 0,1 legyen!',
             'ingredients.*.quantity.decimal' => 'A mennyiség legfeljebb két tizedesjegyű lehet!',
-            'thumbnail_image.required' => 'Tölts fel saját képet, vagy válassz egy alapképet!',
+            'ingredients.*.unit.required_with' => 'Minden alapanyaghoz válassz mértékegységet!',
+            'thumbnail_image.required_without' => 'Tölts fel saját képet, vagy válassz egy alapképet!',
+            'thumbnail_image.image' => 'Csak JPG, PNG vagy WebP képet tölthetsz fel!',
+            'thumbnail_image.mimes' => 'Csak JPG, PNG vagy WebP képet tölthetsz fel!',
+            'thumbnail_image.max' => 'A kép legfeljebb 2 MB lehet!',
+            'thumbnail_image.uploaded' => 'A kép legfeljebb 2 MB lehet!',
         ]);
 
         $steps = [];
         foreach ($validated['steps'] ?? [] as $step) {
-            if (empty($step['description'])) {
-                continue;
+            if (!empty($step['description'])) {
+                $steps[] = $step;
             }
-            if (empty($step['step_category_id'])) {
-                throw ValidationException::withMessages(['steps' => 'Minden lépéshez válassz kategóriát!']);
-            }
-            $steps[] = $step;
         }
 
         $ingredients = [];
         foreach ($validated['ingredients'] ?? [] as $ingredient) {
-            if (empty($ingredient['name'])) {
-                continue;
+            if (!empty($ingredient['name'])) {
+                $ingredients[] = $ingredient;
             }
-            if (!isset($ingredient['quantity'])) {
-                throw ValidationException::withMessages(['ingredients' => 'Minden alapanyaghoz adj meg mennyiséget!']);
-            }
-            if (!isset($ingredient['unit'])) {
-                throw ValidationException::withMessages(['ingredients' => 'Minden alapanyaghoz válassz mértékegységet!']);
-            }
-            $ingredients[] = $ingredient;
-        }
-
-        if (count($steps) < 3) {
-            throw ValidationException::withMessages(['steps' => 'Adj meg legalább 3 lépést!']);
-        }
-        if (count($steps) > 50) {
-            throw ValidationException::withMessages(['steps' => 'Legfeljebb 50 lépést adhatsz meg!']);
-        }
-        if (count($ingredients) < 3) {
-            throw ValidationException::withMessages(['ingredients' => 'Adj meg legalább 3 alapanyagot!']);
         }
 
         $validated['steps'] = $steps;
         $validated['ingredients'] = $ingredients;
 
         return $validated;
+    }
+
+    /**
+     * Checks the number of filled step and ingredient rows.
+     *
+     * @return array error messages (empty if everything is correct)
+     */
+    private function rowErrors(array $validated): array
+    {
+        $errors = [];
+
+        if (count($validated['steps']) < 3) {
+            $errors['steps'] = 'Adj meg legalább 3 lépést!';
+        }
+        if (count($validated['steps']) > 50) {
+            $errors['steps'] = 'Legfeljebb 50 lépést adhatsz meg!';
+        }
+        if (count($validated['ingredients']) < 3) {
+            $errors['ingredients'] = 'Adj meg legalább 3 alapanyagot!';
+        }
+
+        return $errors;
     }
 
     /**
@@ -323,7 +309,11 @@ class RecipeController extends Controller
             $recipe->thumbnail = $validated['default_image'];
         }
 
-        $recipe->fill(Arr::only($validated, ['title', 'description', 'prep_time', 'difficulty', 'servings']));
+        $recipe->title = $validated['title'];
+        $recipe->description = $validated['description'];
+        $recipe->prep_time = $validated['prep_time'];
+        $recipe->difficulty = $validated['difficulty'];
+        $recipe->servings = $validated['servings'];
         $recipe->save();
 
         $recipe->steps()->delete();

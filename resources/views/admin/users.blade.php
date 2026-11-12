@@ -2,9 +2,9 @@
 
 @section('title', 'Felhasználók (admin)')
 
-@push('styles')
+@section('styles')
     <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
-@endpush
+@endsection
 
 @section('content')
     <div class="card-stack">
@@ -28,12 +28,6 @@
                         <a href="{{ route('admin.users', ['sort' => $sort, 'direction' => $direction]) }}" class="btn-clear-search">Összes</a>
                     @endif
                 </form>
-
-                <form id="bulk-delete-form" method="POST" action="{{ route('admin.users.bulkDestroy') }}" class="bulk-delete-form">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn-delete bulk-delete-btn" disabled>Kijelöltek törlése</button>
-                </form>
             </div>
 
             @if ($users->isEmpty())
@@ -50,7 +44,6 @@
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th><input type="checkbox" class="select-all-checkbox"></th>
                             @foreach ($columns as $key => $label)
                                 @php
                                     $nextDirection = ($sort === $key && $direction === 'asc') ? 'desc' : 'asc';
@@ -71,11 +64,6 @@
                     <tbody>
                         @foreach ($users as $user)
                             <tr>
-                                <td>
-                                    @if (!$user->isAdmin() && $user->id !== Auth::id())
-                                        <input type="checkbox" name="ids[]" value="{{ $user->id }}" class="row-checkbox" form="bulk-delete-form">
-                                    @endif
-                                </td>
                                 <td>{{ $user->id }}</td>
                                 <td>
                                     <img src="{{ $user->avatar ? asset($user->avatar) : asset('images/default_avatar.svg') }}" alt="Profilkép" class="user-avatar">

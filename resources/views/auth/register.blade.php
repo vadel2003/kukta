@@ -15,10 +15,7 @@
 
                 <div class="form-group">
                     <label for="name">Felhasználónév</label>
-                    <div class="field-control">
-                        <input type="text" name="name" id="name" value="{{ old('name') }}" required minlength="3" maxlength="30" class="{{ $errors->has('name') ? 'is-invalid' : '' }}" aria-describedby="name-counter">
-                        <small class="char-counter" id="name-counter">0 / 30</small>
-                    </div>
+                    <input type="text" name="name" id="name" value="{{ old('name') }}" required minlength="3" maxlength="30" class="{{ $errors->has('name') ? 'is-invalid' : '' }}">
                     @error('name')
                         <span class="form-error">{{ $message }}</span>
                     @enderror
@@ -26,10 +23,7 @@
 
                 <div class="form-group">
                     <label for="email">Email cím</label>
-                    <div class="field-control">
-                        <input type="email" name="email" id="email" value="{{ old('email') }}" required minlength="6" maxlength="254" class="{{ $errors->has('email') ? 'is-invalid' : '' }}" aria-describedby="email-counter">
-                        <small class="char-counter" id="email-counter">0 / 50</small>
-                    </div>
+                    <input type="email" name="email" id="email" value="{{ old('email') }}" required minlength="6" maxlength="254" class="{{ $errors->has('email') ? 'is-invalid' : '' }}">
                     @error('email')
                         <span class="form-error">{{ $message }}</span>
                     @enderror
@@ -67,21 +61,4 @@
             <p>Már van fiókod? <a href="{{ route('login') }}">Jelentkezz be!</a></p>
         </div>
     </div>
-
-    <script>
-        const password = document.getElementById('password');
-        const passwordConfirmation = document.getElementById('password_confirmation');
-
-        /**
-         * Marks the confirmation field invalid if it does not match the password (so the browser blocks the submit).
-         */
-        function checkPasswordMatch() {
-            passwordConfirmation.setCustomValidity(
-                passwordConfirmation.value === password.value ? '' : 'A két jelszó nem egyezik!'
-            );
-        }
-
-        password.addEventListener('input', checkPasswordMatch);
-        passwordConfirmation.addEventListener('input', checkPasswordMatch);
-    </script>
 @endsection

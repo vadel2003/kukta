@@ -62,13 +62,6 @@
     margin-right: 0.8rem;
 }
 
-.admin-table th:first-child,
-.admin-table td:first-child {
-    width: 1%;
-    text-align: center;
-}
-
-.bulk-delete-btn:disabled,
 .btn-delete:disabled {
     background-color: var(--color-text-lighter);
     cursor: not-allowed;
@@ -154,10 +147,6 @@
     height: 60px;
     border-radius: 4px;
     object-fit: cover;
-}
-
-.hidden-row {
-    display: none;
 }
 
 .ingredient-edit-form {

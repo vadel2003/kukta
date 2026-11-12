@@ -408,21 +408,20 @@ body.assistant-page::-webkit-scrollbar {
 
 .assistant-star {
     padding: 0 4px;
-    cursor: pointer;
-}
-
-.assistant-star input {
-    display: none;
-}
-
-.assistant-star-icon {
+    background: none;
+    font-size: inherit;
+    line-height: 1.2;
     color: #ccc;
-    cursor: pointer;
     transition: color 0.15s ease;
 }
 
-.assistant-star-icon.filled {
+.assistant-star.filled,
+.assistant-stars:hover .assistant-star {
     color: var(--color-primary);
+}
+
+.assistant-stars .assistant-star:hover ~ .assistant-star {
+    color: #ccc;
 }
 
 .assistant-rating-status {

@@ -2,9 +2,9 @@
 
 @section('title', 'Receptek (admin)')
 
-@push('styles')
+@section('styles')
     <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
-@endpush
+@endsection
 
 @section('content')
     <div class="card-stack">
@@ -30,11 +30,6 @@
                 </form>
 
                 <div class="toolbar-actions">
-                    <form id="bulk-delete-form" method="POST" action="{{ route('admin.recipes.bulkDestroy') }}" class="bulk-delete-form">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn-delete bulk-delete-btn" disabled>Kijelöltek törlése</button>
-                    </form>
                     <a href="{{ route('recipes.create') }}" class="btn-edit btn-edit-primary">Új recept</a>
                 </div>
             </div>
@@ -51,7 +46,6 @@
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th><input type="checkbox" class="select-all-checkbox"></th>
                             <th></th>
                             @foreach ($columns as $key => $label)
                                 @php
@@ -71,9 +65,8 @@
                     <tbody>
                         @foreach ($recipes as $recipe)
                             <tr>
-                                <td><input type="checkbox" name="ids[]" value="{{ $recipe->id }}" class="row-checkbox" form="bulk-delete-form"></td>
                                 <td>
-                                    <img src="{{ $recipe->thumbnail_url }}" alt="{{ $recipe->title }}" class="recipe-thumbnail">
+                                    <img src="{{ asset($recipe->thumbnail) }}" alt="{{ $recipe->title }}" class="recipe-thumbnail">
                                 </td>
                                 <td>{{ $recipe->title }}</td>
                                 <td>{{ $recipe->user->name ?? 'törölt felhasználó' }}</td>

@@ -2,9 +2,9 @@
 
 @section('title', 'Alapanyagok (admin)')
 
-@push('styles')
+@section('styles')
     <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
-@endpush
+@endsection
 
 @section('content')
     <div class="card-stack">
@@ -38,37 +38,34 @@
                 </form>
 
                 <div class="toolbar-actions">
-                    <form id="bulk-delete-form" method="POST" action="{{ route('admin.ingredients.bulkDestroy') }}" class="bulk-delete-form">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn-delete bulk-delete-btn" disabled>Kijelöltek törlése</button>
-                    </form>
-                    <button type="button" class="btn-edit btn-edit-primary" data-toggle-new-ingredient>Új alapanyag</button>
+                    <a href="{{ request()->fullUrlWithQuery(['new' => 1]) }}" class="btn-edit btn-edit-primary">Új alapanyag</a>
                 </div>
             </div>
 
-            <div id="new-ingredient-form" class="hidden-row">
-                <form action="{{ route('admin.ingredients.store') }}" method="POST" class="ingredient-edit-form">
-                    @csrf
-                    <label>Név
-                        <input type="text" name="name" minlength="2" maxlength="50" required>
-                    </label>
-                    <label>Kalória
-                        <input type="number" name="calories" step="0.01" min="0" max="900" required>
-                    </label>
-                    <label>Szénhidrát
-                        <input type="number" name="carbohydrate" step="0.01" min="0" max="100" required>
-                    </label>
-                    <label>Fehérje
-                        <input type="number" name="protein" step="0.01" min="0" max="100" required>
-                    </label>
-                    <label>Zsír
-                        <input type="number" name="fat" step="0.01" min="0" max="100" required>
-                    </label>
-                    <button type="submit" class="btn-edit btn-edit-primary">Mentés</button>
-                    <button type="button" class="btn-delete" data-toggle-new-ingredient>Mégse</button>
-                </form>
-            </div>
+            @if (request('new'))
+                <div id="new-ingredient-form">
+                    <form action="{{ route('admin.ingredients.store') }}" method="POST" class="ingredient-edit-form">
+                        @csrf
+                        <label>Név
+                            <input type="text" name="name" value="{{ old('name') }}" minlength="2" maxlength="50" required>
+                        </label>
+                        <label>Kalória
+                            <input type="number" name="calories" value="{{ old('calories') }}" step="0.01" min="0" max="900" required>
+                        </label>
+                        <label>Szénhidrát
+                            <input type="number" name="carbohydrate" value="{{ old('carbohydrate') }}" step="0.01" min="0" max="100" required>
+                        </label>
+                        <label>Fehérje
+                            <input type="number" name="protein" value="{{ old('protein') }}" step="0.01" min="0" max="100" required>
+                        </label>
+                        <label>Zsír
+                            <input type="number" name="fat" value="{{ old('fat') }}" step="0.01" min="0" max="100" required>
+                        </label>
+                        <button type="submit" class="btn-edit btn-edit-primary">Mentés</button>
+                        <a href="{{ request()->fullUrlWithoutQuery('new') }}" class="btn-delete">Mégse</a>
+                    </form>
+                </div>
+            @endif
 
             @if ($ingredients->isEmpty())
                 <p>{{ $search ? 'Nincs találat.' : 'Nincs még alapanyag.' }}</p>
@@ -85,7 +82,6 @@
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th><input type="checkbox" class="select-all-checkbox"></th>
                             @foreach ($columns as $key => $label)
                                 @php
                                     $nextDirection = ($sort === $key && $direction === 'asc') ? 'desc' : 'asc';
@@ -102,77 +98,57 @@
                     </thead>
                     <tbody>
                         @foreach ($ingredients as $ingredient)
-                            <tr id="ingredient-row-{{ $ingredient->id }}">
-                                <td>
-                                    @if ($ingredient->recipes_count > 0)
-                                        <input type="checkbox" disabled title="Receptekben használatban van, nem törölhető">
-                                    @else
-                                        <input type="checkbox" name="ids[]" value="{{ $ingredient->id }}" class="row-checkbox" form="bulk-delete-form">
-                                    @endif
-                                </td>
-                                <td>{{ $ingredient->name }}</td>
-                                <td>{{ $ingredient->calories }}</td>
-                                <td>{{ $ingredient->carbohydrate }}</td>
-                                <td>{{ $ingredient->protein }}</td>
-                                <td>{{ $ingredient->fat }}</td>
-                                <td class="admin-table-actions">
-                                    <button type="button" class="btn-edit btn-edit-primary" data-toggle-ingredient-edit="{{ $ingredient->id }}">Módosítás</button>
-                                    @if ($ingredient->recipes_count > 0)
-                                        <button type="button" class="btn-delete" disabled title="{{ $ingredient->recipes_count }} receptben használatban van, nem törölhető">Törlés</button>
-                                    @else
-                                        <form action="{{ route('admin.ingredients.destroy', $ingredient->id) }}" method="POST" style="display: inline;" data-confirm-title="Biztosan törlöd az alapanyagot?" data-confirm="A(z) „{{ $ingredient->name }}” alapanyag véglegesen törlődik. Ez a művelet nem visszavonható.">
+                            @if (request('edit') == $ingredient->id)
+                                <tr id="ingredient-edit-{{ $ingredient->id }}" class="edit-row">
+                                    <td colspan="6">
+                                        <form action="{{ route('admin.ingredients.update', $ingredient->id) }}" method="POST" class="ingredient-edit-form">
                                             @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn-delete">Törlés</button>
+                                            @method('PUT')
+                                            <label>Név
+                                                <input type="text" name="name" value="{{ old('name', $ingredient->name) }}" minlength="2" maxlength="50" required>
+                                            </label>
+                                            <label>Kalória
+                                                <input type="number" name="calories" value="{{ old('calories', $ingredient->calories) }}" step="0.01" min="0" max="900" required>
+                                            </label>
+                                            <label>Szénhidrát
+                                                <input type="number" name="carbohydrate" value="{{ old('carbohydrate', $ingredient->carbohydrate) }}" step="0.01" min="0" max="100" required>
+                                            </label>
+                                            <label>Fehérje
+                                                <input type="number" name="protein" value="{{ old('protein', $ingredient->protein) }}" step="0.01" min="0" max="100" required>
+                                            </label>
+                                            <label>Zsír
+                                                <input type="number" name="fat" value="{{ old('fat', $ingredient->fat) }}" step="0.01" min="0" max="100" required>
+                                            </label>
+                                            <button type="submit" class="btn-edit btn-edit-primary">Mentés</button>
+                                            <a href="{{ request()->fullUrlWithoutQuery('edit') }}" class="btn-delete">Mégse</a>
                                         </form>
-                                    @endif
-                                </td>
-                            </tr>
-                            <tr id="ingredient-edit-{{ $ingredient->id }}" class="edit-row hidden-row">
-                                <td colspan="7">
-                                    <form action="{{ route('admin.ingredients.update', $ingredient->id) }}" method="POST" class="ingredient-edit-form">
-                                        @csrf
-                                        @method('PUT')
-                                        <label>Név
-                                            <input type="text" name="name" value="{{ $ingredient->name }}" minlength="2" maxlength="50" required>
-                                        </label>
-                                        <label>Kalória
-                                            <input type="number" name="calories" value="{{ $ingredient->calories }}" step="0.01" min="0" max="900" required>
-                                        </label>
-                                        <label>Szénhidrát
-                                            <input type="number" name="carbohydrate" value="{{ $ingredient->carbohydrate }}" step="0.01" min="0" max="100" required>
-                                        </label>
-                                        <label>Fehérje
-                                            <input type="number" name="protein" value="{{ $ingredient->protein }}" step="0.01" min="0" max="100" required>
-                                        </label>
-                                        <label>Zsír
-                                            <input type="number" name="fat" value="{{ $ingredient->fat }}" step="0.01" min="0" max="100" required>
-                                        </label>
-                                        <button type="submit" class="btn-edit btn-edit-primary">Mentés</button>
-                                        <button type="button" class="btn-delete" data-toggle-ingredient-edit="{{ $ingredient->id }}">Mégse</button>
-                                    </form>
-                                </td>
-                            </tr>
+                                    </td>
+                                </tr>
+                            @else
+                                <tr id="ingredient-row-{{ $ingredient->id }}">
+                                    <td>{{ $ingredient->name }}</td>
+                                    <td>{{ $ingredient->calories }}</td>
+                                    <td>{{ $ingredient->carbohydrate }}</td>
+                                    <td>{{ $ingredient->protein }}</td>
+                                    <td>{{ $ingredient->fat }}</td>
+                                    <td class="admin-table-actions">
+                                        <a href="{{ request()->fullUrlWithQuery(['edit' => $ingredient->id]) }}#ingredient-edit-{{ $ingredient->id }}" class="btn-edit btn-edit-primary">Módosítás</a>
+                                        @if ($ingredient->recipes_count > 0)
+                                            <button type="button" class="btn-delete" disabled title="{{ $ingredient->recipes_count }} receptben használatban van, nem törölhető">Törlés</button>
+                                        @else
+                                            <form action="{{ route('admin.ingredients.destroy', $ingredient->id) }}" method="POST" style="display: inline;" data-confirm-title="Biztosan törlöd az alapanyagot?" data-confirm="A(z) „{{ $ingredient->name }}” alapanyag véglegesen törlődik. Ez a művelet nem visszavonható.">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn-delete">Törlés</button>
+                                            </form>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endif
                         @endforeach
                     </tbody>
                 </table>
             @endif
         </div>
     </div>
-
-    <script>
-        document.querySelectorAll('[data-toggle-new-ingredient]').forEach(button => {
-            button.addEventListener('click', () => {
-                document.getElementById('new-ingredient-form').classList.toggle('hidden-row');
-            });
-        });
-
-        document.querySelectorAll('[data-toggle-ingredient-edit]').forEach(button => {
-            button.addEventListener('click', () => {
-                const id = button.dataset.toggleIngredientEdit;
-                document.getElementById('ingredient-row-' + id).classList.toggle('hidden-row');
-                document.getElementById('ingredient-edit-' + id).classList.toggle('hidden-row');
-            });
-        });
-    </script>
 @endsection

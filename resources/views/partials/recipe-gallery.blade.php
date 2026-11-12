@@ -1,10 +1,10 @@
-{{-- Recipe cards. Variables: $recipes, $favoriteIds, $showOwnerActions (optional), $removeOnUnfavorite (optional). --}}
+{{-- Recipe cards. Variables: $recipes, $favoriteIds, $showOwnerActions (optional). --}}
 @forelse ($recipes as $recipe)
-    <div class="recipe-card">
+    <div class="recipe-card" id="recipe-{{ $recipe->id }}">
         <div class="card-image-wrapper">
-            <img src="{{ $recipe->thumbnail_url }}" alt="{{ $recipe->title }}" class="recipe-image">
+            <img src="{{ asset($recipe->thumbnail) }}" alt="{{ $recipe->title }}" class="recipe-image">
             @auth
-                <form action="{{ route('recipes.favorite', $recipe->id) }}" method="POST" class="card-favorite-form" @if (!empty($removeOnUnfavorite)) data-remove-card="true" @endif>
+                <form action="{{ route('recipes.favorite', $recipe->id) }}" method="POST" class="card-favorite-form">
                     @csrf
                     <button type="submit" class="btn-favorite-card {{ in_array($recipe->id, $favoriteIds) ? 'favorited' : '' }}" title="{{ in_array($recipe->id, $favoriteIds) ? 'Kedvenc törlése' : 'Kedvencnek jelölöm' }}">
                         <i data-lucide="heart"></i>

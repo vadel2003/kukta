@@ -7,9 +7,8 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Middleware\IsAdmin;
 use Illuminate\Support\Facades\Route;
-
-Route::pattern('id', '[0-9]+');
 
 // Home
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -50,21 +49,19 @@ Route::get('/recept/{id}', [RecipeController::class, 'show'])->name('recipes.sho
 Route::get('/recept/{id}/asszisztens', [RecipeController::class, 'assistant'])->name('recipes.assistant');
 
 // Super admin
-Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/alapanyagok', [AdminController::class, 'ingredients'])->name('ingredients');
-    Route::post('/alapanyagok', [AdminController::class, 'storeIngredient'])->name('ingredients.store');
-    Route::put('/alapanyagok/{id}', [AdminController::class, 'updateIngredient'])->name('ingredients.update');
-    Route::delete('/alapanyagok/{id}', [AdminController::class, 'destroyIngredient'])->name('ingredients.destroy');
-    Route::delete('/alapanyagok/tomeges-torles', [AdminController::class, 'bulkDestroyIngredients'])->name('ingredients.bulkDestroy');
-    Route::get('/receptek', [AdminController::class, 'recipes'])->name('recipes');
-    Route::delete('/receptek/tomeges-torles', [AdminController::class, 'bulkDestroyRecipes'])->name('recipes.bulkDestroy');
-    Route::get('/felhasznalok', [AdminController::class, 'users'])->name('users');
-    Route::delete('/felhasznalok/{id}', [AdminController::class, 'destroyUser'])->name('users.destroy');
-    Route::delete('/felhasznalok/tomeges-torles', [AdminController::class, 'bulkDestroyUsers'])->name('users.bulkDestroy');
+Route::middleware(['auth', IsAdmin::class])->group(function () {
+    Route::get('/admin/alapanyagok', [AdminController::class, 'ingredients'])->name('admin.ingredients');
+    Route::post('/admin/alapanyagok', [AdminController::class, 'storeIngredient'])->name('admin.ingredients.store');
+    Route::put('/admin/alapanyagok/{id}', [AdminController::class, 'updateIngredient'])->name('admin.ingredients.update');
+    Route::delete('/admin/alapanyagok/{id}', [AdminController::class, 'destroyIngredient'])->name('admin.ingredients.destroy');
+    Route::get('/admin/receptek', [AdminController::class, 'recipes'])->name('admin.recipes');
+    Route::get('/admin/felhasznalok', [AdminController::class, 'users'])->name('admin.users');
+    Route::delete('/admin/felhasznalok/{id}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
 });
 
 // Static pages
 Route::get('/adatkezelesi-tajekoztato', [PageController::class, 'privacy'])->name('page.privacy');
 Route::get('/suti-kezeles', [PageController::class, 'cookies'])->name('page.cookies');
+Route::post('/suti-elfogadas', [PageController::class, 'acceptCookies'])->name('page.cookies.accept');
 Route::get('/aszf', [PageController::class, 'terms'])->name('page.terms');
 Route::get('/impresszum', [PageController::class, 'imprint'])->name('page.imprint');

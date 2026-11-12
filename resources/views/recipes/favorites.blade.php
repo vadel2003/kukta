@@ -2,9 +2,9 @@
 
 @section('title', 'Kedvenc receptek')
 
-@push('styles')
+@section('styles')
     <link rel="stylesheet" href="{{ asset('css/pages/home.css') }}">
-@endpush
+@endsection
 
 @section('content')
     <div class="card-stack">
@@ -18,7 +18,7 @@
         @else
             @include('partials.recipe-list', [
                 'searchAction' => route('recipes.favorites'),
-                'searchPlaceholder' => 'Kedvenc receptek keresése kulcsszó szerint...',
+                'searchPlaceholder' => 'Kedvencek keresése...',
             ])
         @endif
     </div>

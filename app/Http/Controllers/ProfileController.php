@@ -21,7 +21,12 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'min:3', 'max:30', 'unique:user,name,' . $user->id . ',id'],
             'email' => ['required', 'string', 'email', 'min:6', 'max:254', 'unique:user,email,' . $user->id . ',id'],
-            'avatar' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'dimensions:width=100,height=100', 'max:2048'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
+        ], [
+            'avatar.image' => 'Csak JPG, PNG vagy WebP képet tölthetsz fel!',
+            'avatar.mimes' => 'Csak JPG, PNG vagy WebP képet tölthetsz fel!',
+            'avatar.max' => 'A kép legfeljebb 2 MB lehet!',
+            'avatar.uploaded' => 'A kép legfeljebb 2 MB lehet!',
         ]);
 
         $user->name = $validated['name'];

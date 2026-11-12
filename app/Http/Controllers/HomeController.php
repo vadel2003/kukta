@@ -11,17 +11,17 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $recipes = Recipe::with('user')
+        $query = Recipe::with('user')
             ->withCount(['favorites', 'ratings'])
-            ->withAvg('ratings', 'score')
-            ->searchAndFilter($request)
-            ->applySort($request)
-            ->paginate(21);
+            ->withAvg('ratings', 'score');
+        $this->applyFilters($query, $request);
+        $this->applySort($query, $request);
+        $recipes = $query->paginate(21)->withQueryString();
 
         $favoriteIds = Auth::check()
             ? Favorite::where('user_id', Auth::id())->pluck('recipe_id')->toArray()
             : [];
 
-        return $this->recipeListResponse($request, 'home', compact('recipes', 'favoriteIds'));
+        return view('home', compact('recipes', 'favoriteIds') + $this->filterCategories());
     }
 }

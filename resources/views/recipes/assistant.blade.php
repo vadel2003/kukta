@@ -3,16 +3,16 @@
 @section('title', 'Kukta asszisztens – ' . $recipe->title)
 @section('bodyClass', 'assistant-page')
 
-@push('styles')
+@section('styles')
     <link rel="stylesheet" href="{{ asset('css/assistant/assistant.css') }}">
-@endpush
+@endsection
 
 @section('content')
-    <div class="assistant" style="--assistant-bg-image: url('{{ $recipe->thumbnail_url }}');">
+    <div class="assistant" style="--assistant-bg-image: url('{{ asset($recipe->thumbnail) }}');">
         <a href="{{ route('recipes.show', $recipe->id) }}" class="assistant-close" aria-label="Kilépés az asszisztensből"><i data-lucide="x"></i></a>
 
         <section class="assistant-screen is-active">
-            <div class="assistant-intro" style="background-image: url('{{ $recipe->thumbnail_url }}');">
+            <div class="assistant-intro" style="background-image: url('{{ asset($recipe->thumbnail) }}');">
                 <div class="assistant-intro-content">
                     <div class="assistant-intro-card assistant-greeting-card">
                         <div class="assistant-figure-slot">
@@ -63,17 +63,14 @@
                     </div>
 
                     @auth
-                        <form id="assistantRatingForm" action="{{ route('recipes.rate', $recipe->id) }}" method="POST" class="assistant-rating">
+                        <form action="{{ route('recipes.rate', $recipe->id) }}" method="POST" class="assistant-rating">
                             @csrf
                             <div class="assistant-stars">
                                 @for ($i = 1; $i <= 5; $i++)
-                                    <label class="assistant-star">
-                                        <input type="radio" name="score" value="{{ $i }}" {{ $userRating && $userRating->score == $i ? 'checked' : '' }}>
-                                        <span class="assistant-star-icon {{ $userRating && $i <= $userRating->score ? 'filled' : '' }}">★</span>
-                                    </label>
+                                    <button type="submit" name="score" value="{{ $i }}" class="assistant-star {{ $userRating && $i <= $userRating->score ? 'filled' : '' }}" title="{{ $i }} csillag">★</button>
                                 @endfor
                             </div>
-                            <p class="assistant-rating-status" id="assistantRatingStatus">
+                            <p class="assistant-rating-status">
                                 {{ $userRating ? 'A te értékelésed: ' . $userRating->score . ' csillag' : 'Értékeld a receptet!' }}
                             </p>
                         </form>
@@ -362,41 +359,4 @@
             showScreen(0);
         });
     </script>
-
-    @auth
-        <script>
-            const ratingForm = document.getElementById('assistantRatingForm');
-            const ratingStarLabels = Array.from(ratingForm.querySelectorAll('.assistant-star'));
-
-            /**
-             * Fills the rating stars up to the given score.
-             */
-            function fillRatingStars(score) {
-                ratingStarLabels.forEach(label => {
-                    const starValue = parseInt(label.querySelector('input').value);
-                    label.querySelector('.assistant-star-icon').classList.toggle('filled', starValue <= score);
-                });
-            }
-
-            ratingStarLabels.forEach(label => {
-                label.addEventListener('mouseenter', () => fillRatingStars(parseInt(label.querySelector('input').value)));
-            });
-
-            ratingForm.addEventListener('mouseleave', () => {
-                const checked = ratingForm.querySelector('input[name="score"]:checked');
-                fillRatingStars(checked ? parseInt(checked.value) : 0);
-            });
-
-            ratingForm.addEventListener('change', event => {
-                const score = parseInt(event.target.value);
-
-                fetchJson(ratingForm.action, { method: 'POST', body: new FormData(ratingForm) })
-                    .then(() => {
-                        fillRatingStars(score);
-                        document.getElementById('assistantRatingStatus').textContent = 'Köszönjük az értékelést! (' + score + ' csillag)';
-                    })
-                    .catch(error => console.error('Error:', error));
-            });
-        </script>
-    @endauth
 @endsection

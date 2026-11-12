@@ -7,10 +7,9 @@ use App\Models\Recipe;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 
 /**
- * Super admin pages. Access is checked by the route group (middleware('can:admin')).
+ * Super admin pages. Access is checked by the IsAdmin middleware of the routes.
  */
 class AdminController extends Controller
 {
@@ -19,10 +18,11 @@ class AdminController extends Controller
         $search = $request->query('search');
         [$sort, $direction] = $this->sortParams($request, ['name', 'calories', 'carbohydrate', 'protein', 'fat'], 'name', 'asc');
 
-        $ingredients = Ingredient::withCount('recipes')
-            ->when($search, fn ($query) => $query->where('name', 'like', '%' . $search . '%'))
-            ->orderBy($sort, $direction)
-            ->get();
+        $query = Ingredient::withCount('recipes');
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+        $ingredients = $query->orderBy($sort, $direction)->get();
 
         return view('admin.ingredients', compact('ingredients', 'search', 'sort', 'direction'));
     }
@@ -60,31 +60,20 @@ class AdminController extends Controller
         return redirect()->route('admin.ingredients')->with('success', 'Alapanyag sikeresen törölve!');
     }
 
-    /**
-     * Deletes only those selected ingredients that are not used in any recipe.
-     */
-    public function bulkDestroyIngredients(Request $request)
-    {
-        $validated = $request->validate([
-            'ids' => ['required', 'array', 'min:1'],
-            'ids.*' => ['integer', 'exists:ingredient,id'],
-        ]);
-
-        Ingredient::whereIn('id', $validated['ids'])->doesntHave('recipes')->delete();
-
-        return redirect()->route('admin.ingredients')->with('success', 'A kijelölt alapanyagok sikeresen törölve!');
-    }
-
     public function recipes(Request $request)
     {
         $search = $request->query('search');
         [$sort, $direction] = $this->sortParams($request, ['title', 'user', 'created_at'], 'created_at', 'desc');
 
-        $recipesQuery = Recipe::with('user')
-            ->when($search, function ($query) use ($search) {
+        $recipesQuery = Recipe::with('user');
+        if ($search) {
+            $recipesQuery->where(function ($query) use ($search) {
                 $query->where('title', 'like', '%' . $search . '%')
-                    ->orWhereHas('user', fn ($userQuery) => $userQuery->where('name', 'like', '%' . $search . '%'));
+                    ->orWhereHas('user', function ($query) use ($search) {
+                        $query->where('name', 'like', '%' . $search . '%');
+                    });
             });
+        }
 
         if ($sort === 'user') {
             $recipesQuery->leftJoin('user', 'user.id', '=', 'recipe.user_id')
@@ -99,29 +88,17 @@ class AdminController extends Controller
         return view('admin.recipes', compact('recipes', 'search', 'sort', 'direction'));
     }
 
-    public function bulkDestroyRecipes(Request $request)
-    {
-        $validated = $request->validate([
-            'ids' => ['required', 'array', 'min:1'],
-            'ids.*' => ['integer', 'exists:recipe,id'],
-        ]);
-
-        Recipe::whereIn('id', $validated['ids'])->delete();
-
-        return redirect()->route('admin.recipes')->with('success', 'A kijelölt receptek sikeresen törölve!');
-    }
-
     public function users(Request $request)
     {
         $search = $request->query('search');
         [$sort, $direction] = $this->sortParams($request, ['id', 'name', 'email', 'is_admin'], 'name', 'asc');
 
-        $users = User::when($search, function ($query) use ($search) {
+        $query = User::query();
+        if ($search) {
             $query->where('name', 'like', '%' . $search . '%')
                 ->orWhere('email', 'like', '%' . $search . '%');
-        })
-            ->orderBy($sort, $direction)
-            ->get();
+        }
+        $users = $query->orderBy($sort, $direction)->get();
 
         return view('admin.users', compact('users', 'search', 'sort', 'direction'));
     }
@@ -144,37 +121,19 @@ class AdminController extends Controller
     }
 
     /**
-     * The super admin and the current user's own account cannot be deleted.
-     */
-    public function bulkDestroyUsers(Request $request)
-    {
-        $validated = $request->validate([
-            'ids' => ['required', 'array', 'min:1'],
-            'ids.*' => ['integer', 'exists:user,id'],
-        ]);
-
-        $users = User::whereIn('id', $validated['ids'])
-            ->where('is_admin', false)
-            ->where('id', '!=', Auth::id())
-            ->get();
-
-        foreach ($users as $user) {
-            $user->deleteAvatarFile();
-            $user->delete();
-        }
-
-        return redirect()->route('admin.users')->with('success', 'A kijelölt felhasználók sikeresen törölve!');
-    }
-
-    /**
      * Validation rules of the ingredient form.
      *
      * @param  Ingredient|null  $ingredient  the ingredient being updated (its own name is not a duplicate)
      */
     private function ingredientRules(?Ingredient $ingredient = null): array
     {
+        $unique = 'unique:ingredient,name';
+        if ($ingredient) {
+            $unique = 'unique:ingredient,name,' . $ingredient->id;
+        }
+
         return [
-            'name' => ['required', 'string', 'min:2', 'max:50', Rule::unique('ingredient', 'name')->ignore($ingredient?->id)],
+            'name' => ['required', 'string', 'min:2', 'max:50', $unique],
             'calories' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:900'],
             'carbohydrate' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],
             'protein' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],

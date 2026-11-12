@@ -53,14 +53,6 @@ class Recipe extends Model
         return self::DIFFICULTIES[$this->difficulty] ?? '';
     }
 
-    /**
-     * The thumbnail URL ($recipe->thumbnail_url), or the placeholder image if the recipe has none.
-     */
-    public function getThumbnailUrlAttribute(): string
-    {
-        return asset($this->thumbnail ?: 'images/recipes/default/recipe_placeholder.jpg');
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -68,7 +60,7 @@ class Recipe extends Model
 
     public function steps()
     {
-        return $this->hasMany(Step::class, 'recipe_id');
+        return $this->hasMany(Step::class, 'recipe_id')->orderBy('position');
     }
 
     public function ingredients()
@@ -115,67 +107,5 @@ class Recipe extends Model
     public function cuisines()
     {
         return $this->belongsToMany(Cuisine::class, 'cuisine_recipe', 'recipe_id', 'cuisine_id');
-    }
-
-    /**
-     * Keyword search (title, description, ingredient, step) and category filters from the request.
-     * Values within a category are combined with OR, categories with AND. Exception: "free from"
-     * values are combined with AND too (the recipe must be free from all of them).
-     */
-    public function scopeSearchAndFilter($query, $request)
-    {
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhereHas('ingredients', fn ($q2) => $q2->where('name', 'like', "%{$search}%"))
-                    ->orWhereHas('steps', fn ($q2) => $q2->where('description', 'like', "%{$search}%"));
-            });
-        }
-
-        if ($request->filled('meal_time')) {
-            $query->whereHas('mealTimes', fn ($q) => $q->whereIn('meal_time.id', (array) $request->input('meal_time')));
-        }
-        if ($request->filled('food_type')) {
-            $query->whereHas('foodTypes', fn ($q) => $q->whereIn('food_type.id', (array) $request->input('food_type')));
-        }
-        if ($request->filled('diet')) {
-            $query->whereHas('diets', fn ($q) => $q->whereIn('diet.id', (array) $request->input('diet')));
-        }
-        if ($request->filled('free_from')) {
-            foreach ((array) $request->input('free_from') as $freeFromId) {
-                $query->whereHas('freeFroms', fn ($q) => $q->where('free_from.id', $freeFromId));
-            }
-        }
-        if ($request->filled('cuisine')) {
-            $query->whereHas('cuisines', fn ($q) => $q->whereIn('cuisine.id', (array) $request->input('cuisine')));
-        }
-
-        return $query;
-    }
-
-    /**
-     * Sorting by the request's "sort" parameter:
-     * date = newest first, popularity = number of favorites (requires withCount('favorites')),
-     * otherwise relevance: title matches first, then description matches, then $defaultColumn descending.
-     */
-    public function scopeApplySort($query, $request, string $defaultColumn = 'recipe.created_at')
-    {
-        $sort = $request->input('sort');
-
-        if ($sort === 'date') {
-            return $query->orderBy('recipe.created_at', 'desc');
-        }
-        if ($sort === 'popularity') {
-            return $query->orderBy('favorites_count', 'desc');
-        }
-
-        if ($request->filled('search')) {
-            $search = '%' . $request->input('search') . '%';
-            $query->orderByRaw('CASE WHEN recipe.title LIKE ? THEN 1 WHEN recipe.description LIKE ? THEN 2 ELSE 3 END', [$search, $search]);
-        }
-
-        return $query->orderBy($defaultColumn, 'desc');
     }
 }

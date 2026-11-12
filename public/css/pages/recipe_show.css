@@ -409,39 +409,29 @@
 .rating-stars-interactive {
     display: flex;
     justify-content: center;
-    gap: 0.5rem;
     margin: 1rem 0;
 }
 
-.star-label {
-    cursor: pointer;
-    position: relative;
-}
-
-.star-input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.star-icon {
+.star-button {
+    padding: 0 0.25rem;
+    background: none;
     font-size: 2.5rem;
+    line-height: 1.2;
     color: #D3C9BC;
     transition: color 0.15s ease, transform 0.15s ease;
-    display: inline-block;
 }
 
-.star-icon.filled {
+.star-button.filled,
+.rating-stars-interactive:hover .star-button {
     color: var(--color-primary);
 }
 
-.star-label:hover .star-icon {
-    color: var(--color-primary);
+.rating-stars-interactive .star-button:hover ~ .star-button {
+    color: #D3C9BC;
+}
+
+.star-button:hover {
     transform: scale(1.15);
-}
-
-.star-input:checked ~ .star-icon {
-    color: var(--color-primary);
 }
 
 .rating-personal-status {
@@ -488,7 +478,7 @@
         min-width: auto;
     }
 
-    .star-icon {
+    .star-button {
         font-size: 1.75rem;
     }
 
