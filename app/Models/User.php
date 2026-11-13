@@ -3,12 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use Notifiable;
-
     protected $table = 'user';
 
     public $timestamps = false;
@@ -25,18 +22,14 @@ class User extends Authenticatable
         'password',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'password' => 'hashed',
-            'is_admin' => 'boolean',
-        ];
-    }
+    protected $casts = [
+        'is_admin' => 'boolean',
+    ];
 
     /**
-     * Deletes the avatar file from the public folder (if any). Does not change the avatar attribute.
+     * Deletes the avatar file from the public folder (if there is one).
      */
-    public function deleteAvatarFile(): void
+    public function deleteAvatarFile()
     {
         if ($this->avatar && file_exists(public_path($this->avatar))) {
             unlink(public_path($this->avatar));
@@ -58,7 +51,7 @@ class User extends Authenticatable
         return $this->hasMany(Rating::class);
     }
 
-    public function isAdmin(): bool
+    public function isAdmin()
     {
         return $this->is_admin;
     }

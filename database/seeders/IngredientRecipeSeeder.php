@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\IngredientRecipe;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -560,8 +559,35 @@ class IngredientRecipeSeeder extends Seeder
             'Szezámmag'    => ['Szezámmag'],
         ];
 
-        $ingredientIds = DB::table('ingredient')->pluck('id', 'name');
-        $freeFromIds = DB::table('free_from')->pluck('id', 'name');
+        // unit name => number stored in the database (same as IngredientRecipe::UNITS)
+        $unitNumbers = [
+            'g' => 0,
+            'kg' => 1,
+            'ml' => 2,
+            'l' => 3,
+            'db' => 4,
+            'gerezd' => 5,
+            'fej' => 6,
+            'szelet' => 7,
+            'csokor' => 8,
+            'csomag' => 9,
+            'csésze' => 10,
+            'evőkanál' => 11,
+            'teáskanál' => 12,
+            'csipet' => 13,
+        ];
+
+        // ingredient name => id
+        $ingredientIds = [];
+        foreach (DB::table('ingredient')->get() as $row) {
+            $ingredientIds[$row->name] = $row->id;
+        }
+
+        // "free from" name => id
+        $freeFromIds = [];
+        foreach (DB::table('free_from')->get() as $row) {
+            $freeFromIds[$row->name] = $row->id;
+        }
 
         $records = [];
         $freeFromRecords = [];
@@ -569,12 +595,16 @@ class IngredientRecipeSeeder extends Seeder
         foreach ($recipeIngredients as $recipeId => $ingredients) {
             $recipeContains = [];
 
-            foreach ($ingredients as [$name, $quantity, $unit]) {
+            foreach ($ingredients as $ingredient) {
+                $name = $ingredient[0];
+                $quantity = $ingredient[1];
+                $unit = $ingredient[2];
+
                 $records[] = [
                     'ingredient_id' => $ingredientIds[$name],
                     'recipe_id' => $recipeId,
                     'quantity' => $quantity,
-                    'unit' => array_search($unit, IngredientRecipe::UNITS),
+                    'unit' => $unitNumbers[$unit],
                 ];
 
                 foreach ($containsMap as $freeFrom => $names) {

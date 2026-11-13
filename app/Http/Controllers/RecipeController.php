@@ -8,7 +8,6 @@ use App\Models\IngredientRecipe;
 use App\Models\Rating;
 use App\Models\Recipe;
 use App\Models\StepCategory;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,7 +27,8 @@ class RecipeController extends Controller
             return back()->withErrors($errors)->withInput();
         }
 
-        $recipe = new Recipe(['user_id' => Auth::id()]);
+        $recipe = new Recipe();
+        $recipe->user_id = Auth::id();
         $this->saveRecipe($recipe, $request, $validated);
 
         return redirect()->route('recipes.my')->with('success', 'Recept sikeresen feltöltve!');
@@ -43,12 +43,13 @@ class RecipeController extends Controller
         $this->applySort($query, $request);
         $recipes = $query->paginate(21)->withQueryString();
 
-        return view('recipes.my', [
-            'recipes' => $recipes,
-            'favoriteIds' => Favorite::where('user_id', Auth::id())->pluck('recipe_id')->toArray(),
-            'showOwnerActions' => true,
-            'hasAnyRecipes' => Recipe::where('user_id', Auth::id())->exists(),
-        ] + $this->filterCategories());
+        $data = $this->filterCategories();
+        $data['recipes'] = $recipes;
+        $data['favoriteIds'] = Favorite::where('user_id', Auth::id())->pluck('recipe_id')->toArray();
+        $data['showOwnerActions'] = true;
+        $data['hasAnyRecipes'] = Recipe::where('user_id', Auth::id())->exists();
+
+        return view('recipes.my', $data);
     }
 
     public function favorites(Request $request)
@@ -63,15 +64,16 @@ class RecipeController extends Controller
         $this->applySort($query, $request);
         $recipes = $query->paginate(21)->withQueryString();
 
-        return view('recipes.favorites', [
-            'recipes' => $recipes,
-            'favoriteIds' => $favoriteIds,
-            'hasAnyFavorites' => count($favoriteIds) > 0,
-        ] + $this->filterCategories());
+        $data = $this->filterCategories();
+        $data['recipes'] = $recipes;
+        $data['favoriteIds'] = $favoriteIds;
+        $data['hasAnyFavorites'] = count($favoriteIds) > 0;
+
+        return view('recipes.favorites', $data);
     }
 
     /**
-     * Favorites or unfavorites the recipe, then goes back to the same recipe card on the previous page.
+     * Favorites or unfavorites the recipe, then goes back to the same recipe card.
      */
     public function toggleFavorite($id)
     {
@@ -84,10 +86,10 @@ class RecipeController extends Controller
         if ($existing) {
             $existing->delete();
         } else {
-            Favorite::create([
-                'user_id' => Auth::id(),
-                'recipe_id' => $recipe->id,
-            ]);
+            $favorite = new Favorite();
+            $favorite->user_id = Auth::id();
+            $favorite->recipe_id = $recipe->id;
+            $favorite->save();
         }
 
         return redirect(url()->previous() . '#recipe-' . $recipe->id);
@@ -97,28 +99,45 @@ class RecipeController extends Controller
     {
         $recipe = Recipe::with(['user', 'steps', 'ingredients', 'ratings'])->findOrFail($id);
 
-        $isFavorited = Auth::check() && Favorite::where('user_id', Auth::id())
-            ->where('recipe_id', $recipe->id)
-            ->exists();
+        $isFavorited = false;
+        $userRating = null;
+        if (Auth::check()) {
+            $isFavorited = Favorite::where('user_id', Auth::id())->where('recipe_id', $recipe->id)->exists();
+            $userRating = Rating::where('user_id', Auth::id())->where('recipe_id', $recipe->id)->first();
+        }
 
-        $favoriteCount = $recipe->favorites()->count();
-        $freeFroms = $recipe->freeFroms()->orderBy('free_from.id')->get();
-        $averageRating = round($recipe->averageRating() ?? 0, 1);
-        $ratingCount = $recipe->ratings()->count();
-        $userRating = Auth::check() ? $recipe->ratings()->where('user_id', Auth::id())->first() : null;
-        $distributionPercentages = $this->ratingDistribution($recipe);
+        $averageRating = $recipe->averageRating();
+        if ($averageRating == null) {
+            $averageRating = 0;
+        }
 
-        return view('recipes.show', compact('recipe', 'isFavorited', 'favoriteCount', 'freeFroms', 'averageRating', 'ratingCount', 'userRating', 'distributionPercentages'));
+        return view('recipes.show', [
+            'recipe' => $recipe,
+            'isFavorited' => $isFavorited,
+            'favoriteCount' => $recipe->favorites()->count(),
+            'freeFroms' => $recipe->freeFroms()->orderBy('free_from.id')->get(),
+            'averageRating' => round($averageRating, 1),
+            'ratingCount' => $recipe->ratings()->count(),
+            'userRating' => $userRating,
+            'distributionPercentages' => $this->ratingDistribution($recipe),
+            'units' => IngredientRecipe::UNITS,
+        ]);
     }
 
     public function assistant($id)
     {
         $recipe = Recipe::with(['steps.stepCategory', 'ingredients'])->findOrFail($id);
 
-        $averageRating = round($recipe->averageRating() ?? 0, 1);
-        $userRating = Auth::check() ? $recipe->ratings()->where('user_id', Auth::id())->first() : null;
+        $userRating = null;
+        if (Auth::check()) {
+            $userRating = Rating::where('user_id', Auth::id())->where('recipe_id', $recipe->id)->first();
+        }
 
-        return view('recipes.assistant', compact('recipe', 'averageRating', 'userRating'));
+        return view('recipes.assistant', [
+            'recipe' => $recipe,
+            'userRating' => $userRating,
+            'units' => IngredientRecipe::UNITS,
+        ]);
     }
 
     public function storeRating(Request $request, $id)
@@ -129,17 +148,20 @@ class RecipeController extends Controller
 
         $recipe = Recipe::findOrFail($id);
 
-        Rating::updateOrCreate(
-            ['user_id' => Auth::id(), 'recipe_id' => $recipe->id],
-            ['score' => $request->score]
-        );
+        $rating = Rating::where('user_id', Auth::id())->where('recipe_id', $recipe->id)->first();
+        if (!$rating) {
+            $rating = new Rating();
+            $rating->user_id = Auth::id();
+            $rating->recipe_id = $recipe->id;
+        }
+        $rating->score = $request->score;
+        $rating->save();
 
         return redirect(route('recipes.show', $recipe->id) . '#reviews')->with('success', 'Értékelés mentve!');
     }
 
     /**
-     * The "log in to rate" link of guests. The auth middleware sends the guest to the login page,
-     * then back here, and the recipe page opens at its ratings. The rating itself is saved by storeRating() (POST).
+     * The "log in to rate" link of guests: after logging in, opens the recipe page at the ratings.
      */
     public function loginToRate($id)
     {
@@ -152,7 +174,10 @@ class RecipeController extends Controller
             ->where('user_id', Auth::id())
             ->findOrFail($id);
 
-        return view('recipes.create', ['recipe' => $recipe] + $this->formData());
+        $data = $this->formData();
+        $data['recipe'] = $recipe;
+
+        return view('recipes.create', $data);
     }
 
     public function update(Request $request, $id)
@@ -174,11 +199,9 @@ class RecipeController extends Controller
     public function destroy($id)
     {
         $recipe = Recipe::findOrFail($id);
-
-        /** @var User $user */
         $user = Auth::user();
 
-        if ($recipe->user_id !== $user->id && !$user->isAdmin()) {
+        if ($recipe->user_id != $user->id && !$user->isAdmin()) {
             abort(403);
         }
 
@@ -190,35 +213,50 @@ class RecipeController extends Controller
     /**
      * Lists for the recipe form (create and edit).
      */
-    private function formData(): array
+    private function formData()
     {
-        return [
-            'ingredients' => Ingredient::orderBy('name')->get(),
-            'stepCategories' => StepCategory::orderBy('id')->get(),
-        ] + $this->filterCategories();
+        $data = $this->filterCategories();
+        $data['ingredients'] = Ingredient::orderBy('name')->get();
+        $data['stepCategories'] = StepCategory::orderBy('id')->get();
+        $data['difficulties'] = Recipe::DIFFICULTIES;
+        $data['defaultImages'] = Recipe::DEFAULT_IMAGES;
+        $data['units'] = IngredientRecipe::UNITS;
+
+        return $data;
     }
 
     /**
-     * Validates the recipe form. Empty step and ingredient rows are skipped.
-     *
-     * @param  Recipe|null  $recipe  the recipe being edited (it already has an image, so uploading a new one is optional)
-     * @return array the validated data, with only the filled step and ingredient rows
+     * Validates the recipe form and keeps only the filled step and ingredient rows.
      */
-    private function validateRecipe(Request $request, ?Recipe $recipe = null): array
+    private function validateRecipe(Request $request, $recipe = null)
     {
+        // when editing, the recipe already has an image
+        $imageRule = 'required_without:default_image';
+        if ($recipe != null) {
+            $imageRule = 'nullable';
+        }
+
+        $defaultImages = '';
+        foreach (Recipe::DEFAULT_IMAGES as $path => $label) {
+            if ($defaultImages != '') {
+                $defaultImages = $defaultImages . ',';
+            }
+            $defaultImages = $defaultImages . $path;
+        }
+
         $validated = $request->validate([
             'title' => ['required', 'string', 'min:5', 'max:100'],
             'description' => ['required', 'string', 'min:5', 'max:1000'],
             'prep_time' => ['required', 'integer', 'min:3', 'max:1440'],
-            'difficulty' => ['required', 'integer', 'in:' . implode(',', array_keys(Recipe::DIFFICULTIES))],
+            'difficulty' => ['required', 'integer', 'min:0', 'max:2'],
             'servings' => ['required', 'integer', 'min:1', 'max:50'],
             'steps' => ['nullable', 'array'],
-            'steps.*.description' => ['nullable', 'string', 'min:5', 'max:1000'],
+            'steps.*.description' => ['nullable', 'string', 'min:5', 'max:200'],
             'steps.*.step_category_id' => ['nullable', 'required_with:steps.*.description', 'integer', 'exists:step_category,id'],
             'ingredients' => ['nullable', 'array'],
             'ingredients.*.name' => ['nullable', 'string', 'min:2', 'max:50'],
             'ingredients.*.quantity' => ['nullable', 'required_with:ingredients.*.name', 'numeric', 'decimal:0,2', 'min:0.1', 'max:10000'],
-            'ingredients.*.unit' => ['nullable', 'required_with:ingredients.*.name', 'integer', 'in:' . implode(',', array_keys(IngredientRecipe::UNITS))],
+            'ingredients.*.unit' => ['nullable', 'required_with:ingredients.*.name', 'integer', 'min:0', 'max:13'],
             'meal_times' => ['required', 'array', 'min:1'],
             'meal_times.*' => ['exists:meal_time,id'],
             'food_types' => ['required', 'array', 'min:1'],
@@ -229,8 +267,8 @@ class RecipeController extends Controller
             'free_from.*' => ['exists:free_from,id'],
             'cuisines' => ['required', 'array', 'min:1'],
             'cuisines.*' => ['exists:cuisine,id'],
-            'thumbnail_image' => [$recipe ? 'nullable' : 'required_without:default_image', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
-            'default_image' => ['nullable', 'string', 'in:' . implode(',', array_keys(Recipe::DEFAULT_IMAGES))],
+            'thumbnail_image' => [$imageRule, 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
+            'default_image' => ['nullable', 'string', 'in:' . $defaultImages],
         ], [
             'meal_times.required' => 'Válassz legalább egy napszakot!',
             'meal_times.min' => 'Válassz legalább egy napszakot!',
@@ -253,16 +291,20 @@ class RecipeController extends Controller
         ]);
 
         $steps = [];
-        foreach ($validated['steps'] ?? [] as $step) {
-            if (!empty($step['description'])) {
-                $steps[] = $step;
+        if (isset($validated['steps'])) {
+            foreach ($validated['steps'] as $step) {
+                if (!empty($step['description'])) {
+                    $steps[] = $step;
+                }
             }
         }
 
         $ingredients = [];
-        foreach ($validated['ingredients'] ?? [] as $ingredient) {
-            if (!empty($ingredient['name'])) {
-                $ingredients[] = $ingredient;
+        if (isset($validated['ingredients'])) {
+            foreach ($validated['ingredients'] as $ingredient) {
+                if (!empty($ingredient['name'])) {
+                    $ingredients[] = $ingredient;
+                }
             }
         }
 
@@ -274,10 +316,8 @@ class RecipeController extends Controller
 
     /**
      * Checks the number of filled step and ingredient rows.
-     *
-     * @return array error messages (empty if everything is correct)
      */
-    private function rowErrors(array $validated): array
+    private function rowErrors($validated)
     {
         $errors = [];
 
@@ -295,11 +335,9 @@ class RecipeController extends Controller
     }
 
     /**
-     * Saves the recipe with its image, steps, ingredients and categories.
-     * Used for both create and update: the old steps and relations are replaced.
-     * New ingredients are created with zero nutrition values, to be filled in by the super admin.
+     * Saves the recipe with its image, steps, ingredients and categories (used by store and update).
      */
-    private function saveRecipe(Recipe $recipe, Request $request, array $validated): void
+    private function saveRecipe($recipe, $request, $validated)
     {
         if ($request->hasFile('thumbnail_image')) {
             $filename = time() . '_' . uniqid() . '.' . $request->file('thumbnail_image')->extension();
@@ -325,39 +363,61 @@ class RecipeController extends Controller
             ]);
         }
 
+        // new ingredients get 0 nutrition values, the super admin fills them in later
         $ingredientData = [];
         foreach ($validated['ingredients'] as $ingredient) {
-            $ingredientModel = Ingredient::firstOrCreate(
-                ['name' => $ingredient['name']],
-                ['calories' => 0, 'carbohydrate' => 0, 'protein' => 0, 'fat' => 0]
-            );
+            $ingredientModel = Ingredient::where('name', $ingredient['name'])->first();
+            if (!$ingredientModel) {
+                $ingredientModel = new Ingredient();
+                $ingredientModel->name = $ingredient['name'];
+                $ingredientModel->calories = 0;
+                $ingredientModel->carbohydrate = 0;
+                $ingredientModel->protein = 0;
+                $ingredientModel->fat = 0;
+                $ingredientModel->save();
+            }
             $ingredientData[$ingredientModel->id] = [
                 'quantity' => $ingredient['quantity'],
                 'unit' => $ingredient['unit'],
             ];
         }
-        $recipe->ingredients()->sync($ingredientData);
+
+        $recipe->ingredients()->detach();
+        foreach ($ingredientData as $ingredientId => $pivot) {
+            $recipe->ingredients()->attach($ingredientId, $pivot);
+        }
+
+        $freeFroms = [];
+        if (isset($validated['free_from'])) {
+            $freeFroms = $validated['free_from'];
+        }
 
         $recipe->mealTimes()->sync($validated['meal_times']);
         $recipe->foodTypes()->sync($validated['food_types']);
         $recipe->diets()->sync($validated['diets']);
-        $recipe->freeFroms()->sync($validated['free_from'] ?? []);
+        $recipe->freeFroms()->sync($freeFroms);
         $recipe->cuisines()->sync($validated['cuisines']);
     }
 
     /**
-     * Rating distribution per star (5 to 1): count and percentage.
+     * Number and percentage of ratings per star (5 to 1).
      */
-    private function ratingDistribution(Recipe $recipe): array
+    private function ratingDistribution($recipe)
     {
         $total = $recipe->ratings->count();
 
         $distribution = [];
         for ($score = 5; $score >= 1; $score--) {
             $count = $recipe->ratings->where('score', $score)->count();
+
+            $percentage = 0;
+            if ($total > 0) {
+                $percentage = round($count / $total * 100);
+            }
+
             $distribution[$score] = [
                 'count' => $count,
-                'percentage' => $total > 0 ? round($count / $total * 100) : 0,
+                'percentage' => $percentage,
             ];
         }
 

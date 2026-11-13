@@ -22,14 +22,20 @@
                         @auth
                             <form action="{{ route('recipes.favorite', $recipe->id) }}" method="POST" class="banner-favorite-form">
                                 @csrf
-                                <button type="submit" class="btn-favorite-banner {{ $isFavorited ? 'favorited' : '' }}" title="{{ $isFavorited ? 'Kedvenc törlése' : 'Kedvencnek jelölöm' }}">
-                                    <i data-lucide="heart"></i>
-                                </button>
+                                @if ($isFavorited)
+                                    <button type="submit" class="btn-favorite-banner favorited" title="Kedvenc törlése">
+                                        <i data-lucide="heart"></i>
+                                    </button>
+                                @else
+                                    <button type="submit" class="btn-favorite-banner" title="Kedvencnek jelölöm">
+                                        <i data-lucide="heart"></i>
+                                    </button>
+                                @endif
                                 <span class="favorite-badge">{{ $favoriteCount }}</span>
                             </form>
                         @endauth
                         <div class="banner-cook-overlay">
-                            <a href="{{ route('recipes.assistant', $recipe->id) }}" class="btn-cook btn-cook-banner"><span class="icon-assistant" aria-hidden="true"></span> Elkészítem</a>
+                            <a href="{{ route('recipes.assistant', $recipe->id) }}" class="btn-cook btn-cook-banner"><span class="icon-assistant"></span> Elkészítem</a>
                         </div>
                     </div>
                 </div>
@@ -51,8 +57,8 @@
                             <span>{{ $recipe->servings }} adag</span>
                         </div>
                         <div class="meta-author">
-                            <img src="{{ $recipe->user?->avatar ? asset($recipe->user->avatar) : asset('images/default_avatar.svg') }}" alt="Profilkép" class="author-avatar">
-                            <span>{{ $recipe->user?->name ?? 'Törölt felhasználó' }}</span>
+                            <img src="{{ asset($recipe->user->avatar ?? 'images/default_avatar.svg') }}" alt="Profilkép" class="author-avatar">
+                            <span>{{ $recipe->user->name ?? 'Törölt felhasználó' }}</span>
                         </div>
                         <div class="meta-date">
                             <span class="meta-icon"><i data-lucide="calendar"></i></span>
@@ -61,7 +67,15 @@
                     </div>
 
                     <a href="#reviews" class="star-rating-section">
-                        <span class="stars">{{ str_repeat('★', round($averageRating)) }}{{ str_repeat('☆', 5 - round($averageRating)) }}</span>
+                        <span class="stars">
+                            @for ($i = 1; $i <= 5; $i++)
+                                @if ($i <= round($averageRating))
+                                    ★
+                                @else
+                                    ☆
+                                @endif
+                            @endfor
+                        </span>
                         <span class="rating-number">{{ number_format($averageRating, 1) }}</span>
                         <span class="review-count">({{ $ratingCount }} értékelés)</span>
                     </a>
@@ -86,8 +100,11 @@
                     </h2>
                     <ul class="ingredients-list">
                         @foreach ($recipe->ingredients as $ingredient)
+                            @php
+                                $quantity = (float) $ingredient->pivot->quantity;
+                            @endphp
                             <li class="ingredient-item">
-                                <span class="ingredient-quantity">{{ str_replace('.', ',', (float) $ingredient->pivot->quantity) }} {{ \App\Models\IngredientRecipe::UNITS[$ingredient->pivot->unit] ?? '' }}</span>
+                                <span class="ingredient-quantity">{{ str_replace('.', ',', $quantity) }} {{ $units[$ingredient->pivot->unit] }}</span>
                                 <span class="ingredient-name">{{ $ingredient->name }}</span>
                             </li>
                         @endforeach

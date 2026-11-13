@@ -16,7 +16,16 @@ class AdminController extends Controller
     public function ingredients(Request $request)
     {
         $search = $request->query('search');
-        [$sort, $direction] = $this->sortParams($request, ['name', 'calories', 'carbohydrate', 'protein', 'fat'], 'name', 'asc');
+
+        // only these columns can be used for sorting
+        $sort = $request->query('sort', 'name');
+        if (!in_array($sort, ['name', 'calories', 'carbohydrate', 'protein', 'fat'])) {
+            $sort = 'name';
+        }
+        $direction = $request->query('direction', 'asc');
+        if ($direction != 'asc' && $direction != 'desc') {
+            $direction = 'asc';
+        }
 
         $query = Ingredient::withCount('recipes');
         if ($search) {
@@ -24,12 +33,25 @@ class AdminController extends Controller
         }
         $ingredients = $query->orderBy($sort, $direction)->get();
 
-        return view('admin.ingredients', compact('ingredients', 'search', 'sort', 'direction'));
+        return view('admin.ingredients', [
+            'ingredients' => $ingredients,
+            'search' => $search,
+            'sort' => $sort,
+            'direction' => $direction,
+        ]);
     }
 
     public function storeIngredient(Request $request)
     {
-        Ingredient::create($request->validate($this->ingredientRules()));
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'min:2', 'max:50', 'unique:ingredient,name'],
+            'calories' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:900'],
+            'carbohydrate' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],
+            'protein' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],
+            'fat' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],
+        ]);
+
+        Ingredient::create($validated);
 
         return redirect()->route('admin.ingredients')->with('success', 'Alapanyag sikeresen létrehozva!');
     }
@@ -38,7 +60,16 @@ class AdminController extends Controller
     {
         $ingredient = Ingredient::findOrFail($id);
 
-        $ingredient->update($request->validate($this->ingredientRules($ingredient)));
+        // the ingredient's own name does not count as a duplicate
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'min:2', 'max:50', 'unique:ingredient,name,' . $ingredient->id],
+            'calories' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:900'],
+            'carbohydrate' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],
+            'protein' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],
+            'fat' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],
+        ]);
+
+        $ingredient->update($validated);
 
         return redirect()->route('admin.ingredients')->with('success', 'Alapanyag sikeresen módosítva!');
     }
@@ -63,35 +94,57 @@ class AdminController extends Controller
     public function recipes(Request $request)
     {
         $search = $request->query('search');
-        [$sort, $direction] = $this->sortParams($request, ['title', 'user', 'created_at'], 'created_at', 'desc');
 
-        $recipesQuery = Recipe::with('user');
+        $sort = $request->query('sort', 'created_at');
+        if (!in_array($sort, ['title', 'user', 'created_at'])) {
+            $sort = 'created_at';
+        }
+        $direction = $request->query('direction', 'desc');
+        if ($direction != 'asc' && $direction != 'desc') {
+            $direction = 'desc';
+        }
+
+        $query = Recipe::with('user');
         if ($search) {
-            $recipesQuery->where(function ($query) use ($search) {
-                $query->where('title', 'like', '%' . $search . '%')
-                    ->orWhereHas('user', function ($query) use ($search) {
-                        $query->where('name', 'like', '%' . $search . '%');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                    ->orWhereHas('user', function ($q2) use ($search) {
+                        $q2->where('name', 'like', '%' . $search . '%');
                     });
             });
         }
 
-        if ($sort === 'user') {
-            $recipesQuery->leftJoin('user', 'user.id', '=', 'recipe.user_id')
+        if ($sort == 'user') {
+            // select('recipe.*') is needed, otherwise the id of the user would overwrite the id of the recipe
+            $query->leftJoin('user', 'user.id', '=', 'recipe.user_id')
                 ->orderBy('user.name', $direction)
                 ->select('recipe.*');
         } else {
-            $recipesQuery->orderBy($sort, $direction);
+            $query->orderBy($sort, $direction);
         }
 
-        $recipes = $recipesQuery->get();
+        $recipes = $query->get();
 
-        return view('admin.recipes', compact('recipes', 'search', 'sort', 'direction'));
+        return view('admin.recipes', [
+            'recipes' => $recipes,
+            'search' => $search,
+            'sort' => $sort,
+            'direction' => $direction,
+        ]);
     }
 
     public function users(Request $request)
     {
         $search = $request->query('search');
-        [$sort, $direction] = $this->sortParams($request, ['id', 'name', 'email', 'is_admin'], 'name', 'asc');
+
+        $sort = $request->query('sort', 'name');
+        if (!in_array($sort, ['id', 'name', 'email', 'is_admin'])) {
+            $sort = 'name';
+        }
+        $direction = $request->query('direction', 'asc');
+        if ($direction != 'asc' && $direction != 'desc') {
+            $direction = 'asc';
+        }
 
         $query = User::query();
         if ($search) {
@@ -100,7 +153,12 @@ class AdminController extends Controller
         }
         $users = $query->orderBy($sort, $direction)->get();
 
-        return view('admin.users', compact('users', 'search', 'sort', 'direction'));
+        return view('admin.users', [
+            'users' => $users,
+            'search' => $search,
+            'sort' => $sort,
+            'direction' => $direction,
+        ]);
     }
 
     /**
@@ -110,7 +168,7 @@ class AdminController extends Controller
     {
         $user = User::findOrFail($id);
 
-        if ($user->isAdmin() || $user->id === Auth::id()) {
+        if ($user->isAdmin() || $user->id == Auth::id()) {
             abort(403);
         }
 
@@ -118,47 +176,5 @@ class AdminController extends Controller
         $user->delete();
 
         return redirect()->route('admin.users')->with('success', 'Felhasználó sikeresen törölve!');
-    }
-
-    /**
-     * Validation rules of the ingredient form.
-     *
-     * @param  Ingredient|null  $ingredient  the ingredient being updated (its own name is not a duplicate)
-     */
-    private function ingredientRules(?Ingredient $ingredient = null): array
-    {
-        $unique = 'unique:ingredient,name';
-        if ($ingredient) {
-            $unique = 'unique:ingredient,name,' . $ingredient->id;
-        }
-
-        return [
-            'name' => ['required', 'string', 'min:2', 'max:50', $unique],
-            'calories' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:900'],
-            'carbohydrate' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],
-            'protein' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],
-            'fat' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],
-        ];
-    }
-
-    /**
-     * Table sorting from the "sort" and "direction" query parameters.
-     * Only whitelisted column names can reach orderBy() (prevents SQL injection).
-     *
-     * @return array [column, direction]
-     */
-    private function sortParams(Request $request, array $allowedSorts, string $defaultSort, string $defaultDirection): array
-    {
-        $sort = $request->query('sort', $defaultSort);
-        if (!in_array($sort, $allowedSorts)) {
-            $sort = $defaultSort;
-        }
-
-        $direction = $request->query('direction', $defaultDirection);
-        if (!in_array($direction, ['asc', 'desc'])) {
-            $direction = $defaultDirection;
-        }
-
-        return [$sort, $direction];
     }
 }

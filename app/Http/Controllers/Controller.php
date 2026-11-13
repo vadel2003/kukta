@@ -12,79 +12,83 @@ use Illuminate\Http\Request;
 abstract class Controller
 {
     /**
-     * Recipe category lists for the filters and the recipe form,
-     * plus the number of filters checked in the request (shown on the Filters button).
+     * Category lists for the filters and the recipe form, and the number of checked filters.
      */
-    protected function filterCategories(): array
+    protected function filterCategories()
     {
+        $activeFilterCount = 0;
+        $filterNames = ['meal_time', 'food_type', 'diet', 'free_from', 'cuisine'];
+        foreach ($filterNames as $name) {
+            if (is_array(request($name))) {
+                $activeFilterCount = $activeFilterCount + count(request($name));
+            }
+        }
+
         return [
             'mealTimes' => MealTime::orderBy('id')->get(),
             'foodTypes' => FoodType::orderBy('id')->get(),
             'diets' => Diet::orderBy('id')->get(),
             'freeFroms' => FreeFrom::orderBy('id')->get(),
             'cuisines' => Cuisine::orderBy('id')->get(),
-            'activeFilterCount' => count((array) request('meal_time')) + count((array) request('food_type'))
-                + count((array) request('diet')) + count((array) request('free_from')) + count((array) request('cuisine')),
+            'activeFilterCount' => $activeFilterCount,
         ];
     }
 
     /**
-     * Keyword search (title, description, ingredient, step) and category filters from the request.
-     * Values within a category are combined with OR, categories with AND. Exception: "free from"
-     * values are combined with AND too (the recipe must be free from all of them).
+     * Keyword search and category filters. Values of one category are combined with OR,
+     * except "free from", where the recipe must be free from all checked values.
      */
-    protected function applyFilters($query, Request $request): void
+    protected function applyFilters($query, Request $request)
     {
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->where(function ($query) use ($search) {
-                $query->where('title', 'like', '%' . $search . '%')
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
                     ->orWhere('description', 'like', '%' . $search . '%')
-                    ->orWhereHas('ingredients', function ($query) use ($search) {
-                        $query->where('name', 'like', '%' . $search . '%');
+                    ->orWhereHas('ingredients', function ($q2) use ($search) {
+                        $q2->where('name', 'like', '%' . $search . '%');
                     })
-                    ->orWhereHas('steps', function ($query) use ($search) {
-                        $query->where('description', 'like', '%' . $search . '%');
+                    ->orWhereHas('steps', function ($q2) use ($search) {
+                        $q2->where('description', 'like', '%' . $search . '%');
                     });
             });
         }
 
         if ($request->filled('meal_time')) {
-            $query->whereHas('mealTimes', function ($query) use ($request) {
-                $query->whereIn('meal_time.id', (array) $request->input('meal_time'));
+            $query->whereHas('mealTimes', function ($q) use ($request) {
+                $q->whereIn('meal_time.id', (array) $request->input('meal_time'));
             });
         }
         if ($request->filled('food_type')) {
-            $query->whereHas('foodTypes', function ($query) use ($request) {
-                $query->whereIn('food_type.id', (array) $request->input('food_type'));
+            $query->whereHas('foodTypes', function ($q) use ($request) {
+                $q->whereIn('food_type.id', (array) $request->input('food_type'));
             });
         }
         if ($request->filled('diet')) {
-            $query->whereHas('diets', function ($query) use ($request) {
-                $query->whereIn('diet.id', (array) $request->input('diet'));
+            $query->whereHas('diets', function ($q) use ($request) {
+                $q->whereIn('diet.id', (array) $request->input('diet'));
             });
         }
         if ($request->filled('free_from')) {
             foreach ((array) $request->input('free_from') as $freeFromId) {
-                $query->whereHas('freeFroms', function ($query) use ($freeFromId) {
-                    $query->where('free_from.id', $freeFromId);
+                $query->whereHas('freeFroms', function ($q) use ($freeFromId) {
+                    $q->where('free_from.id', $freeFromId);
                 });
             }
         }
         if ($request->filled('cuisine')) {
-            $query->whereHas('cuisines', function ($query) use ($request) {
-                $query->whereIn('cuisine.id', (array) $request->input('cuisine'));
+            $query->whereHas('cuisines', function ($q) use ($request) {
+                $q->whereIn('cuisine.id', (array) $request->input('cuisine'));
             });
         }
     }
 
     /**
-     * Sorting by the request's "sort" parameter: popularity = number of favorites
-     * (requires withCount('favorites')), otherwise the newest recipe first.
+     * Sorting: by number of favorites (popularity) or by date (newest first).
      */
-    protected function applySort($query, Request $request): void
+    protected function applySort($query, Request $request)
     {
-        if ($request->input('sort') === 'popularity') {
+        if ($request->input('sort') == 'popularity') {
             $query->orderBy('favorites_count', 'desc');
         } else {
             $query->orderBy('created_at', 'desc');

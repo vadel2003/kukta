@@ -34,30 +34,38 @@
                 </div>
             </div>
 
-            @if ($recipes->isEmpty())
-                <p>{{ $search ? 'Nincs találat.' : 'Nincs még feltöltött recept.' }}</p>
+            @if (count($recipes) == 0)
+                @if ($search)
+                    <p>Nincs találat.</p>
+                @else
+                    <p>Nincs még feltöltött recept.</p>
+                @endif
             @else
                 @php
-                    $columns = [
-                        'title' => 'Cím',
-                        'user' => 'Feltöltötte',
-                    ];
+                    // clicking the sorted column again reverses the direction
+                    $otherDirection = 'asc';
+                    if ($direction == 'asc') {
+                        $otherDirection = 'desc';
+                    }
+                    $arrow = '▼';
+                    if ($direction == 'asc') {
+                        $arrow = '▲';
+                    }
                 @endphp
                 <table class="admin-table">
                     <thead>
                         <tr>
                             <th></th>
-                            @foreach ($columns as $key => $label)
-                                @php
-                                    $nextDirection = ($sort === $key && $direction === 'asc') ? 'desc' : 'asc';
-                                    $arrow = $sort === $key ? ($direction === 'asc' ? ' ▲' : ' ▼') : '';
-                                @endphp
-                                <th>
-                                    <a href="{{ route('admin.recipes', ['search' => $search, 'sort' => $key, 'direction' => $nextDirection]) }}">
-                                        {{ $label }}{{ $arrow }}
-                                    </a>
-                                </th>
-                            @endforeach
+                            <th>
+                                <a href="{{ route('admin.recipes', ['search' => $search, 'sort' => 'title', 'direction' => $sort == 'title' ? $otherDirection : 'asc']) }}">
+                                    Cím @if ($sort == 'title') {{ $arrow }} @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('admin.recipes', ['search' => $search, 'sort' => 'user', 'direction' => $sort == 'user' ? $otherDirection : 'asc']) }}">
+                                    Feltöltötte @if ($sort == 'user') {{ $arrow }} @endif
+                                </a>
+                            </th>
                             <th>Leírás</th>
                             <th class="admin-table-actions">Műveletek</th>
                         </tr>
@@ -73,7 +81,7 @@
                                 <td>{{ Str::limit($recipe->description, 100) }}</td>
                                 <td class="admin-table-actions">
                                     <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-edit btn-edit-primary">Részletek</a>
-                                    <form action="{{ route('recipes.destroy', $recipe->id) }}" method="POST" style="display: inline;" data-confirm-title="Biztosan törlöd a receptet?" data-confirm="A(z) „{{ $recipe->title }}” recept véglegesen törlődik. Ez a művelet nem visszavonható.">
+                                    <form action="{{ route('recipes.destroy', $recipe->id) }}" method="POST" style="display: inline;" data-confirm="Biztosan törlöd a receptet? A(z) „{{ $recipe->title }}” recept véglegesen törlődik. Ez a művelet nem visszavonható.">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn-delete">Törlés</button>

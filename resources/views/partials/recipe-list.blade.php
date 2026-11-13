@@ -8,7 +8,7 @@
     </div>
 
     @if ($recipes->hasPages())
-        <nav class="pagination" aria-label="Lapozás">
+        <nav class="pagination">
             @if ($recipes->previousPageUrl())
                 <a href="{{ $recipes->previousPageUrl() }}#recipes" class="btn-outline">« Előző</a>
             @endif

@@ -39,8 +39,8 @@
     margin-bottom: 0.25rem;
 }
 
-.category-group + .category-group {
-    margin-top: 1rem;
+.category-group {
+    margin-bottom: 1rem;
 }
 
 .ingredient-toolbar {
@@ -69,9 +69,6 @@
 
 .ingredient-search input[type="text"] {
     flex: 1;
-    padding: 0.6rem 0.8rem;
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
 }
 
 .ingredient-search .btn-edit,
@@ -206,12 +203,8 @@
         margin-right: 0;
     }
 
-    .toolbar-actions > * {
+    .toolbar-actions a {
         flex: 1;
-    }
-
-    .toolbar-actions button {
-        width: 100%;
     }
 
     .admin-table {
@@ -224,13 +217,4 @@
     .ingredient-edit-form input[type="number"] {
         width: 100%;
     }
-}
-
-.btn-recipe-submit {
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-    transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.btn-recipe-submit:hover {
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }

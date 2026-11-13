@@ -817,7 +817,7 @@ class StepSeeder extends Seeder
                 ['A sült burgonyát a húshoz forgatjuk, és azonnal tálaljuk.', 'Tálalás'],
             ],
             104 => [ // Somlói galuska
-                ['6 db tojást 150 g cukorral habosra verünk, beleforgatunk 150 g lisztet, majd a masszát három egyenlő részre osztjuk: az elsőbe 20 g kakaóport, a másodikba 50 g darált diót keverünk, a harmadik natúr (sima) piskóta marad.', 'Elkészítés'],
+                ['6 db tojást 150 g cukorral habosra verünk, beleforgatunk 150 g lisztet, és a masszát három részre osztjuk: egyikbe 20 g kakaóport, másikba 50 g darált diót keverünk, a harmadik natúr marad.', 'Elkészítés'],
                 ['A három piskótát külön-külön 180°C-on 15 perc alatt kisütjük, kihűtjük, és kockákra vágjuk.', 'Sütés'],
                 ['Vaníliasodót készítünk: 500 ml tejet 1 teáskanál vaníliával felforralunk, 4 db tojássárgáját 100 g cukorral kikeverünk, és a tejjel együtt sűrűre főzzük.', 'Főzés'],
                 ['100 g csokoládét 100 ml tejszínnel vízgőz felett simára olvasztunk.', 'Elkészítés'],
@@ -954,15 +954,19 @@ class StepSeeder extends Seeder
             ],
         ];
 
-        $categoryIds = DB::table('step_category')->pluck('id', 'name');
+        // step category name => id
+        $categoryIds = [];
+        foreach (DB::table('step_category')->get() as $row) {
+            $categoryIds[$row->name] = $row->id;
+        }
 
         $records = [];
         foreach ($recipeSteps as $recipeId => $steps) {
-            foreach ($steps as $index => [$description, $category]) {
+            foreach ($steps as $index => $step) {
                 $records[] = [
-                    'description' => $description,
+                    'description' => $step[0],
                     'recipe_id' => $recipeId,
-                    'step_category_id' => $categoryIds[$category],
+                    'step_category_id' => $categoryIds[$step[1]],
                     'position' => $index + 1,
                 ];
             }

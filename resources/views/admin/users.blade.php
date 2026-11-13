@@ -30,34 +30,48 @@
                 </form>
             </div>
 
-            @if ($users->isEmpty())
-                <p>{{ $search ? 'Nincs találat.' : 'Nincs még felhasználó.' }}</p>
+            @if (count($users) == 0)
+                @if ($search)
+                    <p>Nincs találat.</p>
+                @else
+                    <p>Nincs még felhasználó.</p>
+                @endif
             @else
                 @php
-                    $columns = [
-                        'id' => 'ID',
-                        'name' => 'Név',
-                        'email' => 'Email',
-                        'is_admin' => 'Szerepkör',
-                    ];
+                    // clicking the sorted column again reverses the direction
+                    $otherDirection = 'asc';
+                    if ($direction == 'asc') {
+                        $otherDirection = 'desc';
+                    }
+                    $arrow = '▼';
+                    if ($direction == 'asc') {
+                        $arrow = '▲';
+                    }
                 @endphp
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            @foreach ($columns as $key => $label)
-                                @php
-                                    $nextDirection = ($sort === $key && $direction === 'asc') ? 'desc' : 'asc';
-                                    $arrow = $sort === $key ? ($direction === 'asc' ? ' ▲' : ' ▼') : '';
-                                @endphp
-                                <th>
-                                    <a href="{{ route('admin.users', ['search' => $search, 'sort' => $key, 'direction' => $nextDirection]) }}">
-                                        {{ $label }}{{ $arrow }}
-                                    </a>
-                                </th>
-                                @if ($key === 'id')
-                                    <th></th>
-                                @endif
-                            @endforeach
+                            <th>
+                                <a href="{{ route('admin.users', ['search' => $search, 'sort' => 'id', 'direction' => $sort == 'id' ? $otherDirection : 'asc']) }}">
+                                    ID @if ($sort == 'id') {{ $arrow }} @endif
+                                </a>
+                            </th>
+                            <th></th>
+                            <th>
+                                <a href="{{ route('admin.users', ['search' => $search, 'sort' => 'name', 'direction' => $sort == 'name' ? $otherDirection : 'asc']) }}">
+                                    Név @if ($sort == 'name') {{ $arrow }} @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('admin.users', ['search' => $search, 'sort' => 'email', 'direction' => $sort == 'email' ? $otherDirection : 'asc']) }}">
+                                    Email @if ($sort == 'email') {{ $arrow }} @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('admin.users', ['search' => $search, 'sort' => 'is_admin', 'direction' => $sort == 'is_admin' ? $otherDirection : 'asc']) }}">
+                                    Szerepkör @if ($sort == 'is_admin') {{ $arrow }} @endif
+                                </a>
+                            </th>
                             <th class="admin-table-actions">Műveletek</th>
                         </tr>
                     </thead>
@@ -66,14 +80,20 @@
                             <tr>
                                 <td>{{ $user->id }}</td>
                                 <td>
-                                    <img src="{{ $user->avatar ? asset($user->avatar) : asset('images/default_avatar.svg') }}" alt="Profilkép" class="user-avatar">
+                                    <img src="{{ asset($user->avatar ?? 'images/default_avatar.svg') }}" alt="Profilkép" class="user-avatar">
                                 </td>
                                 <td>{{ $user->name }}</td>
                                 <td>{{ $user->email }}</td>
-                                <td>{{ $user->isAdmin() ? 'Szuperadmin' : 'Regisztrált felhasználó' }}</td>
+                                <td>
+                                    @if ($user->isAdmin())
+                                        Szuperadmin
+                                    @else
+                                        Regisztrált felhasználó
+                                    @endif
+                                </td>
                                 <td class="admin-table-actions">
-                                    @if (!$user->isAdmin() && $user->id !== Auth::id())
-                                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display: inline;" data-confirm-title="Biztosan törlöd a felhasználót?" data-confirm="„{{ $user->name }}” receptjei megmaradnak, de a kedvencei és értékelései véglegesen törlődnek. Ez a művelet nem visszavonható.">
+                                    @if (!$user->isAdmin() && $user->id != Auth::id())
+                                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display: inline;" data-confirm="Biztosan törlöd a felhasználót? „{{ $user->name }}” receptjei megmaradnak, de a kedvencei és értékelései véglegesen törlődnek. Ez a művelet nem visszavonható.">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn-delete">Törlés</button>

@@ -38,7 +38,7 @@
                 </form>
 
                 <div class="toolbar-actions">
-                    <a href="{{ request()->fullUrlWithQuery(['new' => 1]) }}" class="btn-edit btn-edit-primary">Új alapanyag</a>
+                    <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => $sort, 'direction' => $direction, 'new' => 1]) }}" class="btn-edit btn-edit-primary">Új alapanyag</a>
                 </div>
             </div>
 
@@ -62,37 +62,57 @@
                             <input type="number" name="fat" value="{{ old('fat') }}" step="0.01" min="0" max="100" required>
                         </label>
                         <button type="submit" class="btn-edit btn-edit-primary">Mentés</button>
-                        <a href="{{ request()->fullUrlWithoutQuery('new') }}" class="btn-delete">Mégse</a>
+                        <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => $sort, 'direction' => $direction]) }}" class="btn-delete">Mégse</a>
                     </form>
                 </div>
             @endif
 
-            @if ($ingredients->isEmpty())
-                <p>{{ $search ? 'Nincs találat.' : 'Nincs még alapanyag.' }}</p>
+            @if (count($ingredients) == 0)
+                @if ($search)
+                    <p>Nincs találat.</p>
+                @else
+                    <p>Nincs még alapanyag.</p>
+                @endif
             @else
                 @php
-                    $columns = [
-                        'name' => 'Név',
-                        'calories' => 'Kalória',
-                        'carbohydrate' => 'Szénhidrát',
-                        'protein' => 'Fehérje',
-                        'fat' => 'Zsír',
-                    ];
+                    // clicking the sorted column again reverses the direction
+                    $otherDirection = 'asc';
+                    if ($direction == 'asc') {
+                        $otherDirection = 'desc';
+                    }
+                    $arrow = '▼';
+                    if ($direction == 'asc') {
+                        $arrow = '▲';
+                    }
                 @endphp
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            @foreach ($columns as $key => $label)
-                                @php
-                                    $nextDirection = ($sort === $key && $direction === 'asc') ? 'desc' : 'asc';
-                                    $arrow = $sort === $key ? ($direction === 'asc' ? ' ▲' : ' ▼') : '';
-                                @endphp
-                                <th>
-                                    <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => $key, 'direction' => $nextDirection]) }}">
-                                        {{ $label }}{{ $arrow }}
-                                    </a>
-                                </th>
-                            @endforeach
+                            <th>
+                                <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => 'name', 'direction' => $sort == 'name' ? $otherDirection : 'asc']) }}">
+                                    Név @if ($sort == 'name') {{ $arrow }} @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => 'calories', 'direction' => $sort == 'calories' ? $otherDirection : 'asc']) }}">
+                                    Kalória @if ($sort == 'calories') {{ $arrow }} @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => 'carbohydrate', 'direction' => $sort == 'carbohydrate' ? $otherDirection : 'asc']) }}">
+                                    Szénhidrát @if ($sort == 'carbohydrate') {{ $arrow }} @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => 'protein', 'direction' => $sort == 'protein' ? $otherDirection : 'asc']) }}">
+                                    Fehérje @if ($sort == 'protein') {{ $arrow }} @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => 'fat', 'direction' => $sort == 'fat' ? $otherDirection : 'asc']) }}">
+                                    Zsír @if ($sort == 'fat') {{ $arrow }} @endif
+                                </a>
+                            </th>
                             <th class="admin-table-actions">Műveletek</th>
                         </tr>
                     </thead>
@@ -120,23 +140,23 @@
                                                 <input type="number" name="fat" value="{{ old('fat', $ingredient->fat) }}" step="0.01" min="0" max="100" required>
                                             </label>
                                             <button type="submit" class="btn-edit btn-edit-primary">Mentés</button>
-                                            <a href="{{ request()->fullUrlWithoutQuery('edit') }}" class="btn-delete">Mégse</a>
+                                            <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => $sort, 'direction' => $direction]) }}" class="btn-delete">Mégse</a>
                                         </form>
                                     </td>
                                 </tr>
                             @else
-                                <tr id="ingredient-row-{{ $ingredient->id }}">
+                                <tr>
                                     <td>{{ $ingredient->name }}</td>
                                     <td>{{ $ingredient->calories }}</td>
                                     <td>{{ $ingredient->carbohydrate }}</td>
                                     <td>{{ $ingredient->protein }}</td>
                                     <td>{{ $ingredient->fat }}</td>
                                     <td class="admin-table-actions">
-                                        <a href="{{ request()->fullUrlWithQuery(['edit' => $ingredient->id]) }}#ingredient-edit-{{ $ingredient->id }}" class="btn-edit btn-edit-primary">Módosítás</a>
+                                        <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => $sort, 'direction' => $direction, 'edit' => $ingredient->id]) }}#ingredient-edit-{{ $ingredient->id }}" class="btn-edit btn-edit-primary">Módosítás</a>
                                         @if ($ingredient->recipes_count > 0)
                                             <button type="button" class="btn-delete" disabled title="{{ $ingredient->recipes_count }} receptben használatban van, nem törölhető">Törlés</button>
                                         @else
-                                            <form action="{{ route('admin.ingredients.destroy', $ingredient->id) }}" method="POST" style="display: inline;" data-confirm-title="Biztosan törlöd az alapanyagot?" data-confirm="A(z) „{{ $ingredient->name }}” alapanyag véglegesen törlődik. Ez a művelet nem visszavonható.">
+                                            <form action="{{ route('admin.ingredients.destroy', $ingredient->id) }}" method="POST" style="display: inline;" data-confirm="Biztosan törlöd az alapanyagot? A(z) „{{ $ingredient->name }}” alapanyag véglegesen törlődik. Ez a művelet nem visszavonható.">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn-delete">Törlés</button>

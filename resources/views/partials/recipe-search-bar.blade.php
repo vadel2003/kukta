@@ -9,24 +9,25 @@
         ['param' => 'free_from', 'title' => 'Érzékenység', 'items' => $freeFroms],
         ['param' => 'cuisine', 'title' => 'Konyha', 'items' => $cuisines],
     ];
-    $urlWithoutFilters = request()->fullUrlWithoutQuery(['meal_time', 'food_type', 'diet', 'free_from', 'cuisine', 'page']) . '#recipes';
+    // the search word and the sorting stay, only the filters are removed
+    $urlWithoutFilters = $searchAction . '?search=' . urlencode(request('search')) . '&sort=' . request('sort', 'date') . '#recipes';
 @endphp
-<form action="{{ $searchAction }}#recipes" method="GET" id="searchForm">
+<form action="{{ $searchAction }}#recipes" method="GET">
     <div class="search-bar">
         <div class="search-row">
             <div class="search-input-group">
                 <i data-lucide="search" class="search-input-icon"></i>
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ $searchPlaceholder ?? 'Receptek keresése...' }}" class="search-input" autofocus>
             </div>
-            <button type="submit" class="btn-search"><i data-lucide="search"></i> Keresés</button>
+            <button type="submit" class="btn-search"><i data-lucide="search"></i> <span class="btn-text">Keresés</span></button>
             <button type="button" class="btn-filters {{ $activeFilterCount > 0 ? 'has-filters' : '' }}" popovertarget="filtersModal">
-                <i data-lucide="filter"></i> Szűrők
+                <i data-lucide="filter"></i> <span class="btn-text">Szűrők</span>
                 @if ($activeFilterCount > 0)
                     <span class="filter-count">{{ $activeFilterCount }}</span>
                 @endif
             </button>
             <span class="search-divider"></span>
-            <button type="button" class="btn-sort" popovertarget="sortModal"><i data-lucide="arrow-up-down"></i> Rendezés</button>
+            <button type="button" class="btn-sort" popovertarget="sortModal"><i data-lucide="arrow-up-down"></i> <span class="btn-text">Rendezés</span></button>
         </div>
     </div>
 
@@ -36,10 +37,20 @@
                 @foreach ($group['items'] as $item)
                     @if (in_array($item->id, (array) request($group['param'])))
                         @php
-                            $otherValues = array_values(array_diff((array) request($group['param']), [$item->id]));
+                            // the other checked values of the same filter stay in the link
+                            $otherValues = [];
+                            foreach ((array) request($group['param']) as $value) {
+                                if ($value != $item->id) {
+                                    $otherValues[] = $value;
+                                }
+                            }
                         @endphp
                         <a href="{{ request()->fullUrlWithQuery([$group['param'] => $otherValues, 'page' => null]) }}#recipes" class="active-filter" title="Szűrő eltávolítása">
-                            {{ $group['param'] === 'free_from' ? $item->name . ' nélkül' : $item->name }} ✕
+                            @if ($group['param'] == 'free_from')
+                                {{ $item->name }} nélkül ✕
+                            @else
+                                {{ $item->name }} ✕
+                            @endif
                         </a>
                     @endif
                 @endforeach
@@ -59,7 +70,7 @@
             @foreach ($filterGroups as $group)
                 <div class="filter-group">
                     <h4>{{ $group['title'] }}</h4>
-                    @if ($group['param'] === 'free_from')
+                    @if ($group['param'] == 'free_from')
                         <p class="filter-hint">Jelöld be, amit a recept <strong>nem</strong> tartalmazhat.</p>
                     @endif
                     <div class="filter-options">
@@ -92,18 +103,14 @@
         </div>
         <div class="modal-body">
             <div class="filter-options">
-                @foreach (['date' => 'Legújabb', 'popularity' => 'Legnépszerűbb'] as $value => $label)
-                    <label class="filter-chip">
-                        <input type="radio" name="sort" value="{{ $value }}"
-                            {{ request('sort', 'date') == $value ? 'checked' : '' }}>
-                        <span>
-                            {{ $label }}
-                            @if ($value === 'date')
-                                <small class="chip-note">(alapértelmezett)</small>
-                            @endif
-                        </span>
-                    </label>
-                @endforeach
+                <label class="filter-chip">
+                    <input type="radio" name="sort" value="date" {{ request('sort', 'date') == 'date' ? 'checked' : '' }}>
+                    <span>Legújabb <small class="chip-note">(alapértelmezett)</small></span>
+                </label>
+                <label class="filter-chip">
+                    <input type="radio" name="sort" value="popularity" {{ request('sort') == 'popularity' ? 'checked' : '' }}>
+                    <span>Legnépszerűbb</span>
+                </label>
             </div>
         </div>
         <div class="modal-footer">

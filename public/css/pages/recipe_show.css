@@ -13,10 +13,6 @@
     margin-bottom: 0;
 }
 
-.back-link ~ .recipe-top {
-    margin-top: 0.75rem;
-}
-
 /* Banner section */
 .recipe-banner {
     position: relative;
@@ -66,7 +62,6 @@
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid #ccc;
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.35);
 }
 
 .meta-date {
@@ -96,7 +91,7 @@
     grid-template-columns: 1.5fr 1fr;
     gap: 2rem;
     margin-bottom: 2rem;
-    margin-top: 2rem;
+    margin-top: 0.75rem;
 }
 
 /* Bottom section */
@@ -160,17 +155,11 @@
     color: var(--color-text);
 }
 
-.allergen-icon {
-    background-color: var(--color-danger);
-    mask: var(--allergen-icon) center / contain no-repeat;
-}
-
 /* Step list */
 .steps-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    counter-reset: step-counter;
 }
 
 .step-number {
@@ -197,25 +186,12 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
-    z-index: 10;
     display: flex;
     align-items: center;
     gap: 0.4rem;
     background: #fff;
     padding: 0.5rem 0.9rem;
     border-radius: 24px;
-}
-
-.recipe-banner::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 420px;
-    height: 420px;
-    background: radial-gradient(circle 320px at bottom right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%);
-    pointer-events: none;
-    z-index: 1;
 }
 
 .banner-cook-overlay {
@@ -226,7 +202,6 @@
     padding: 1.5rem;
     display: flex;
     justify-content: flex-end;
-    z-index: 2;
 }
 
 .btn-cook-banner {
@@ -240,7 +215,8 @@
 }
 
 .btn-cook-banner .icon-assistant {
-    transform: scale(1.6);
+    width: 1.8em;
+    height: 1.8em;
 }
 
 .btn-cook-banner:hover {
@@ -266,33 +242,17 @@
     transform: scale(1.2);
 }
 
-.btn-favorite-banner.favorited {
-    background: #fff;
-    color: var(--color-favorite);
-}
-
-/* Favorite heart fill on the banner */
-.btn-favorite-banner:not(.favorited) .lucide path {
-    fill: none;
-}
-
-.btn-favorite-banner.favorited .lucide path {
+.btn-favorite-banner.favorited svg {
     fill: currentColor;
 }
 
 /* ===== STAR RATING ===== */
 .star-rating-section {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 10px;
     margin: 10px 0 6px 0;
     text-decoration: none;
-    cursor: pointer;
-    width: fit-content;
-}
-
-#reviews {
-    scroll-margin-top: 100px;
 }
 
 .star-rating-section .stars {
@@ -381,7 +341,6 @@
 .rating-bar-fill {
     height: 100%;
     background: var(--color-primary);
-    transition: width 0.3s ease;
 }
 
 .rating-bar-count {
@@ -418,27 +377,17 @@
     font-size: 2.5rem;
     line-height: 1.2;
     color: #D3C9BC;
-    transition: color 0.15s ease, transform 0.15s ease;
 }
 
 .star-button.filled,
-.rating-stars-interactive:hover .star-button {
-    color: var(--color-primary);
-}
-
-.rating-stars-interactive .star-button:hover ~ .star-button {
-    color: #D3C9BC;
-}
-
 .star-button:hover {
-    transform: scale(1.15);
+    color: var(--color-primary);
 }
 
 .rating-personal-status {
     color: var(--color-text-light);
     font-size: 0.95rem;
     margin-top: 0.5rem;
-    transition: color 0.3s ease;
 }
 
 .rating-login-prompt {
@@ -486,7 +435,6 @@
 
     .recipe-top {
         gap: 1rem;
-        margin-top: 1rem;
         margin-bottom: 1rem;
     }
 
@@ -544,13 +492,8 @@
     }
 
     .btn-cook-banner .icon-assistant {
-        transform: scale(1.3);
-    }
-
-    .recipe-banner::after {
-        width: 260px;
-        height: 260px;
-        background: radial-gradient(circle 200px at bottom right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%);
+        width: 1.5em;
+        height: 1.5em;
     }
 
     /* Texts */

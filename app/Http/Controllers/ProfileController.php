@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
@@ -15,7 +15,6 @@ class ProfileController extends Controller
 
     public function update(Request $request)
     {
-        /** @var User $user */
         $user = Auth::user();
 
         $validated = $request->validate([
@@ -37,7 +36,7 @@ class ProfileController extends Controller
             $filename = $user->id . '_' . time() . '.' . $request->file('avatar')->extension();
             $request->file('avatar')->move(public_path('avatars'), $filename);
             $user->avatar = 'avatars/' . $filename;
-        } elseif ($request->boolean('remove_avatar')) {
+        } elseif ($request->has('remove_avatar')) {
             $user->deleteAvatarFile();
             $user->avatar = null;
         }
@@ -49,7 +48,6 @@ class ProfileController extends Controller
 
     public function updatePassword(Request $request)
     {
-        /** @var User $user */
         $user = Auth::user();
 
         $validated = $request->validate([
@@ -57,7 +55,7 @@ class ProfileController extends Controller
             'new_password' => ['required', 'string', 'min:8', 'max:50', 'confirmed'],
         ]);
 
-        $user->password = $validated['new_password'];
+        $user->password = Hash::make($validated['new_password']);
         $user->save();
 
         return redirect()->route('profile.index')->with('success', 'Jelszó sikeresen frissítve!');
@@ -72,7 +70,6 @@ class ProfileController extends Controller
             'password' => ['required', 'current_password'],
         ]);
 
-        /** @var User $user */
         $user = Auth::user();
 
         if ($user->isAdmin()) {

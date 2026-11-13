@@ -33,8 +33,8 @@
 
                         <div class="avatar-row-actions">
                             <label for="avatar">Új profilkép</label>
-                            <input type="file" name="avatar" id="avatar" accept="image/jpeg,image/png,image/webp" aria-describedby="avatar-hint">
-                            <p class="field-hint" id="avatar-hint">JPG, PNG vagy WebP kép, legfeljebb 2 MB.</p>
+                            <input type="file" name="avatar" id="avatar" accept="image/jpeg,image/png,image/webp">
+                            <p class="field-hint">JPG, PNG vagy WebP kép, legfeljebb 2 MB.</p>
                             @if (Auth::user()->avatar)
                                 <label class="avatar-remove">
                                     <input type="checkbox" name="remove_avatar" value="1"> Profilkép eltávolítása
@@ -87,8 +87,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="new_password">Új jelszó <span class="label-hint" id="new_password-hint">(8–50 karakter)</span></label>
-                        <input type="password" name="new_password" id="new_password" required minlength="8" maxlength="50" class="{{ $errors->has('new_password') ? 'is-invalid' : '' }}" aria-describedby="new_password-hint">
+                        <label for="new_password">Új jelszó <span class="label-hint">(8–50 karakter)</span></label>
+                        <input type="password" name="new_password" id="new_password" required minlength="8" maxlength="50" class="{{ $errors->has('new_password') ? 'is-invalid' : '' }}">
                         @error('new_password')
                             <span class="form-error">{{ $message }}</span>
                         @enderror
@@ -106,7 +106,7 @@
             </div>
         </div>
 
-        @unless (Auth::user()->isAdmin())
+        @if (!Auth::user()->isAdmin())
             <div class="content-card profile-panel profile-panel--danger">
                 <h2 class="content-title">
                     <span class="title-icon"><i data-lucide="trash-2"></i></span>
@@ -148,6 +148,6 @@
                     </div>
                 </form>
             </div>
-        @endunless
+        @endif
     </div>
 @endsection

@@ -18,10 +18,15 @@ class HomeController extends Controller
         $this->applySort($query, $request);
         $recipes = $query->paginate(21)->withQueryString();
 
-        $favoriteIds = Auth::check()
-            ? Favorite::where('user_id', Auth::id())->pluck('recipe_id')->toArray()
-            : [];
+        $favoriteIds = [];
+        if (Auth::check()) {
+            $favoriteIds = Favorite::where('user_id', Auth::id())->pluck('recipe_id')->toArray();
+        }
 
-        return view('home', compact('recipes', 'favoriteIds') + $this->filterCategories());
+        $data = $this->filterCategories();
+        $data['recipes'] = $recipes;
+        $data['favoriteIds'] = $favoriteIds;
+
+        return view('home', $data);
     }
 }

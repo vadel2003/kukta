@@ -285,10 +285,23 @@ class RecipeSeeder extends Seeder
             121 => [['Főétel'],              ['Ebéd', 'Vacsora'],                ['Pescetáriánus'],                    ['Ázsiai']],  // Garnélás sült rizs
         ];
 
-        $foodTypeIds = DB::table('food_type')->pluck('id', 'name');
-        $mealTimeIds = DB::table('meal_time')->pluck('id', 'name');
-        $dietIds = DB::table('diet')->pluck('id', 'name');
-        $cuisineIds = DB::table('cuisine')->pluck('id', 'name');
+        // category name => id
+        $foodTypeIds = [];
+        foreach (DB::table('food_type')->get() as $row) {
+            $foodTypeIds[$row->name] = $row->id;
+        }
+        $mealTimeIds = [];
+        foreach (DB::table('meal_time')->get() as $row) {
+            $mealTimeIds[$row->name] = $row->id;
+        }
+        $dietIds = [];
+        foreach (DB::table('diet')->get() as $row) {
+            $dietIds[$row->name] = $row->id;
+        }
+        $cuisineIds = [];
+        foreach (DB::table('cuisine')->get() as $row) {
+            $cuisineIds[$row->name] = $row->id;
+        }
 
         // food type => default image
         $thumbnailMap = [
@@ -307,12 +320,22 @@ class RecipeSeeder extends Seeder
         ];
 
         foreach ($recipes as $index => $recipe) {
-            $recipe['thumbnail'] = $thumbnailMap[$categories[$index + 1][0][0]];
+            // the image is the default image of the recipe's first food type
+            $recipeId = $index + 1;
+            $foodTypes = $categories[$recipeId][0];
+            $firstFoodType = $foodTypes[0];
+
+            $recipe['thumbnail'] = $thumbnailMap[$firstFoodType];
             $recipe['updated_at'] = $recipe['created_at'];
             DB::table('recipe')->insert($recipe);
         }
 
-        foreach ($categories as $recipeId => [$foodTypes, $mealTimes, $diets, $cuisines]) {
+        foreach ($categories as $recipeId => $category) {
+            $foodTypes = $category[0];
+            $mealTimes = $category[1];
+            $diets = $category[2];
+            $cuisines = $category[3];
+
             foreach ($foodTypes as $name) {
                 DB::table('food_type_recipe')->insert(['food_type_id' => $foodTypeIds[$name], 'recipe_id' => $recipeId]);
             }

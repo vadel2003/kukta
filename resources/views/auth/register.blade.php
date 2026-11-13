@@ -30,8 +30,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Jelszó <span class="label-hint" id="password-hint">(8–50 karakter)</span></label>
-                    <input type="password" name="password" id="password" required minlength="8" maxlength="50" aria-describedby="password-hint" class="{{ $errors->has('password') ? 'is-invalid' : '' }}">
+                    <label for="password">Jelszó <span class="label-hint">(8–50 karakter)</span></label>
+                    <input type="password" name="password" id="password" required minlength="8" maxlength="50" class="{{ $errors->has('password') ? 'is-invalid' : '' }}">
                     @error('password')
                         <span class="form-error">{{ $message }}</span>
                     @enderror
@@ -46,8 +46,8 @@
                     <label class="checkbox-inline">
                         <input type="checkbox" name="terms" required>
                         <span>
-                            Elfogadom az <a href="{{ route('page.terms') }}" target="_blank" class="external-link">Általános szerződési feltételeket<i data-lucide="external-link" aria-hidden="true"></i><span class="sr-only"> (új lapon nyílik)</span></a>,
-                            és megismertem az <a href="{{ route('page.privacy') }}" target="_blank" class="external-link">Adatkezelési tájékoztatót<i data-lucide="external-link" aria-hidden="true"></i><span class="sr-only"> (új lapon nyílik)</span></a>.
+                            Elfogadom az <a href="{{ route('page.terms') }}" target="_blank" class="external-link">Általános szerződési feltételeket<i data-lucide="external-link"></i></a>,
+                            és megismertem az <a href="{{ route('page.privacy') }}" target="_blank" class="external-link">Adatkezelési tájékoztatót<i data-lucide="external-link"></i></a>.
                         </span>
                     </label>
                     @error('terms')

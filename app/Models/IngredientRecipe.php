@@ -12,7 +12,6 @@ class IngredientRecipe extends Model
 
     /**
      * Units: number stored in the database => label.
-     * New units may only be appended, because saved recipes reference the numbers.
      */
     public const UNITS = [
         0 => 'g',

@@ -67,7 +67,7 @@
     <div id="mobileMenu" class="mobile-menu-overlay" popover>
         <div class="mobile-menu-header">
             <span class="mobile-menu-title">Menü</span>
-            <button type="button" class="mobile-menu-close" popovertarget="mobileMenu" popovertargetaction="hide" aria-label="Menü bezárása">
+            <button type="button" class="mobile-menu-close" popovertarget="mobileMenu" popovertargetaction="hide" title="Menü bezárása">
                 <i data-lucide="x"></i>
             </button>
         </div>
@@ -96,6 +96,8 @@
         </nav>
     </div>
 
+    @yield('hero')
+
     <main>
         @yield('content')
     </main>
@@ -109,12 +111,15 @@
     </a>
 
     <script>
-        document.addEventListener('submit', event => {
-            const form = event.target;
-            if (form.dataset.confirm && !confirm((form.dataset.confirmTitle || 'Biztosan folytatod?') + '\n\n' + form.dataset.confirm)) {
-                event.preventDefault();
-            }
-        });
+        // delete forms ask for confirmation before sending
+        const confirmForms = document.querySelectorAll('form[data-confirm]');
+        for (let i = 0; i < confirmForms.length; i++) {
+            confirmForms[i].addEventListener('submit', function (event) {
+                if (!confirm(this.getAttribute('data-confirm'))) {
+                    event.preventDefault();
+                }
+            });
+        }
 
         lucide.createIcons();
     </script>

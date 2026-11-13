@@ -48,9 +48,9 @@ class Recipe extends Model
     /**
      * The difficulty label, e.g. 1 => "közepes".
      */
-    public function difficultyLabel(): string
+    public function difficultyLabel()
     {
-        return self::DIFFICULTIES[$this->difficulty] ?? '';
+        return self::DIFFICULTIES[$this->difficulty];
     }
 
     public function user()
