@@ -27,7 +27,6 @@
                 ];
             }
         }
-        // at least 3 rows are shown
         $stepCount = count(old('steps', $stepValues));
         if ($stepCount < 3) {
             $stepCount = 3;
@@ -37,7 +36,6 @@
             $ingredientCount = 3;
         }
 
-        // checked categories: from old() after a validation error, otherwise from the edited recipe
         $checkedMealTimes = [];
         $checkedFoodTypes = [];
         $checkedDiets = [];
@@ -372,7 +370,6 @@
         const stepsContainer = document.getElementById('steps-container');
         const ingredientsContainer = document.getElementById('ingredients');
 
-        // adds a new, empty row as a copy of the last row
         function addRow(container) {
             const newRow = container.lastElementChild.cloneNode(true);
 
@@ -390,7 +387,6 @@
             renumberRows();
         }
 
-        // removes a row, at least 3 rows must remain
         function removeRow(button) {
             const row = button.parentElement;
             const container = row.parentElement;
@@ -402,7 +398,6 @@
             renumberRows();
         }
 
-        // renumbers the field names (steps[0], steps[1], ...) and disables the remove buttons at 3 rows
         function renumberRows() {
             const steps = stepsContainer.children;
             for (let i = 0; i < steps.length; i++) {

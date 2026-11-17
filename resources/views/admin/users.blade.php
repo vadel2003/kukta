@@ -38,7 +38,6 @@
                 @endif
             @else
                 @php
-                    // clicking the sorted column again reverses the direction
                     $otherDirection = 'asc';
                     if ($direction == 'asc') {
                         $otherDirection = 'desc';

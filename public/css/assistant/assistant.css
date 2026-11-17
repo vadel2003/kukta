@@ -1,4 +1,3 @@
-/* ===== KUKTA ASSISTANT ===== */
 body.assistant-page header,
 body.assistant-page .site-footer,
 body.assistant-page .scroll-to-top {
@@ -64,7 +63,6 @@ body.assistant-page {
     to { opacity: 1; }
 }
 
-/* Intro screen */
 .assistant-intro {
     position: relative;
     width: 100%;
@@ -126,7 +124,6 @@ body.assistant-page {
     line-height: 1.7;
 }
 
-/* Pea figure with a speech bubble */
 .assistant-figure-slot {
     display: flex;
     justify-content: center;
@@ -166,7 +163,6 @@ body.assistant-page {
     white-space: nowrap;
 }
 
-/* Ingredients screen */
 .assistant-heading {
     margin-bottom: 1.5rem;
     text-align: center;
@@ -222,7 +218,6 @@ body.assistant-page {
     text-overflow: ellipsis;
 }
 
-/* Step screens */
 .assistant-step {
     width: 100%;
     display: flex;
@@ -268,7 +263,6 @@ body.assistant-page {
     line-height: 1.8;
 }
 
-/* Finish screen with the rating */
 .assistant-finish {
     width: 100%;
     display: flex;
@@ -313,7 +307,6 @@ body.assistant-page {
     font-weight: 600;
 }
 
-/* Previous / next buttons on the two sides */
 .assistant-nav-zone {
     position: fixed;
     top: 0;
@@ -380,14 +373,12 @@ body.assistant-page {
     z-index: 500;
 }
 
-/* ===== TABLET VIEW ===== */
 @media (max-width: 1024px) {
     .ingredient-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
-/* ===== MOBILE VIEW ===== */
 @media (max-width: 768px) {
     .assistant-intro-content,
     .assistant-ingredients,

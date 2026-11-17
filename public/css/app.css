@@ -49,7 +49,6 @@ body {
     min-height: 100vh;
 }
 
-/* ===== HEADER / NAVIGATION ===== */
 header {
     background: rgba(230, 126, 34, 0.9);
     padding: 0.5rem 1.5rem;
@@ -113,7 +112,6 @@ header {
     opacity: 0.8;
 }
 
-/* Dropdown menu */
 .dropdown {
     position: relative;
     display: inline-block;
@@ -183,7 +181,6 @@ header {
     color: var(--color-primary);
 }
 
-/* Divider between groups */
 .dropdown-divider {
     border: none;
     border-top: 1px solid var(--color-border);
@@ -206,7 +203,6 @@ header {
     color: var(--color-primary);
 }
 
-/* Main content */
 main {
     width: 100%;
     max-width: 1200px;
@@ -216,7 +212,6 @@ main {
     min-width: 0;
 }
 
-/* Buttons */
 button {
     display: inline-block;
     padding: 0.5rem 1rem;
@@ -228,7 +223,6 @@ button {
     line-height: inherit;
 }
 
-/* ===== SEARCH BAR ===== */
 .search-row {
     display: flex;
     align-items: center;
@@ -346,7 +340,6 @@ button {
     line-height: 1;
 }
 
-/* ===== SEARCH BUTTONS ON NARROW SCREENS ===== */
 @media (max-width: 768px) {
     .search-input-group {
         padding: 0.75rem 0.6rem;
@@ -371,7 +364,6 @@ button {
     }
 }
 
-/* ===== RECIPE CARD + GALLERY ===== */
 .recipe-gallery {
     display: flex;
     flex-wrap: wrap;
@@ -666,7 +658,6 @@ button {
     color: #fff;
 }
 
-/* Favorite button on the card */
 .card-favorite-form {
     position: absolute;
     top: 0.5rem;
@@ -707,7 +698,6 @@ button {
     fill: currentColor;
 }
 
-/* Star rating on the card */
 .star-rating {
     display: flex;
     align-items: center;
@@ -755,7 +745,6 @@ button {
     width: 100%;
 }
 
-/* ===== CARDS ===== */
 .content-card {
     background: var(--color-white);
     border: 1px solid #ECE3D8;
@@ -841,7 +830,6 @@ button {
     }
 }
 
-/* ===== DEFAULT IMAGE PICKER ===== */
 .image-section-title {
     margin-bottom: 0.5rem;
 }
@@ -927,7 +915,6 @@ button {
     outline-offset: 2px;
 }
 
-/* ===== FORM COMPONENTS ===== */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -1168,7 +1155,6 @@ select.is-invalid:focus {
     border: 1px solid #ccc;
 }
 
-/* ===== MODAL (popover) ===== */
 .modal-content {
     background: var(--color-white);
     color: inherit;
@@ -1235,7 +1221,6 @@ select.is-invalid:focus {
     justify-content: flex-end;
 }
 
-/* ===== PROFILE PAGE ===== */
 .profile-page {
     max-width: 950px;
     margin: 3rem auto;
@@ -1441,7 +1426,6 @@ input[type="file"] {
     }
 }
 
-/* ===== FOOTER ===== */
 .site-footer {
     background-color: var(--color-footer-bg);
     color: #fff;
@@ -1512,7 +1496,6 @@ input[type="file"] {
     margin: 0;
 }
 
-/* ===== SCROLL TO TOP BUTTON ===== */
 .scroll-to-top {
     position: fixed;
     bottom: 2rem;
@@ -1537,14 +1520,12 @@ input[type="file"] {
     transform: translateY(-3px);
 }
 
-/* ===== MOBILE-ONLY ELEMENTS ===== */
 @media (min-width: 769px) {
     .mobile-menu-overlay {
         display: none;
     }
 }
 
-/* ===== MOBILE VIEW ===== */
 body {
     overflow-x: hidden;
 }
@@ -1631,7 +1612,6 @@ body {
         padding: 0.5rem 1rem 1rem;
     }
 
-    /* Divider between groups */
     .mobile-menu-divider {
         border: none;
         border-top: 1px solid var(--color-border);
@@ -1801,7 +1781,6 @@ body {
     }
 }
 
-/* ===== COOKIE NOTICE ===== */
 .cookie-notice {
     position: fixed;
     left: 1rem;
@@ -1854,7 +1833,6 @@ body {
     }
 }
 
-/* ===== LEGAL TEXTS ===== */
 .legal-text {
     line-height: 1.65;
 }

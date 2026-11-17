@@ -138,7 +138,6 @@
     object-fit: cover;
 }
 
-/* Small recipe image in the recipes table */
 .recipe-thumbnail {
     width: 60px;
     height: 60px;
@@ -179,7 +178,6 @@
     width: 6rem;
 }
 
-/* ===== MOBILE VIEW ===== */
 @media (max-width: 768px) {
     .admin-panel {
         padding: 16px;

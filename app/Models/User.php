@@ -26,9 +26,6 @@ class User extends Authenticatable
         'is_admin' => 'boolean',
     ];
 
-    /**
-     * Deletes the avatar file from the public folder (if there is one).
-     */
     public function deleteAvatarFile()
     {
         if ($this->avatar && file_exists(public_path($this->avatar))) {

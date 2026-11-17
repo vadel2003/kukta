@@ -6,12 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('cache', function (Blueprint $table) {
+        Schema::create('cache',function(Blueprint $table) {
             $table->string('key')->primary();
             $table->mediumText('value');
             $table->bigInteger('expiration')->index();
@@ -24,6 +21,7 @@ return new class extends Migration
         });
 
         Schema::create('jobs', function (Blueprint $table) {
+            
             $table->id();
             $table->string('queue')->index();
             $table->longText('payload');
@@ -32,6 +30,7 @@ return new class extends Migration
             $table->unsignedInteger('available_at');
             $table->unsignedInteger('created_at');
         });
+
 
         Schema::create('job_batches', function (Blueprint $table) {
             $table->string('id')->primary();
@@ -60,11 +59,11 @@ return new class extends Migration
 
         Schema::create('user', function (Blueprint $table) {
             $table->id();
-            $table->string('email', 254)->unique();
+            $table->string('email' , 254)->unique();
             $table->string('name', 30)->unique();
-            $table->string('password', 255); // stored hashed
-            $table->boolean('is_admin')->default(false); // super admin flag
-            $table->string('avatar', 255)->nullable();
+            $table->string('password', 255);
+            $table->boolean('is_admin')->default(false);
+            $table->string('avatar', 255)->nullable(); 
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -86,9 +85,9 @@ return new class extends Migration
             $table->id();
             $table->string('title', 100);
             $table->string('description', 1000);
-            $table->unsignedSmallInteger('prep_time'); // preparation time in minutes
-            $table->unsignedTinyInteger('difficulty'); // 0 = easy, 1 = medium, 2 = hard (Recipe::DIFFICULTIES)
-            $table->unsignedTinyInteger('servings'); // number of servings
+            $table->unsignedSmallInteger('prep_time');
+            $table->unsignedTinyInteger('difficulty');
+            $table->unsignedTinyInteger('servings');
             $table->string('thumbnail', 255);
             $table->foreignId('user_id')->nullable()->constrained('user')->onDelete('SET NULL');
             $table->timestamp('created_at')->useCurrent();
@@ -98,22 +97,22 @@ return new class extends Migration
         Schema::create('ingredient', function (Blueprint $table) {
             $table->id();
             $table->string('name', 50)->unique();
-            $table->double('calories');     // kcal / 100 g
-            $table->double('carbohydrate'); // g / 100 g
-            $table->double('protein');      // g / 100 g
-            $table->double('fat');          // g / 100 g
+            $table->double('calories');
+            $table->double('carbohydrate');
+            $table->double('protein');
+            $table->double('fat');
         });
 
         Schema::create('step_category', function (Blueprint $table) {
             $table->id();
             $table->string('name', 50);
-            $table->string('thumbnail', 255)->unique(); // image path, e.g. images/steps/cooking.svg
+            $table->string('thumbnail', 255)->unique();
         });
 
         Schema::create('step', function (Blueprint $table) {
             $table->id();
             $table->string('description', 1000);
-            $table->unsignedTinyInteger('position'); // order, starting from 1
+            $table->unsignedTinyInteger('position'); // order (from 1)
             $table->foreignId('recipe_id')->constrained('recipe')->onDelete('CASCADE');
             $table->foreignId('step_category_id')->constrained('step_category')->onDelete('RESTRICT');
 
@@ -125,7 +124,7 @@ return new class extends Migration
             $table->foreignId('recipe_id')->constrained('recipe')->onDelete('CASCADE');
             $table->foreignId('ingredient_id')->constrained('ingredient')->onDelete('RESTRICT');
             $table->double('quantity');
-            $table->unsignedTinyInteger('unit'); // unit number (IngredientRecipe::UNITS), e.g. 0 = g
+            $table->unsignedTinyInteger('unit');
         });
 
         Schema::create('favorite', function (Blueprint $table) {
@@ -141,7 +140,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('user')->onDelete('CASCADE');
             $table->foreignId('recipe_id')->constrained('recipe')->onDelete('CASCADE');
-            $table->unsignedTinyInteger('score'); // 1-5
+            $table->unsignedTinyInteger('score');
 
             $table->unique(['user_id', 'recipe_id']);
         });
@@ -169,7 +168,7 @@ return new class extends Migration
         Schema::create('free_from', function (Blueprint $table) {
             $table->id();
             $table->string('name', 30);
-            $table->string('label', 30); // shown on the recipe page, e.g. "Gluténmentes"
+            $table->string('label', 30);
             $table->string('thumbnail', 255);
         });
 
@@ -204,9 +203,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('free_from_recipe');
@@ -233,6 +229,7 @@ return new class extends Migration
         Schema::dropIfExists('job_batches');
         Schema::dropIfExists('jobs');
         Schema::dropIfExists('cache_locks');
-        Schema::dropIfExists('cache');
+        Schema::dropIfExists('cache');  
     }
+
 };

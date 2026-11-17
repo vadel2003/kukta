@@ -8,16 +8,12 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-/**
- * Super admin pages. Access is checked by the IsAdmin middleware of the routes.
- */
 class AdminController extends Controller
 {
     public function ingredients(Request $request)
     {
         $search = $request->query('search');
 
-        // only these columns can be used for sorting
         $sort = $request->query('sort', 'name');
         if (!in_array($sort, ['name', 'calories', 'carbohydrate', 'protein', 'fat'])) {
             $sort = 'name';
@@ -60,7 +56,6 @@ class AdminController extends Controller
     {
         $ingredient = Ingredient::findOrFail($id);
 
-        // the ingredient's own name does not count as a duplicate
         $validated = $request->validate([
             'name' => ['required', 'string', 'min:2', 'max:50', 'unique:ingredient,name,' . $ingredient->id],
             'calories' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:900'],
@@ -74,9 +69,6 @@ class AdminController extends Controller
         return redirect()->route('admin.ingredients')->with('success', 'Alapanyag sikeresen módosítva!');
     }
 
-    /**
-     * An ingredient used in a recipe cannot be deleted.
-     */
     public function destroyIngredient($id)
     {
         $ingredient = Ingredient::findOrFail($id);
@@ -115,7 +107,6 @@ class AdminController extends Controller
         }
 
         if ($sort == 'user') {
-            // select('recipe.*') is needed, otherwise the id of the user would overwrite the id of the recipe
             $query->leftJoin('user', 'user.id', '=', 'recipe.user_id')
                 ->orderBy('user.name', $direction)
                 ->select('recipe.*');
@@ -161,9 +152,6 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * The super admin and the current user's own account cannot be deleted.
-     */
     public function destroyUser($id)
     {
         $user = User::findOrFail($id);

@@ -1,6 +1,3 @@
-{{-- Search bar, active filters, Filters and Sort modals in one form (a single submit sends everything).
-     The modals are popovers: the browser opens and closes them, no JavaScript needed.
-     Variables: $searchAction, $searchPlaceholder (optional), $activeFilterCount and the category lists. --}}
 @php
     $filterGroups = [
         ['param' => 'meal_time', 'title' => 'Étkezés', 'items' => $mealTimes],
@@ -9,7 +6,6 @@
         ['param' => 'free_from', 'title' => 'Érzékenység', 'items' => $freeFroms],
         ['param' => 'cuisine', 'title' => 'Konyha', 'items' => $cuisines],
     ];
-    // the search word and the sorting stay, only the filters are removed
     $urlWithoutFilters = $searchAction . '?search=' . urlencode(request('search')) . '&sort=' . request('sort', 'date') . '#recipes';
 @endphp
 <form action="{{ $searchAction }}#recipes" method="GET">
@@ -37,7 +33,6 @@
                 @foreach ($group['items'] as $item)
                     @if (in_array($item->id, (array) request($group['param'])))
                         @php
-                            // the other checked values of the same filter stay in the link
                             $otherValues = [];
                             foreach ((array) request($group['param']) as $value) {
                                 if ($value != $item->id) {

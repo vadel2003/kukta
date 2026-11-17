@@ -1,4 +1,3 @@
-{{-- Recipe cards. Variables: $recipes, $favoriteIds, $showOwnerActions (optional). --}}
 @forelse ($recipes as $recipe)
     @php
         $isFavorite = in_array($recipe->id, $favoriteIds);

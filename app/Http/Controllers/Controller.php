@@ -11,9 +11,6 @@ use Illuminate\Http\Request;
 
 abstract class Controller
 {
-    /**
-     * Category lists for the filters and the recipe form, and the number of checked filters.
-     */
     protected function filterCategories()
     {
         $activeFilterCount = 0;
@@ -34,10 +31,6 @@ abstract class Controller
         ];
     }
 
-    /**
-     * Keyword search and category filters. Values of one category are combined with OR,
-     * except "free from", where the recipe must be free from all checked values.
-     */
     protected function applyFilters($query, Request $request)
     {
         if ($request->filled('search')) {
@@ -83,9 +76,6 @@ abstract class Controller
         }
     }
 
-    /**
-     * Sorting: by number of favorites (popularity) or by date (newest first).
-     */
     protected function applySort($query, Request $request)
     {
         if ($request->input('sort') == 'popularity') {

@@ -9,24 +9,28 @@ class RatingSeeder extends Seeder
 {
     public function run(): void
     {
-        $ratings = [
-            2 => [9 => 2, 22 => 5, 33 => 1, 38 => 4],
-            3 => [40 => 4, 8 => 3, 7 => 4, 15 => 4, 1 => 4],
-            4 => [4 => 4, 30 => 5, 28 => 2, 19 => 2],
-            5 => [39 => 5, 16 => 4, 35 => 5, 36 => 3, 5 => 2],
-        ];
+        DB::table('rating')->insert([
+            ['user_id' => 2, 'recipe_id' => 9, 'score' => 2],
+            ['user_id' => 2, 'recipe_id' => 22, 'score' => 5],
+            ['user_id' => 2, 'recipe_id' => 33, 'score' => 1],
+            ['user_id' => 2, 'recipe_id' => 38, 'score' => 4],
 
-        $records = [];
-        foreach ($ratings as $userId => $scores) {
-            foreach ($scores as $recipeId => $score) {
-                $records[] = [
-                    'user_id' => $userId,
-                    'recipe_id' => $recipeId,
-                    'score' => $score,
-                ];
-            }
-        }
+            ['user_id' => 3, 'recipe_id' => 1, 'score' => 4],
+            ['user_id' => 3, 'recipe_id' => 7, 'score' => 4],
+            ['user_id' => 3, 'recipe_id' => 8, 'score' => 3],
+            ['user_id' => 3, 'recipe_id' => 15, 'score' => 4],
+            ['user_id' => 3, 'recipe_id' => 40, 'score' => 4],
 
-        DB::table('rating')->insert($records);
+            ['user_id' => 4, 'recipe_id' => 4, 'score' => 4],
+            ['user_id' => 4, 'recipe_id' => 19, 'score' => 2],
+            ['user_id' => 4, 'recipe_id' => 28, 'score' => 2],
+            ['user_id' => 4, 'recipe_id' => 30, 'score' => 5],
+
+            ['user_id' => 5, 'recipe_id' => 5, 'score' => 2],
+            ['user_id' => 5, 'recipe_id' => 16, 'score' => 4],
+            ['user_id' => 5, 'recipe_id' => 35, 'score' => 5],
+            ['user_id' => 5, 'recipe_id' => 36, 'score' => 3],
+            ['user_id' => 5, 'recipe_id' => 39, 'score' => 5],
+        ]);
     }
 }

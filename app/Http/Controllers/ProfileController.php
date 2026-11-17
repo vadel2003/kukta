@@ -61,9 +61,6 @@ class ProfileController extends Controller
         return redirect()->route('profile.index')->with('success', 'Jelszó sikeresen frissítve!');
     }
 
-    /**
-     * Deletes the current user's account. The super admin account cannot be deleted.
-     */
     public function destroy(Request $request)
     {
         $request->validate([

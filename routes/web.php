@@ -10,19 +10,15 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Middleware\IsAdmin;
 use Illuminate\Support\Facades\Route;
 
-// Home
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// Login
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Registration
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
-// Profile
 Route::middleware('auth')->group(function () {
     Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
     Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
@@ -30,7 +26,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profil', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Recipes (logged in)
 Route::middleware('auth')->group(function () {
     Route::get('/recept/uj', [RecipeController::class, 'create'])->name('recipes.create');
     Route::post('/recept/uj', [RecipeController::class, 'store'])->name('recipes.store');
@@ -44,11 +39,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/recept/{id}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
 });
 
-// Recipes (public)
 Route::get('/recept/{id}', [RecipeController::class, 'show'])->name('recipes.show');
 Route::get('/recept/{id}/asszisztens', [RecipeController::class, 'assistant'])->name('recipes.assistant');
 
-// Super admin
 Route::middleware(['auth', IsAdmin::class])->group(function () {
     Route::get('/admin/alapanyagok', [AdminController::class, 'ingredients'])->name('admin.ingredients');
     Route::post('/admin/alapanyagok', [AdminController::class, 'storeIngredient'])->name('admin.ingredients.store');
@@ -59,7 +52,6 @@ Route::middleware(['auth', IsAdmin::class])->group(function () {
     Route::delete('/admin/felhasznalok/{id}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
 });
 
-// Static pages
 Route::get('/adatkezelesi-tajekoztato', [PageController::class, 'privacy'])->name('page.privacy');
 Route::get('/suti-kezeles', [PageController::class, 'cookies'])->name('page.cookies');
 Route::post('/suti-elfogadas', [PageController::class, 'acceptCookies'])->name('page.cookies.accept');

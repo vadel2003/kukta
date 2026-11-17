@@ -72,9 +72,6 @@ class RecipeController extends Controller
         return view('recipes.favorites', $data);
     }
 
-    /**
-     * Favorites or unfavorites the recipe, then goes back to the same recipe card.
-     */
     public function toggleFavorite($id)
     {
         $recipe = Recipe::findOrFail($id);
@@ -160,9 +157,6 @@ class RecipeController extends Controller
         return redirect(route('recipes.show', $recipe->id) . '#reviews')->with('success', 'Értékelés mentve!');
     }
 
-    /**
-     * The "log in to rate" link of guests: after logging in, opens the recipe page at the ratings.
-     */
     public function loginToRate($id)
     {
         return redirect(route('recipes.show', $id) . '#reviews');
@@ -210,9 +204,6 @@ class RecipeController extends Controller
         return redirect()->back()->with('success', 'Recept sikeresen törölve!');
     }
 
-    /**
-     * Lists for the recipe form (create and edit).
-     */
     private function formData()
     {
         $data = $this->filterCategories();
@@ -225,12 +216,8 @@ class RecipeController extends Controller
         return $data;
     }
 
-    /**
-     * Validates the recipe form and keeps only the filled step and ingredient rows.
-     */
     private function validateRecipe(Request $request, $recipe = null)
     {
-        // when editing, the recipe already has an image
         $imageRule = 'required_without:default_image';
         if ($recipe != null) {
             $imageRule = 'nullable';
@@ -314,9 +301,6 @@ class RecipeController extends Controller
         return $validated;
     }
 
-    /**
-     * Checks the number of filled step and ingredient rows.
-     */
     private function rowErrors($validated)
     {
         $errors = [];
@@ -334,9 +318,6 @@ class RecipeController extends Controller
         return $errors;
     }
 
-    /**
-     * Saves the recipe with its image, steps, ingredients and categories (used by store and update).
-     */
     private function saveRecipe($recipe, $request, $validated)
     {
         if ($request->hasFile('thumbnail_image')) {
@@ -363,7 +344,6 @@ class RecipeController extends Controller
             ]);
         }
 
-        // new ingredients get 0 nutrition values, the super admin fills them in later
         $ingredientData = [];
         foreach ($validated['ingredients'] as $ingredient) {
             $ingredientModel = Ingredient::where('name', $ingredient['name'])->first();
@@ -399,9 +379,6 @@ class RecipeController extends Controller
         $recipe->cuisines()->sync($validated['cuisines']);
     }
 
-    /**
-     * Number and percentage of ratings per star (5 to 1).
-     */
     private function ratingDistribution($recipe)
     {
         $total = $recipe->ratings->count();

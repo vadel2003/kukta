@@ -10,9 +10,6 @@ class IngredientRecipe extends Model
 
     public $timestamps = false;
 
-    /**
-     * Units: number stored in the database => label.
-     */
     public const UNITS = [
         0 => 'g',
         1 => 'kg',

@@ -2,12 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
     public function run(): void
     {
         $this->call([
@@ -18,10 +16,8 @@ class DatabaseSeeder extends Seeder
             DietSeeder::class,
             FreeFromSeeder::class,
             CuisineSeeder::class,
-            RecipeSeeder::class,
             StepCategorySeeder::class,
-            StepSeeder::class,
-            IngredientRecipeSeeder::class,
+            RecipeSeeder::class,
             FavoriteSeeder::class,
             RatingSeeder::class,
         ]);

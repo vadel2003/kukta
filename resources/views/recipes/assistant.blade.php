@@ -9,7 +9,6 @@
 
 @section('content')
     @php
-        // 5 ingredients fit on one screen
         $ingredientPages = ceil($recipe->ingredients->count() / 5);
     @endphp
 
@@ -128,7 +127,6 @@
         let touchStartX = 0;
         let touchStartY = 0;
 
-        // shows the screen with the given number, the others are hidden
         function showScreen(index) {
             current = index;
 
@@ -161,7 +159,6 @@
             }
         }
 
-        // the whole side area is clickable, not just the button
         document.getElementById('prevZone').addEventListener('click', prevScreen);
         nextZone.addEventListener('click', nextScreen);
 
@@ -177,7 +174,6 @@
             }
         });
 
-        // swiping on mobile
         document.addEventListener('touchstart', function (event) {
             touchStartX = event.changedTouches[0].clientX;
             touchStartY = event.changedTouches[0].clientY;
@@ -187,7 +183,6 @@
             const deltaX = event.changedTouches[0].clientX - touchStartX;
             const deltaY = event.changedTouches[0].clientY - touchStartY;
 
-            // vertical scrolling does not change the screen
             if (Math.abs(deltaY) > Math.abs(deltaX)) {
                 return;
             }

@@ -4,22 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+// The data structure of the recipe
 class Recipe extends Model
 {
     protected $table = 'recipe';
 
-    /**
-     * Difficulty levels: number stored in the database => label.
-     */
     public const DIFFICULTIES = [
         0 => 'könnyű',
         1 => 'közepes',
         2 => 'nehéz',
     ];
 
-    /**
-     * Selectable default images: path => label, in picker order.
-     */
     public const DEFAULT_IMAGES = [
         'images/recipes/default/soup_thumbnail.svg'        => 'Leves',
         'images/recipes/default/main_course_thumbnail.svg' => 'Főétel',
@@ -45,9 +40,6 @@ class Recipe extends Model
         'user_id',
     ];
 
-    /**
-     * The difficulty label, e.g. 1 => "közepes".
-     */
     public function difficultyLabel()
     {
         return self::DIFFICULTIES[$this->difficulty];

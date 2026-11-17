@@ -1,5 +1,3 @@
-{{-- Recipe list: search, filters, sorting, recipe cards and the page links.
-     Variables: $searchAction, $searchPlaceholder (optional), $recipes, $favoriteIds and the category lists. --}}
 <section id="recipes" class="recipes-section">
     @include('partials.recipe-search-bar')
 

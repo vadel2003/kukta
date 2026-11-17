@@ -63,7 +63,6 @@
         </div>
     </header>
 
-    {{-- Mobile menu: the profile icon opens it (popover attribute, no JavaScript needed). --}}
     <div id="mobileMenu" class="mobile-menu-overlay" popover>
         <div class="mobile-menu-header">
             <span class="mobile-menu-title">Menü</span>
@@ -111,7 +110,6 @@
     </a>
 
     <script>
-        // delete forms ask for confirmation before sending
         const confirmForms = document.querySelectorAll('form[data-confirm]');
         for (let i = 0; i < confirmForms.length; i++) {
             confirmForms[i].addEventListener('submit', function (event) {

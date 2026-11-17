@@ -9,9 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class IsAdmin
 {
-    /**
-     * Only the super admin can open the admin pages, others get a 403 error.
-     */
     public function handle(Request $request, Closure $next): Response
     {
         if (!Auth::user()->isAdmin()) {
