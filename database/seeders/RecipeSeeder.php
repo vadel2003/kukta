@@ -9,6 +9,7 @@ class RecipeSeeder extends Seeder
 {
     public function run(): void
     {
+        // Gulyásleves
         DB::table('recipe')->insert([
             'id' => 1,
             'title' => 'Gulyásleves',
@@ -56,6 +57,8 @@ class RecipeSeeder extends Seeder
             ['recipe_id' => 1, 'position' => 7, 'step_category_id' => 5,
                 'description' => 'Forrón tálaljuk, friss kenyérrel az igazi.'],
         ]);
+
+        // Paradicsomleves
 
         DB::table('recipe')->insert([
             'id' => 2,

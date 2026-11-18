@@ -33,17 +33,12 @@ abstract class Controller
 
     protected function applyFilters($query, Request $request)
     {
-        if ($request->filled('search')) {
+        if ($request->filled('search')) 
+        {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', '%' . $search . '%')
-                    ->orWhere('description', 'like', '%' . $search . '%')
-                    ->orWhereHas('ingredients', function ($q2) use ($search) {
-                        $q2->where('name', 'like', '%' . $search . '%');
-                    })
-                    ->orWhereHas('steps', function ($q2) use ($search) {
-                        $q2->where('description', 'like', '%' . $search . '%');
-                    });
+                  ->orWhere('description', 'like', '%' . $search . '%');
             });
         }
 

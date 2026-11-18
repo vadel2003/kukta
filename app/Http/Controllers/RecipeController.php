@@ -116,7 +116,7 @@ class RecipeController extends Controller
             'averageRating' => round($averageRating, 1),
             'ratingCount' => $recipe->ratings()->count(),
             'userRating' => $userRating,
-            'distributionPercentages' => $this->ratingDistribution($recipe),
+            'distributionPercentages' => $this->countRatingsByScore($recipe),
             'units' => IngredientRecipe::UNITS,
         ]);
     }
@@ -379,7 +379,7 @@ class RecipeController extends Controller
         $recipe->cuisines()->sync($validated['cuisines']);
     }
 
-    private function ratingDistribution($recipe)
+    private function countRatingsByScore($recipe)
     {
         $total = $recipe->ratings->count();
 
