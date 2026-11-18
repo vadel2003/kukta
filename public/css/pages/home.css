@@ -79,6 +79,10 @@
 
 .hero-image img {
     width: 100%;
+    position: relative;
+    top: -25px;
+    margin-bottom: -180px;
+    pointer-events: none;
     filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
 }
 
