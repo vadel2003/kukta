@@ -3,14 +3,14 @@
 @section('title', 'Általános szerződési feltételek')
 
 @section('content')
-    <section class="page-section">
-        <div class="card-stack">
+    <section class="page">
+        <div class="column">
             <div>
-                <a href="{{ route('home') }}" class="back-link back-link--always"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
+                <a href="{{ route('home') }}" class="back_button always_show"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
                 <h1>Általános szerződési feltételek</h1>
             </div>
-            <div class="content-card legal-text">
-                <p class="legal-meta">Hatályos: 2026. október 2-től</p>
+            <div class="box legal_text">
+                <p class="legal_date">Hatályos: 2026. október 2-től</p>
 
                 <p>
                     Ez a dokumentum a Kukta receptoldal (a továbbiakban: Oldal) használatának feltételeit

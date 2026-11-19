@@ -3,14 +3,14 @@
 @section('title', 'Süti tájékoztató')
 
 @section('content')
-    <section class="page-section">
-        <div class="card-stack">
+    <section class="page">
+        <div class="column">
             <div>
-                <a href="{{ route('home') }}" class="back-link back-link--always"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
+                <a href="{{ route('home') }}" class="back_button always_show"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
                 <h1>Süti tájékoztató</h1>
             </div>
-            <div class="content-card legal-text">
-                <p class="legal-meta">Hatályos: 2026. október 2-től</p>
+            <div class="box legal_text">
+                <p class="legal_date">Hatályos: 2026. október 2-től</p>
 
                 <h2>Mi az a süti?</h2>
                 <p>

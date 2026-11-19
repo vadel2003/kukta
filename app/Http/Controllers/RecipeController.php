@@ -46,7 +46,6 @@ class RecipeController extends Controller
         $data = $this->filterCategories();
         $data['recipes'] = $recipes;
         $data['favoriteIds'] = Favorite::where('user_id', Auth::id())->pluck('recipe_id')->toArray();
-        $data['showOwnerActions'] = true;
         $data['hasAnyRecipes'] = Recipe::where('user_id', Auth::id())->exists();
 
         return view('recipes.my', $data);
@@ -89,7 +88,7 @@ class RecipeController extends Controller
             $favorite->save();
         }
 
-        return redirect(url()->previous() . '#recipe-' . $recipe->id);
+        return redirect(url()->previous() . '#recipe_' . $recipe->id);
     }
 
     public function show($id)

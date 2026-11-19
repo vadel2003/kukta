@@ -3,34 +3,34 @@
 @section('title', 'Receptek (admin)')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 @endsection
 
 @section('content')
-    <div class="card-stack">
+    <div class="column">
         <div>
-            <a href="{{ route('home') }}" class="back-link"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
+            <a href="{{ route('home') }}" class="back_button"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
             <h1>Receptek kezelése</h1>
         </div>
 
-        <div class="admin-panel">
+        <div class="admin_box">
             @if (session('success'))
-                <p class="form-success">{{ session('success') }}</p>
+                <p class="success">{{ session('success') }}</p>
             @endif
 
-            <div class="ingredient-toolbar">
-                <form action="{{ route('admin.recipes') }}" method="GET" class="ingredient-search">
+            <div class="ingredient_top">
+                <form action="{{ route('admin.recipes') }}" method="GET" class="ingredient_search">
                     <input type="hidden" name="sort" value="{{ $sort }}">
                     <input type="hidden" name="direction" value="{{ $direction }}">
                     <input type="text" name="search" value="{{ $search }}" placeholder="Keresés cím vagy feltöltő szerint...">
-                    <button type="submit" class="btn-edit btn-edit-primary">Keresés</button>
+                    <button type="submit" class="edit_button edit_orange">Keresés</button>
                     @if ($search)
-                        <a href="{{ route('admin.recipes', ['sort' => $sort, 'direction' => $direction]) }}" class="btn-clear-search">Összes</a>
+                        <a href="{{ route('admin.recipes', ['sort' => $sort, 'direction' => $direction]) }}" class="clear_button">Összes</a>
                     @endif
                 </form>
 
-                <div class="toolbar-actions">
-                    <a href="{{ route('recipes.create') }}" class="btn-edit btn-edit-primary">Új recept</a>
+                <div class="top_buttons">
+                    <a href="{{ route('recipes.create') }}" class="edit_button edit_orange">Új recept</a>
                 </div>
             </div>
 
@@ -46,44 +46,58 @@
                     if ($direction == 'asc') {
                         $otherDirection = 'desc';
                     }
+                    $titleDirection = 'asc';
+                    if ($sort == 'title') {
+                        $titleDirection = $otherDirection;
+                    }
+                    $userDirection = 'asc';
+                    if ($sort == 'user') {
+                        $userDirection = $otherDirection;
+                    }
                     $arrow = '▼';
                     if ($direction == 'asc') {
                         $arrow = '▲';
                     }
                 @endphp
-                <table class="admin-table">
+                <table class="admin_table">
                     <thead>
                         <tr>
                             <th></th>
                             <th>
-                                <a href="{{ route('admin.recipes', ['search' => $search, 'sort' => 'title', 'direction' => $sort == 'title' ? $otherDirection : 'asc']) }}">
+                                <a href="{{ route('admin.recipes', ['search' => $search, 'sort' => 'title', 'direction' => $titleDirection]) }}">
                                     Cím @if ($sort == 'title') {{ $arrow }} @endif
                                 </a>
                             </th>
                             <th>
-                                <a href="{{ route('admin.recipes', ['search' => $search, 'sort' => 'user', 'direction' => $sort == 'user' ? $otherDirection : 'asc']) }}">
+                                <a href="{{ route('admin.recipes', ['search' => $search, 'sort' => 'user', 'direction' => $userDirection]) }}">
                                     Feltöltötte @if ($sort == 'user') {{ $arrow }} @endif
                                 </a>
                             </th>
                             <th>Leírás</th>
-                            <th class="admin-table-actions">Műveletek</th>
+                            <th class="table_buttons">Műveletek</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($recipes as $recipe)
                             <tr>
                                 <td>
-                                    <img src="{{ asset($recipe->thumbnail) }}" alt="{{ $recipe->title }}" class="recipe-thumbnail">
+                                    <img src="{{ asset($recipe->thumbnail) }}" alt="{{ $recipe->title }}" class="small_image">
                                 </td>
                                 <td>{{ $recipe->title }}</td>
-                                <td>{{ $recipe->user->name ?? 'törölt felhasználó' }}</td>
+                                <td>
+                                    @if ($recipe->user)
+                                        {{ $recipe->user->name }}
+                                    @else
+                                        törölt felhasználó
+                                    @endif
+                                </td>
                                 <td>{{ Str::limit($recipe->description, 100) }}</td>
-                                <td class="admin-table-actions">
-                                    <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-edit btn-edit-primary">Részletek</a>
+                                <td class="table_buttons">
+                                    <a href="{{ route('recipes.show', $recipe->id) }}" class="edit_button edit_orange">Részletek</a>
                                     <form action="{{ route('recipes.destroy', $recipe->id) }}" method="POST" style="display: inline;" data-confirm="Biztosan törlöd a receptet? A(z) „{{ $recipe->title }}” recept véglegesen törlődik. Ez a művelet nem visszavonható.">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn-delete">Törlés</button>
+                                        <button type="submit" class="delete_button">Törlés</button>
                                     </form>
                                 </td>
                             </tr>

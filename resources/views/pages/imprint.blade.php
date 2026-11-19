@@ -3,13 +3,13 @@
 @section('title', 'Impresszum')
 
 @section('content')
-    <section class="page-section">
-        <div class="card-stack">
+    <section class="page">
+        <div class="column">
             <div>
-                <a href="{{ route('home') }}" class="back-link back-link--always"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
+                <a href="{{ route('home') }}" class="back_button always_show"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
                 <h1>Impresszum</h1>
             </div>
-            <div class="content-card legal-text">
+            <div class="box legal_text">
                 <h2>Az oldal üzemeltetője</h2>
                 <ul>
                     <li>Név: Völgyi Adél</li>

@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
 @section('title', 'Kukta asszisztens – ' . $recipe->title)
-@section('bodyClass', 'assistant-page')
+@section('bodyClass', 'assistant_page')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/assistant/assistant.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/assistant.css') }}">
 @endsection
 
 @section('content')
@@ -13,20 +13,20 @@
     @endphp
 
     <div class="assistant">
-        <a href="{{ route('recipes.show', $recipe->id) }}" class="assistant-close" title="Kilépés az asszisztensből"><i data-lucide="x"></i></a>
+        <a href="{{ route('recipes.show', $recipe->id) }}" class="exit_button" title="Kilépés az asszisztensből"><i data-lucide="x"></i></a>
 
-        <section class="assistant-screen is-active">
-            <div class="assistant-intro" style="background-image: url('{{ asset($recipe->thumbnail) }}');">
-                <div class="assistant-intro-content">
-                    <div class="assistant-intro-card assistant-greeting-card">
-                        <div class="assistant-figure-slot">
-                            <div class="assistant-figure">
-                                <img src="{{ asset('images/assistant-figure.svg') }}" alt="Kukta asszisztens, a borsó főzősegéd" class="assistant-figure-image">
-                                <p class="assistant-figure-bubble">Szia!<br>Én vagyok az asszisztensed.<br>Induljon a főzés!</p>
+        <section class="screen active">
+            <div class="intro" style="background-image: url('{{ asset($recipe->thumbnail) }}');">
+                <div class="intro_inside">
+                    <div class="white_box greeting">
+                        <div class="mascot_box">
+                            <div class="mascot">
+                                <img src="{{ asset('images/assistant-figure.svg') }}" alt="Kukta asszisztens, a borsó főzősegéd" class="mascot_image">
+                                <p class="speech_bubble">Szia!<br>Én vagyok az asszisztensed.<br>Induljon a főzés!</p>
                             </div>
                         </div>
                     </div>
-                    <div class="assistant-intro-card assistant-intro-overlay">
+                    <div class="white_box intro_text">
                         <h1>{{ $recipe->title }}</h1>
                         <p>{{ $recipe->description }}</p>
                     </div>
@@ -35,23 +35,23 @@
         </section>
 
         @foreach ($recipe->ingredients->chunk(5) as $chunk)
-            <section class="assistant-screen">
-                <div class="assistant-ingredients">
-                    <div class="content-card assistant-ingredients-card">
-                        <h2 class="assistant-heading">
+            <section class="screen">
+                <div class="ingredients_page">
+                    <div class="box ingredients_box">
+                        <h2 class="big_title">
                             Hozzávalók
                             @if ($ingredientPages > 1)
                                 ({{ $loop->iteration }}/{{ $ingredientPages }})
                             @endif
                         </h2>
-                        <ul class="ingredient-grid">
+                        <ul class="ingredient_grid">
                             @foreach ($chunk as $ingredient)
                                 @php
                                     $quantity = (float) $ingredient->pivot->quantity;
                                 @endphp
-                                <li class="assistant-ingredient">
-                                    <span class="assistant-ingredient-qty">{{ str_replace('.', ',', $quantity) }} {{ $units[$ingredient->pivot->unit] }}</span>
-                                    <span class="assistant-ingredient-name">{{ $ingredient->name }}</span>
+                                <li class="ingredient_box">
+                                    <span class="amount">{{ str_replace('.', ',', $quantity) }} {{ $units[$ingredient->pivot->unit] }}</span>
+                                    <span class="ingredient_text">{{ $ingredient->name }}</span>
                                 </li>
                             @endforeach
                         </ul>
@@ -61,36 +61,36 @@
         @endforeach
 
         @foreach ($recipe->steps as $step)
-            <section class="assistant-screen">
-                <div class="assistant-step">
-                    <div class="content-card assistant-step-card">
-                        <div class="assistant-step-number">{{ $loop->iteration }}</div>
-                        <img src="{{ asset($step->stepCategory->thumbnail) }}" alt="{{ $step->stepCategory->name }}" class="step-image">
-                        <p class="assistant-step-text">{{ $step->description }}</p>
+            <section class="screen">
+                <div class="step_page">
+                    <div class="box step_box">
+                        <div class="big_number">{{ $loop->iteration }}</div>
+                        <img src="{{ asset($step->stepCategory->thumbnail) }}" alt="{{ $step->stepCategory->name }}" class="step_image">
+                        <p class="step_big_text">{{ $step->description }}</p>
                     </div>
                 </div>
             </section>
         @endforeach
 
-        <section class="assistant-screen assistant-screen-finish">
-            <div class="assistant-finish">
-                <div class="content-card assistant-finish-card">
-                    <div class="assistant-figure-slot">
-                        <div class="assistant-figure">
-                            <img src="{{ asset('images/assistant-figure.svg') }}" alt="Kukta asszisztens, a borsó főzősegéd" class="assistant-figure-image">
-                            <p class="assistant-figure-bubble">Jó étvágyat!</p>
+        <section class="screen last_screen">
+            <div class="finish_page">
+                <div class="box finish_box">
+                    <div class="mascot_box">
+                        <div class="mascot">
+                            <img src="{{ asset('images/assistant-figure.svg') }}" alt="Kukta asszisztens, a borsó főzősegéd" class="mascot_image">
+                            <p class="speech_bubble">Jó étvágyat!</p>
                         </div>
                     </div>
 
                     @auth
                         <form action="{{ route('recipes.rate', $recipe->id) }}" method="POST">
                             @csrf
-                            <div class="assistant-stars">
+                            <div class="rate_stars">
                                 @for ($i = 1; $i <= 5; $i++)
-                                    <button type="submit" name="score" value="{{ $i }}" class="assistant-star {{ $userRating && $i <= $userRating->score ? 'filled' : '' }}" title="{{ $i }} csillag">★</button>
+                                    <button type="submit" name="score" value="{{ $i }}" class="rate_star @if ($userRating && $i <= $userRating->score) filled @endif" title="{{ $i }} csillag">★</button>
                                 @endfor
                             </div>
-                            <p class="assistant-rating-status">
+                            <p class="rate_text">
                                 @if ($userRating)
                                     A te értékelésed: {{ $userRating->score }} csillag
                                 @else
@@ -99,29 +99,29 @@
                             </p>
                         </form>
                     @else
-                        <p class="assistant-rating-status">
+                        <p class="rate_text">
                             Az értékeléshez <a href="{{ route('recipes.rate.login', $recipe->id) }}">jelentkezz be</a>
                         </p>
                     @endauth
 
-                    <a href="{{ route('recipes.show', $recipe->id) }}" class="btn-cook btn-cook-primary">Vissza a recepthez</a>
+                    <a href="{{ route('recipes.show', $recipe->id) }}" class="big_button orange">Vissza a recepthez</a>
                 </div>
             </div>
         </section>
 
-        <div class="assistant-nav-zone assistant-nav-zone-prev" id="prevZone">
-            <button type="button" id="prevButton" class="btn-assistant-nav" title="Vissza"><i data-lucide="chevron-left"></i></button>
+        <div class="side left_side" id="prev_side">
+            <button type="button" id="prev_button" class="arrow_button" title="Vissza"><i data-lucide="chevron-left"></i></button>
         </div>
-        <div class="assistant-nav-zone assistant-nav-zone-next" id="nextZone">
-            <button type="button" id="nextButton" class="btn-assistant-nav" title="Tovább"><i data-lucide="chevron-right"></i></button>
+        <div class="side right_side" id="next_side">
+            <button type="button" id="next_button" class="arrow_button" title="Tovább"><i data-lucide="chevron-right"></i></button>
         </div>
-        <span class="assistant-progress" id="progress"></span>
+        <span class="step_counter" id="progress"></span>
     </div>
 
     <script>
-        const screens = document.querySelectorAll('.assistant-screen');
-        const prevButton = document.getElementById('prevButton');
-        const nextZone = document.getElementById('nextZone');
+        const screens = document.querySelectorAll('.screen');
+        const prevButton = document.getElementById('prev_button');
+        const nextZone = document.getElementById('next_side');
         const progress = document.getElementById('progress');
         let current = 0;
         let touchStartX = 0;
@@ -132,9 +132,9 @@
 
             for (let i = 0; i < screens.length; i++) {
                 if (i == current) {
-                    screens[i].classList.add('is-active');
+                    screens[i].classList.add('active');
                 } else {
-                    screens[i].classList.remove('is-active');
+                    screens[i].classList.remove('active');
                 }
             }
 
@@ -159,7 +159,7 @@
             }
         }
 
-        document.getElementById('prevZone').addEventListener('click', prevScreen);
+        document.getElementById('prev_side').addEventListener('click', prevScreen);
         nextZone.addEventListener('click', nextScreen);
 
         document.addEventListener('keydown', function (event) {

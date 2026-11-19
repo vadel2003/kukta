@@ -11,34 +11,34 @@
 </head>
 <body class="@yield('bodyClass')">
     <header>
-        <div class="header-left">
+        <div class="header_left">
             <a href="{{ route('home') }}">
                 <img src="{{ asset('images/kukta-hat.svg') }}" alt="" class="logo">
-                <span class="logo-text">Kukta</span>
+                <span class="logo_text">Kukta</span>
             </a>
         </div>
 
-        <div class="header-right">
+        <div class="header_right">
             @auth
-                <div class="dropdown desktop-user">
-                    <button type="button" class="dropdown-trigger" popovertarget="mobileMenu">
-                        <img src="{{ asset('images/profile_icon.svg') }}" alt="Profil" class="profile-icon">
-                        <i data-lucide="chevron-down" class="dropdown-arrow"></i>
+                <div class="dropdown desktop_user">
+                    <button type="button" class="profile_button" popovertarget="menu_popup">
+                        <img src="{{ asset('images/profile_icon.svg') }}" alt="Profil" class="profile_icon">
+                        <i data-lucide="chevron-down" class="arrow"></i>
                     </button>
-                    <div class="dropdown-menu">
-                        <div class="dropdown-panel">
+                    <div class="dropdown_menu">
+                        <div class="dropdown_box">
                             <a href="{{ route('profile.index') }}"><i data-lucide="user"></i> Profil</a>
                             <a href="{{ route('recipes.create') }}"><i data-lucide="plus"></i> Új recept</a>
                             <a href="{{ route('recipes.my') }}"><i data-lucide="book-open"></i> Saját receptek</a>
                             <a href="{{ route('recipes.favorites') }}"><i data-lucide="heart"></i> Kedvenc receptek</a>
                             @if (Auth::user()->isAdmin())
-                                <hr class="dropdown-divider">
-                                <span class="dropdown-label">Szuperadmin</span>
+                                <hr class="dropdown_line">
+                                <span class="dropdown_title">Szuperadmin</span>
                                 <a href="{{ route('admin.ingredients') }}"><i data-lucide="carrot"></i> Alapanyagok</a>
                                 <a href="{{ route('admin.recipes') }}"><i data-lucide="utensils"></i> Receptek</a>
                                 <a href="{{ route('admin.users') }}"><i data-lucide="users"></i> Felhasználók</a>
                             @endif
-                            <hr class="dropdown-divider">
+                            <hr class="dropdown_line">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit"><i data-lucide="log-out"></i> Kijelentkezés</button>
@@ -47,13 +47,13 @@
                     </div>
                 </div>
             @else
-                <div class="dropdown desktop-user">
-                    <button type="button" class="dropdown-trigger" popovertarget="mobileMenu" title="Bejelentkezés">
-                        <img src="{{ asset('images/profile_icon.svg') }}" alt="Bejelentkezés" class="profile-icon">
-                        <i data-lucide="chevron-down" class="dropdown-arrow"></i>
+                <div class="dropdown desktop_user">
+                    <button type="button" class="profile_button" popovertarget="menu_popup" title="Bejelentkezés">
+                        <img src="{{ asset('images/profile_icon.svg') }}" alt="Bejelentkezés" class="profile_icon">
+                        <i data-lucide="chevron-down" class="arrow"></i>
                     </button>
-                    <div class="dropdown-menu">
-                        <div class="dropdown-panel">
+                    <div class="dropdown_menu">
+                        <div class="dropdown_box">
                             <a href="{{ route('login') }}"><i data-lucide="log-in"></i> Bejelentkezés</a>
                             <a href="{{ route('register') }}"><i data-lucide="user-plus"></i> Regisztráció</a>
                         </div>
@@ -63,27 +63,27 @@
         </div>
     </header>
 
-    <div id="mobileMenu" class="mobile-menu-overlay" popover>
-        <div class="mobile-menu-header">
-            <span class="mobile-menu-title">Menü</span>
-            <button type="button" class="mobile-menu-close" popovertarget="mobileMenu" popovertargetaction="hide" title="Menü bezárása">
+    <div id="menu_popup" class="mobile_popup" popover>
+        <div class="mobile_menu_top">
+            <span class="mobile_menu_title">Menü</span>
+            <button type="button" class="mobile_close" popovertarget="menu_popup" popovertargetaction="hide" title="Menü bezárása">
                 <i data-lucide="x"></i>
             </button>
         </div>
-        <nav class="mobile-menu">
+        <nav class="mobile_menu">
             @auth
                 <a href="{{ route('profile.index') }}"><i data-lucide="user"></i> Profil</a>
                 <a href="{{ route('recipes.create') }}"><i data-lucide="plus"></i> Új recept</a>
                 <a href="{{ route('recipes.my') }}"><i data-lucide="book-open"></i> Saját receptek</a>
                 <a href="{{ route('recipes.favorites') }}"><i data-lucide="heart"></i> Kedvenc receptek</a>
                 @if (Auth::user()->isAdmin())
-                    <hr class="mobile-menu-divider">
-                    <span class="mobile-menu-label">Szuperadmin</span>
+                    <hr class="mobile_line">
+                    <span class="mobile_small_title">Szuperadmin</span>
                     <a href="{{ route('admin.ingredients') }}"><i data-lucide="carrot"></i> Alapanyagok</a>
                     <a href="{{ route('admin.recipes') }}"><i data-lucide="utensils"></i> Receptek</a>
                     <a href="{{ route('admin.users') }}"><i data-lucide="users"></i> Felhasználók</a>
                 @endif
-                <hr class="mobile-menu-divider">
+                <hr class="mobile_line">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit"><i data-lucide="log-out"></i> Kijelentkezés</button>
@@ -101,11 +101,38 @@
         @yield('content')
     </main>
 
-    @include('partials.footer')
+    <footer class="footer">
+        <div class="footer_inside">
+            <div class="footer_column">
+                <h4>Elérhetőség</h4>
+                <p><a href="mailto:info@kukta.hu"><i data-lucide="mail" class="footer_icon"></i> info@kukta.hu</a></p>
+            </div>
+            <nav class="footer_column">
+                <h4>Információk</h4>
+                <ul>
+                    <li><a href="{{ route('page.imprint') }}">Impresszum</a></li>
+                    <li><a href="{{ route('page.terms') }}">Általános szerződési feltételek</a></li>
+                    <li><a href="{{ route('page.privacy') }}">Adatkezelési tájékoztató</a></li>
+                    <li><a href="{{ route('page.cookies') }}">Süti tájékoztató</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="footer_bottom">
+            <p>&copy; {{ date('Y') }} Kukta</p>
+        </div>
+    </footer>
 
-    @include('partials.cookie-notice')
+    @if (!request()->cookie('cookie_notice_seen'))
+        <form method="POST" action="{{ route('page.cookies.accept') }}" class="cookie_box">
+            @csrf
+            <p>
+                Az oldal használatával elfogadod a <a href="{{ route('page.cookies') }}">Süti tájékoztatóban</a> foglaltakat.
+            </p>
+            <button type="submit" class="cookie_button">Rendben</button>
+        </form>
+    @endif
 
-    <a href="#top" class="scroll-to-top" title="Vissza a tetejére">
+    <a href="#top" class="up_button" title="Vissza a tetejére">
         <i data-lucide="arrow-up"></i>
     </a>
 

@@ -3,48 +3,48 @@
 @section('title', 'Alapanyagok (admin)')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 @endsection
 
 @section('content')
-    <div class="card-stack">
+    <div class="column">
         <div>
-            <a href="{{ route('home') }}" class="back-link"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
+            <a href="{{ route('home') }}" class="back_button"><i data-lucide="arrow-left"></i> Vissza a főoldalra</a>
             <h1>Alapanyagok kezelése</h1>
         </div>
 
-        <div class="admin-panel">
+        <div class="admin_box">
             @if (session('success'))
-                <p class="form-success">{{ session('success') }}</p>
+                <p class="success">{{ session('success') }}</p>
             @endif
 
             @if ($errors->any())
-                <ul class="form-error">
+                <ul class="error_message">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
             @endif
 
-            <div class="ingredient-toolbar">
-                <form action="{{ route('admin.ingredients') }}" method="GET" class="ingredient-search">
+            <div class="ingredient_top">
+                <form action="{{ route('admin.ingredients') }}" method="GET" class="ingredient_search">
                     <input type="hidden" name="sort" value="{{ $sort }}">
                     <input type="hidden" name="direction" value="{{ $direction }}">
                     <input type="text" name="search" value="{{ $search }}" placeholder="Keresés név szerint...">
-                    <button type="submit" class="btn-edit btn-edit-primary">Keresés</button>
+                    <button type="submit" class="edit_button edit_orange">Keresés</button>
                     @if ($search)
-                        <a href="{{ route('admin.ingredients', ['sort' => $sort, 'direction' => $direction]) }}" class="btn-clear-search">Összes</a>
+                        <a href="{{ route('admin.ingredients', ['sort' => $sort, 'direction' => $direction]) }}" class="clear_button">Összes</a>
                     @endif
                 </form>
 
-                <div class="toolbar-actions">
-                    <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => $sort, 'direction' => $direction, 'new' => 1]) }}" class="btn-edit btn-edit-primary">Új alapanyag</a>
+                <div class="top_buttons">
+                    <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => $sort, 'direction' => $direction, 'new' => 1]) }}" class="edit_button edit_orange">Új alapanyag</a>
                 </div>
             </div>
 
             @if (request('new'))
-                <div id="new-ingredient-form">
-                    <form action="{{ route('admin.ingredients.store') }}" method="POST" class="ingredient-edit-form">
+                <div id="new_ingredient">
+                    <form action="{{ route('admin.ingredients.store') }}" method="POST" class="ingredient_form">
                         @csrf
                         <label>Név
                             <input type="text" name="name" value="{{ old('name') }}" minlength="2" maxlength="50" required>
@@ -61,8 +61,8 @@
                         <label>Zsír
                             <input type="number" name="fat" value="{{ old('fat') }}" step="0.01" min="0" max="100" required>
                         </label>
-                        <button type="submit" class="btn-edit btn-edit-primary">Mentés</button>
-                        <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => $sort, 'direction' => $direction]) }}" class="btn-delete">Mégse</a>
+                        <button type="submit" class="edit_button edit_orange">Mentés</button>
+                        <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => $sort, 'direction' => $direction]) }}" class="delete_button">Mégse</a>
                     </form>
                 </div>
             @endif
@@ -79,48 +79,68 @@
                     if ($direction == 'asc') {
                         $otherDirection = 'desc';
                     }
+                    $nameDirection = 'asc';
+                    if ($sort == 'name') {
+                        $nameDirection = $otherDirection;
+                    }
+                    $caloriesDirection = 'asc';
+                    if ($sort == 'calories') {
+                        $caloriesDirection = $otherDirection;
+                    }
+                    $carbohydrateDirection = 'asc';
+                    if ($sort == 'carbohydrate') {
+                        $carbohydrateDirection = $otherDirection;
+                    }
+                    $proteinDirection = 'asc';
+                    if ($sort == 'protein') {
+                        $proteinDirection = $otherDirection;
+                    }
+                    $fatDirection = 'asc';
+                    if ($sort == 'fat') {
+                        $fatDirection = $otherDirection;
+                    }
                     $arrow = '▼';
                     if ($direction == 'asc') {
                         $arrow = '▲';
                     }
                 @endphp
-                <table class="admin-table">
+                <table class="admin_table">
                     <thead>
                         <tr>
                             <th>
-                                <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => 'name', 'direction' => $sort == 'name' ? $otherDirection : 'asc']) }}">
+                                <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => 'name', 'direction' => $nameDirection]) }}">
                                     Név @if ($sort == 'name') {{ $arrow }} @endif
                                 </a>
                             </th>
                             <th>
-                                <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => 'calories', 'direction' => $sort == 'calories' ? $otherDirection : 'asc']) }}">
+                                <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => 'calories', 'direction' => $caloriesDirection]) }}">
                                     Kalória @if ($sort == 'calories') {{ $arrow }} @endif
                                 </a>
                             </th>
                             <th>
-                                <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => 'carbohydrate', 'direction' => $sort == 'carbohydrate' ? $otherDirection : 'asc']) }}">
+                                <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => 'carbohydrate', 'direction' => $carbohydrateDirection]) }}">
                                     Szénhidrát @if ($sort == 'carbohydrate') {{ $arrow }} @endif
                                 </a>
                             </th>
                             <th>
-                                <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => 'protein', 'direction' => $sort == 'protein' ? $otherDirection : 'asc']) }}">
+                                <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => 'protein', 'direction' => $proteinDirection]) }}">
                                     Fehérje @if ($sort == 'protein') {{ $arrow }} @endif
                                 </a>
                             </th>
                             <th>
-                                <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => 'fat', 'direction' => $sort == 'fat' ? $otherDirection : 'asc']) }}">
+                                <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => 'fat', 'direction' => $fatDirection]) }}">
                                     Zsír @if ($sort == 'fat') {{ $arrow }} @endif
                                 </a>
                             </th>
-                            <th class="admin-table-actions">Műveletek</th>
+                            <th class="table_buttons">Műveletek</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($ingredients as $ingredient)
                             @if (request('edit') == $ingredient->id)
-                                <tr id="ingredient-edit-{{ $ingredient->id }}" class="edit-row">
+                                <tr id="ingredient_edit_{{ $ingredient->id }}" class="edit_row">
                                     <td colspan="6">
-                                        <form action="{{ route('admin.ingredients.update', $ingredient->id) }}" method="POST" class="ingredient-edit-form">
+                                        <form action="{{ route('admin.ingredients.update', $ingredient->id) }}" method="POST" class="ingredient_form">
                                             @csrf
                                             @method('PUT')
                                             <label>Név
@@ -138,8 +158,8 @@
                                             <label>Zsír
                                                 <input type="number" name="fat" value="{{ old('fat', $ingredient->fat) }}" step="0.01" min="0" max="100" required>
                                             </label>
-                                            <button type="submit" class="btn-edit btn-edit-primary">Mentés</button>
-                                            <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => $sort, 'direction' => $direction]) }}" class="btn-delete">Mégse</a>
+                                            <button type="submit" class="edit_button edit_orange">Mentés</button>
+                                            <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => $sort, 'direction' => $direction]) }}" class="delete_button">Mégse</a>
                                         </form>
                                     </td>
                                 </tr>
@@ -150,15 +170,15 @@
                                     <td>{{ $ingredient->carbohydrate }}</td>
                                     <td>{{ $ingredient->protein }}</td>
                                     <td>{{ $ingredient->fat }}</td>
-                                    <td class="admin-table-actions">
-                                        <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => $sort, 'direction' => $direction, 'edit' => $ingredient->id]) }}#ingredient-edit-{{ $ingredient->id }}" class="btn-edit btn-edit-primary">Módosítás</a>
+                                    <td class="table_buttons">
+                                        <a href="{{ route('admin.ingredients', ['search' => $search, 'sort' => $sort, 'direction' => $direction, 'edit' => $ingredient->id]) }}#ingredient_edit_{{ $ingredient->id }}" class="edit_button edit_orange">Módosítás</a>
                                         @if ($ingredient->recipes_count > 0)
-                                            <button type="button" class="btn-delete" disabled title="{{ $ingredient->recipes_count }} receptben használatban van, nem törölhető">Törlés</button>
+                                            <button type="button" class="delete_button" disabled title="{{ $ingredient->recipes_count }} receptben használatban van, nem törölhető">Törlés</button>
                                         @else
                                             <form action="{{ route('admin.ingredients.destroy', $ingredient->id) }}" method="POST" style="display: inline;" data-confirm="Biztosan törlöd az alapanyagot? A(z) „{{ $ingredient->name }}” alapanyag véglegesen törlődik. Ez a művelet nem visszavonható.">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn-delete">Törlés</button>
+                                                <button type="submit" class="delete_button">Törlés</button>
                                             </form>
                                         @endif
                                     </td>

@@ -1,4 +1,4 @@
-.error-page {
+.error_page {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -10,59 +10,59 @@
     padding: 3rem 1.5rem 4rem;
 }
 
-.error-image {
+.error_image {
     width: 200px;
     margin-bottom: 1rem;
 }
 
-.error-code {
+.error_number {
     font-size: 7.5rem;
     font-weight: 800;
     line-height: 1;
-    color: var(--color-primary);
+    color: #e67e22;
 }
 
-.error-title {
+.error_title {
     margin-top: 0.75rem;
     font-size: 1.9rem;
-    color: var(--color-dark-brown);
+    color: #2b2320;
 }
 
-.error-text {
+.error_text {
     margin-top: 0.6rem;
     font-size: 1.05rem;
-    color: var(--color-text-light);
+    color: #666;
 }
 
-.btn-home {
+.home_button {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     margin-top: 1.8rem;
     padding: 0.9rem 2rem;
-    background-color: var(--color-primary);
-    color: var(--color-white);
+    background-color: #e67e22;
+    color: #fff;
     font-size: 1.05rem;
     font-weight: 700;
     text-decoration: none;
     border-radius: 8px;
 }
 
-.btn-home:hover {
-    background-color: var(--color-primary-hover);
+.home_button:hover {
+    background-color: #d35400;
 }
 
-.btn-home svg {
+.home_button svg {
     width: 1.15em;
     height: 1.15em;
 }
 
 @media (max-width: 768px) {
-    .error-code {
+    .error_number {
         font-size: 5rem;
     }
 
-    .error-title {
+    .error_title {
         font-size: 1.4rem;
     }
 }
