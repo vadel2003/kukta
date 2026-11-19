@@ -31,7 +31,7 @@ class RecipeController extends Controller
         $recipe->user_id = Auth::id();
         $this->saveRecipe($recipe, $request, $validated);
 
-        return redirect()->route('recipes.my')->with('success', 'Recept sikeresen feltöltve!');
+        return redirect()->route('recipes.my')->with('success', 'Recept feltöltve!');
     }
 
     public function myRecipes(Request $request)
@@ -186,7 +186,7 @@ class RecipeController extends Controller
 
         $this->saveRecipe($recipe, $request, $validated);
 
-        return redirect()->route('recipes.my')->with('success', 'Recept sikeresen módosítva!');
+        return redirect()->route('recipes.my')->with('success', 'Recept módosítva!');
     }
 
     public function destroy($id)
@@ -200,7 +200,7 @@ class RecipeController extends Controller
 
         $recipe->delete();
 
-        return redirect()->back()->with('success', 'Recept sikeresen törölve!');
+        return redirect()->back()->with('success', 'Recept törölve!');
     }
 
     private function formData()
@@ -273,7 +273,6 @@ class RecipeController extends Controller
             'thumbnail_image.image' => 'Csak JPG, PNG vagy WebP képet tölthetsz fel!',
             'thumbnail_image.mimes' => 'Csak JPG, PNG vagy WebP képet tölthetsz fel!',
             'thumbnail_image.max' => 'A kép legfeljebb 2 MB lehet!',
-            'thumbnail_image.uploaded' => 'A kép legfeljebb 2 MB lehet!',
         ]);
 
         $steps = [];

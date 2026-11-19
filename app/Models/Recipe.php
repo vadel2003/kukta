@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-// The data structure of the recipe
 class Recipe extends Model
 {
     protected $table = 'recipe';
@@ -16,18 +15,18 @@ class Recipe extends Model
     ];
 
     public const DEFAULT_IMAGES = [
-        'images/recipes/default/soup_thumbnail.svg'        => 'Leves',
+        'images/recipes/default/soup_thumbnail.svg' => 'Leves',
         'images/recipes/default/main_course_thumbnail.svg' => 'Főétel',
-        'images/recipes/default/dessert_thumbnail.svg'     => 'Desszert',
-        'images/recipes/default/starter_thumbnail.svg'     => 'Előétel / Nasi',
-        'images/recipes/default/side_dish_thumbnail.svg'   => 'Köret',
-        'images/recipes/default/salad_thumbnail.svg'       => 'Saláta',
-        'images/recipes/default/pasta_thumbnail.svg'       => 'Tészta',
-        'images/recipes/default/breakfast_thumbnail.svg'   => 'Reggeli',
-        'images/recipes/default/bakery_thumbnail.svg'      => 'Pékáru',
-        'images/recipes/default/fruit_thumbnail.svg'       => 'Gyümölcs',
-        'images/recipes/default/drink_thumbnail.svg'       => 'Ital',
-        'images/recipes/default/preserve_thumbnail.svg'    => 'Befőtt',
+        'images/recipes/default/dessert_thumbnail.svg' => 'Desszert',
+        'images/recipes/default/starter_thumbnail.svg' => 'Előétel / Nasi',
+        'images/recipes/default/side_dish_thumbnail.svg' => 'Köret',
+        'images/recipes/default/salad_thumbnail.svg' => 'Saláta',
+        'images/recipes/default/pasta_thumbnail.svg' => 'Tészta',
+        'images/recipes/default/breakfast_thumbnail.svg' => 'Reggeli',
+        'images/recipes/default/bakery_thumbnail.svg' => 'Pékáru',
+        'images/recipes/default/fruit_thumbnail.svg' => 'Gyümölcs',
+        'images/recipes/default/drink_thumbnail.svg' => 'Ital',
+        'images/recipes/default/preserve_thumbnail.svg' => 'Befőtt',
     ];
 
     protected $fillable = [

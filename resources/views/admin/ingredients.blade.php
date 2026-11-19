@@ -175,7 +175,7 @@
                                         @if ($ingredient->recipes_count > 0)
                                             <button type="button" class="delete_button" disabled title="{{ $ingredient->recipes_count }} receptben használatban van, nem törölhető">Törlés</button>
                                         @else
-                                            <form action="{{ route('admin.ingredients.destroy', $ingredient->id) }}" method="POST" style="display: inline;" data-confirm="Biztosan törlöd az alapanyagot? A(z) „{{ $ingredient->name }}” alapanyag véglegesen törlődik. Ez a művelet nem visszavonható.">
+                                            <form action="{{ route('admin.ingredients.destroy', $ingredient->id) }}" method="POST" style="display: inline;" data-confirm="Biztosan törlöd ezt az alapanyagot?">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="delete_button">Törlés</button>

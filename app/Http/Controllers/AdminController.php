@@ -49,7 +49,7 @@ class AdminController extends Controller
 
         Ingredient::create($validated);
 
-        return redirect()->route('admin.ingredients')->with('success', 'Alapanyag sikeresen létrehozva!');
+        return redirect()->route('admin.ingredients')->with('success', 'Alapanyag hozzáadva!');
     }
 
     public function updateIngredient(Request $request, $id)
@@ -66,7 +66,7 @@ class AdminController extends Controller
 
         $ingredient->update($validated);
 
-        return redirect()->route('admin.ingredients')->with('success', 'Alapanyag sikeresen módosítva!');
+        return redirect()->route('admin.ingredients')->with('success', 'Alapanyag módosítva!');
     }
 
     public function destroyIngredient($id)
@@ -75,12 +75,12 @@ class AdminController extends Controller
 
         if ($ingredient->recipes()->exists()) {
             return redirect()->route('admin.ingredients')
-                ->withErrors('A(z) „' . $ingredient->name . '” alapanyag nem törölhető, mert receptekben használatban van.');
+                ->withErrors('Ez az alapanyag nem törölhető, mert van recept, ami használja.');
         }
 
         $ingredient->delete();
 
-        return redirect()->route('admin.ingredients')->with('success', 'Alapanyag sikeresen törölve!');
+        return redirect()->route('admin.ingredients')->with('success', 'Alapanyag törölve!');
     }
 
     public function recipes(Request $request)
@@ -88,7 +88,7 @@ class AdminController extends Controller
         $search = $request->query('search');
 
         $sort = $request->query('sort', 'created_at');
-        if (!in_array($sort, ['title', 'user', 'created_at'])) {
+        if (!in_array($sort, ['title', 'created_at'])) {
             $sort = 'created_at';
         }
         $direction = $request->query('direction', 'desc');
@@ -106,15 +106,7 @@ class AdminController extends Controller
             });
         }
 
-        if ($sort == 'user') {
-            $query->leftJoin('user', 'user.id', '=', 'recipe.user_id')
-                ->orderBy('user.name', $direction)
-                ->select('recipe.*');
-        } else {
-            $query->orderBy($sort, $direction);
-        }
-
-        $recipes = $query->get();
+        $recipes = $query->orderBy($sort, $direction)->get();
 
         return view('admin.recipes', [
             'recipes' => $recipes,
@@ -163,6 +155,6 @@ class AdminController extends Controller
         $user->deleteAvatarFile();
         $user->delete();
 
-        return redirect()->route('admin.users')->with('success', 'Felhasználó sikeresen törölve!');
+        return redirect()->route('admin.users')->with('success', 'Felhasználó törölve!');
     }
 }

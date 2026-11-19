@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Kukta asszisztens – ' . $recipe->title)
+@section('title', 'Kukta asszisztens - ' . $recipe->title)
 @section('bodyClass', 'assistant_page')
 
 @section('styles')

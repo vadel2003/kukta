@@ -87,7 +87,7 @@
                     </div>
 
                     <div class="form_group">
-                        <label for="new_password">Új jelszó <span class="small_hint">(8–50 karakter)</span></label>
+                        <label for="new_password">Új jelszó <span class="small_hint">(8-50 karakter)</span></label>
                         <input type="password" name="new_password" id="new_password" required minlength="8" maxlength="50" class="@error('new_password') invalid @enderror">
                         @error('new_password')
                             <span class="error_message">{{ $message }}</span>

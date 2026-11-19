@@ -156,23 +156,7 @@ return [
     'ulid' => 'The :attribute field must be a valid ULID.',
     'uuid' => 'The :attribute field must be a valid UUID.',
 
-    /*
-    | Custom messages for a field + rule pair ("field.rule")
-    */
-
-    'custom' => [
-        'terms' => [
-            'required' => 'A regisztrációhoz el kell fogadnod az Adatkezelési tájékoztatót és az ÁSZF-et.',
-            'accepted' => 'A regisztrációhoz el kell fogadnod az Adatkezelési tájékoztatót és az ÁSZF-et.',
-        ],
-    ],
-
-    /*
-    | Hungarian names of the fields (input names). "*" matches any index (e.g. steps.0.description).
-    */
-
     'attributes' => [
-        // Registration, login, profile
         'name' => 'felhasználónév',
         'email' => 'email cím',
         'password' => 'jelszó',
@@ -180,9 +164,6 @@ return [
         'current_password' => 'jelenlegi jelszó',
         'new_password' => 'új jelszó',
         'avatar' => 'profilkép',
-        'terms' => 'feltételek',
-
-        // Recipe form
         'title' => 'recept címe',
         'description' => 'leírás',
         'prep_time' => 'elkészítési idő',
@@ -207,8 +188,6 @@ return [
         'free_from.*' => 'mentesség',
         'cuisines' => 'konyha',
         'cuisines.*' => 'konyha',
-
-        // Admin: ingredients
         'calories' => 'kalória',
         'carbohydrate' => 'szénhidrát',
         'protein' => 'fehérje',

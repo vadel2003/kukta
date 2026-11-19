@@ -1001,32 +1001,6 @@ select.invalid:focus {
     text-decoration: underline;
 }
 
-.external_link svg {
-    width: 0.85em;
-    height: 0.85em;
-    margin-left: 0.2em;
-    vertical-align: -0.05em;
-}
-
-.form_group label.checkbox_row {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
-    font-weight: 400;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    cursor: pointer;
-}
-
-.checkbox_row input[type="checkbox"] {
-    flex-shrink: 0;
-    width: 18px;
-    height: 18px;
-    margin: 1px 0 0;
-    accent-color: #e67e22;
-    cursor: pointer;
-}
-
 .column {
     display: flex;
     flex-direction: column;
@@ -1074,16 +1048,6 @@ select.invalid:focus {
     justify-content: center;
     width: 100%;
     max-width: 320px;
-}
-
-.page {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-}
-
-.page h1 {
-    color: #1a1a1a;
 }
 
 .checkboxes {
@@ -1424,16 +1388,6 @@ input[type="file"] {
     margin: 0;
 }
 
-.footer_column ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.footer_column li {
-    padding: 0.25rem 0;
-}
-
 .footer a {
     color: #fff;
     text-decoration: none;
@@ -1747,111 +1701,4 @@ body {
     .card_delete {
         padding: 6px;
     }
-}
-
-.cookie_box {
-    position: fixed;
-    left: 1rem;
-    right: 1rem;
-    bottom: 1rem;
-    z-index: 900;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1.25rem;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 1rem 1.25rem;
-    background: #5c4b40;
-    color: #FAF6F0;
-    border: 1px solid #958776;
-    border-radius: 12px;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
-}
-
-.cookie_box p {
-    margin: 0;
-    font-size: 1.05rem;
-    line-height: 1.5;
-}
-
-.cookie_box a {
-    color: #fff;
-}
-
-.cookie_button {
-    flex-shrink: 0;
-    padding: 10px 28px;
-    background: #FAF6F0;
-    color: #2b2320;
-    border: none;
-    border-radius: 6px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.cookie_button:hover {
-    background: #fff;
-}
-
-@media (max-width: 768px) {
-    .cookie_box {
-        flex-direction: column;
-        align-items: stretch;
-    }
-}
-
-.legal_text {
-    line-height: 1.65;
-}
-
-.legal_text h2,
-.legal_text h3,
-.legal_text p,
-.legal_text ul,
-.legal_text table {
-    margin-bottom: 0.9rem;
-}
-
-.legal_text h2 {
-    margin-top: 2rem;
-    font-size: 1.2rem;
-    color: #1a1a1a;
-}
-
-.legal_text h3 {
-    margin-top: 1.4rem;
-    font-size: 1.05rem;
-}
-
-.legal_text ul {
-    padding-left: 1.4rem;
-}
-
-.legal_text a {
-    color: #e67e22;
-}
-
-.legal_text .legal_date {
-    color: #666;
-    font-size: 0.9rem;
-}
-
-.legal_text table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95rem;
-}
-
-.legal_text th,
-.legal_text td {
-    padding: 0.6rem;
-    border: 1px solid #ddd;
-    text-align: left;
-    vertical-align: top;
-    word-break: break-word;
-}
-
-.legal_text th {
-    background: #FAF6F0;
 }

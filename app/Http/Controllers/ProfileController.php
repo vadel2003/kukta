@@ -25,7 +25,6 @@ class ProfileController extends Controller
             'avatar.image' => 'Csak JPG, PNG vagy WebP képet tölthetsz fel!',
             'avatar.mimes' => 'Csak JPG, PNG vagy WebP képet tölthetsz fel!',
             'avatar.max' => 'A kép legfeljebb 2 MB lehet!',
-            'avatar.uploaded' => 'A kép legfeljebb 2 MB lehet!',
         ]);
 
         $user->name = $validated['name'];
@@ -43,7 +42,7 @@ class ProfileController extends Controller
 
         $user->save();
 
-        return redirect()->route('profile.index')->with('success', 'Alapadatok sikeresen frissítve!');
+        return redirect()->route('profile.index')->with('success', 'Adatok mentve!');
     }
 
     public function updatePassword(Request $request)
@@ -58,7 +57,7 @@ class ProfileController extends Controller
         $user->password = Hash::make($validated['new_password']);
         $user->save();
 
-        return redirect()->route('profile.index')->with('success', 'Jelszó sikeresen frissítve!');
+        return redirect()->route('profile.index')->with('success', 'Jelszó megváltoztatva!');
     }
 
     public function destroy(Request $request)

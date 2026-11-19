@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="hu">
 <head>
     <meta charset="utf-8">
@@ -107,30 +107,11 @@
                 <h4>Elérhetőség</h4>
                 <p><a href="mailto:info@kukta.hu"><i data-lucide="mail" class="footer_icon"></i> info@kukta.hu</a></p>
             </div>
-            <nav class="footer_column">
-                <h4>Információk</h4>
-                <ul>
-                    <li><a href="{{ route('page.imprint') }}">Impresszum</a></li>
-                    <li><a href="{{ route('page.terms') }}">Általános szerződési feltételek</a></li>
-                    <li><a href="{{ route('page.privacy') }}">Adatkezelési tájékoztató</a></li>
-                    <li><a href="{{ route('page.cookies') }}">Süti tájékoztató</a></li>
-                </ul>
-            </nav>
         </div>
         <div class="footer_bottom">
             <p>&copy; {{ date('Y') }} Kukta</p>
         </div>
     </footer>
-
-    @if (!request()->cookie('cookie_notice_seen'))
-        <form method="POST" action="{{ route('page.cookies.accept') }}" class="cookie_box">
-            @csrf
-            <p>
-                Az oldal használatával elfogadod a <a href="{{ route('page.cookies') }}">Süti tájékoztatóban</a> foglaltakat.
-            </p>
-            <button type="submit" class="cookie_button">Rendben</button>
-        </form>
-    @endif
 
     <a href="#top" class="up_button" title="Vissza a tetejére">
         <i data-lucide="arrow-up"></i>

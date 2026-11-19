@@ -3,7 +3,6 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
-use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\RegisterController;
@@ -51,9 +50,3 @@ Route::middleware(['auth', IsAdmin::class])->group(function () {
     Route::get('/admin/felhasznalok', [AdminController::class, 'users'])->name('admin.users');
     Route::delete('/admin/felhasznalok/{id}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
 });
-
-Route::get('/adatkezelesi-tajekoztato', [PageController::class, 'privacy'])->name('page.privacy');
-Route::get('/suti-kezeles', [PageController::class, 'cookies'])->name('page.cookies');
-Route::post('/suti-elfogadas', [PageController::class, 'acceptCookies'])->name('page.cookies.accept');
-Route::get('/aszf', [PageController::class, 'terms'])->name('page.terms');
-Route::get('/impresszum', [PageController::class, 'imprint'])->name('page.imprint');

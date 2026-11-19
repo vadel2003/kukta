@@ -112,7 +112,7 @@
                                 </td>
                                 <td class="table_buttons">
                                     @if (!$user->isAdmin() && $user->id != Auth::id())
-                                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display: inline;" data-confirm="Biztosan törlöd a felhasználót? „{{ $user->name }}” receptjei megmaradnak, de a kedvencei és értékelései véglegesen törlődnek. Ez a művelet nem visszavonható.">
+                                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display: inline;" data-confirm="Biztosan törlöd ezt a felhasználót? A receptjei megmaradnak.">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="delete_button">Törlés</button>

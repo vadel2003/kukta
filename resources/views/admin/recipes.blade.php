@@ -50,10 +50,6 @@
                     if ($sort == 'title') {
                         $titleDirection = $otherDirection;
                     }
-                    $userDirection = 'asc';
-                    if ($sort == 'user') {
-                        $userDirection = $otherDirection;
-                    }
                     $arrow = '▼';
                     if ($direction == 'asc') {
                         $arrow = '▲';
@@ -68,11 +64,7 @@
                                     Cím @if ($sort == 'title') {{ $arrow }} @endif
                                 </a>
                             </th>
-                            <th>
-                                <a href="{{ route('admin.recipes', ['search' => $search, 'sort' => 'user', 'direction' => $userDirection]) }}">
-                                    Feltöltötte @if ($sort == 'user') {{ $arrow }} @endif
-                                </a>
-                            </th>
+                            <th>Feltöltötte</th>
                             <th>Leírás</th>
                             <th class="table_buttons">Műveletek</th>
                         </tr>
@@ -94,7 +86,7 @@
                                 <td>{{ Str::limit($recipe->description, 100) }}</td>
                                 <td class="table_buttons">
                                     <a href="{{ route('recipes.show', $recipe->id) }}" class="edit_button edit_orange">Részletek</a>
-                                    <form action="{{ route('recipes.destroy', $recipe->id) }}" method="POST" style="display: inline;" data-confirm="Biztosan törlöd a receptet? A(z) „{{ $recipe->title }}” recept véglegesen törlődik. Ez a művelet nem visszavonható.">
+                                    <form action="{{ route('recipes.destroy', $recipe->id) }}" method="POST" style="display: inline;" data-confirm="Biztosan törlöd ezt a receptet?">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="delete_button">Törlés</button>

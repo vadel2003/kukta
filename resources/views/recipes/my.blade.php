@@ -312,7 +312,7 @@
                                     <a href="{{ route('recipes.edit', $recipe->id) }}" class="card_edit">
                                         <i data-lucide="pencil"></i> <span class="button_text">Szerkesztés</span>
                                     </a>
-                                    <form action="{{ route('recipes.destroy', $recipe->id) }}" method="POST" data-confirm="Biztosan törlöd a receptet? A(z) „{{ $recipe->title }}” recept véglegesen törlődik. Ez a művelet nem visszavonható.">
+                                    <form action="{{ route('recipes.destroy', $recipe->id) }}" method="POST" data-confirm="Biztosan törlöd ezt a receptet?">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="card_delete">

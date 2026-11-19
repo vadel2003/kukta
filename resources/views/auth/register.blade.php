@@ -30,7 +30,7 @@
                 </div>
 
                 <div class="form_group">
-                    <label for="password">Jelszó <span class="small_hint">(8–50 karakter)</span></label>
+                    <label for="password">Jelszó <span class="small_hint">(8-50 karakter)</span></label>
                     <input type="password" name="password" id="password" required minlength="8" maxlength="50" class="@error('password') invalid @enderror">
                     @error('password')
                         <span class="error_message">{{ $message }}</span>
@@ -40,19 +40,6 @@
                 <div class="form_group">
                     <label for="password_confirmation">Jelszó megerősítése</label>
                     <input type="password" name="password_confirmation" id="password_confirmation" required minlength="8" maxlength="50">
-                </div>
-
-                <div class="form_group">
-                    <label class="checkbox_row">
-                        <input type="checkbox" name="terms" required>
-                        <span>
-                            Elfogadom az <a href="{{ route('page.terms') }}" target="_blank" class="external_link">Általános szerződési feltételeket<i data-lucide="external-link"></i></a>,
-                            és megismertem az <a href="{{ route('page.privacy') }}" target="_blank" class="external_link">Adatkezelési tájékoztatót<i data-lucide="external-link"></i></a>.
-                        </span>
-                    </label>
-                    @error('terms')
-                        <span class="error_message">{{ $message }}</span>
-                    @enderror
                 </div>
 
                 <button type="submit" class="big_button center orange">Regisztráció</button>
