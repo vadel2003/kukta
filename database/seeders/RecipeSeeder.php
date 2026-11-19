@@ -109,6 +109,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Melegen, tálkákba szedve tálaljuk.'],
         ]);
 
+        // Húsleves
         DB::table('recipe')->insert([
             'id' => 3,
             'title' => 'Húsleves',
@@ -153,6 +154,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'A tésztát tányérba tesszük, ráöntjük a levest, mellé húst és zöldséget szedünk.'],
         ]);
 
+        // Zöldségleves
         DB::table('recipe')->insert([
             'id' => 4,
             'title' => 'Zöldségleves',
@@ -195,6 +197,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Sózzuk, borsozzuk, és kb. 20 perc alatt puhára főzzük.'],
         ]);
 
+        // Gyümölcsleves
         DB::table('recipe')->insert([
             'id' => 5,
             'title' => 'Gyümölcsleves',
@@ -237,6 +240,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Kihűtjük, és jól behűtve tálaljuk.'],
         ]);
 
+        // Sajtleves
         DB::table('recipe')->insert([
             'id' => 6,
             'title' => 'Sajtleves',
@@ -277,6 +281,7 @@ class RecipeSeeder extends Seeder
             ['recipe_id' => 6, 'position' => 6, 'step_category_id' => 5, 'description' => 'Forrón tálaljuk.'],
         ]);
 
+        // Pörkölt
         DB::table('recipe')->insert([
             'id' => 7,
             'title' => 'Pörkölt',
@@ -322,6 +327,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'A pörköltet a galuskával tálaljuk.'],
         ]);
 
+        // Rántott csirke
         DB::table('recipe')->insert([
             'id' => 8,
             'title' => 'Rántott csirke',
@@ -364,6 +370,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'A rántott húst a sült krumplival együtt tálaljuk.'],
         ]);
 
+        // Bolognai spagetti
         DB::table('recipe')->insert([
             'id' => 9,
             'title' => 'Bolognai spagetti',
@@ -408,6 +415,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Tésztára szedjük a szószt, és jó sok reszelt sajtot szórunk rá.'],
         ]);
 
+        // Lasagne
         DB::table('recipe')->insert([
             'id' => 10,
             'title' => 'Lasagne',
@@ -449,6 +457,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Pár perc pihentetés után szeletekre vágva tálaljuk.'],
         ]);
 
+        // Caesar saláta
         DB::table('recipe')->insert([
             'id' => 11,
             'title' => 'Caesar saláta',
@@ -490,6 +499,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'A salátára rakjuk a csirkét és a kenyérkockát, meglocsoljuk, sajtot reszelünk rá.'],
         ]);
 
+        // Görög saláta
         DB::table('recipe')->insert([
             'id' => 12,
             'title' => 'Görög saláta',
@@ -531,6 +541,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Mehet rá az olívabogyó, a morzsolt feta, egy kis só és olaj.'],
         ]);
 
+        // Sült krumpli
         DB::table('recipe')->insert([
             'id' => 13,
             'title' => 'Sült krumpli',
@@ -570,6 +581,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Tepsibe terítjük, és 200 fokon kb. 35 percig sütjük, félidőben átforgatjuk.'],
         ]);
 
+        // Párolt rizs
         DB::table('recipe')->insert([
             'id' => 14,
             'title' => 'Párolt rizs',
@@ -606,6 +618,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Villával átlazítjuk, és kész.'],
         ]);
 
+        // Palacsinta
         DB::table('recipe')->insert([
             'id' => 15,
             'title' => 'Palacsinta',
@@ -645,6 +658,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Mehet bele lekvár, kakaó vagy túró, kinek mi a kedvence.'],
         ]);
 
+        // Almás pite
         DB::table('recipe')->insert([
             'id' => 16,
             'title' => 'Almás pite',
@@ -688,6 +702,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Kihűlés után szeletekre vágva tálaljuk.'],
         ]);
 
+        // Tiramisu
         DB::table('recipe')->insert([
             'id' => 17,
             'title' => 'Tiramisu',
@@ -727,6 +742,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Egy éjszakára hűtőbe tesszük, tálalás előtt kakaót szitálunk a tetejére.'],
         ]);
 
+        // Csokoládés süti
         DB::table('recipe')->insert([
             'id' => 18,
             'title' => 'Csokoládés süti',
@@ -766,6 +782,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Ha kihűlt, kockákra vágjuk. A közepe maradjon kicsit ragacsos!'],
         ]);
 
+        // Bruschetta
         DB::table('recipe')->insert([
             'id' => 19,
             'title' => 'Bruschetta',
@@ -806,6 +823,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Rákanalazzuk a paradicsomot, meglocsoljuk a maradék olajjal, és azonnal tálaljuk.'],
         ]);
 
+        // Guacamole
         DB::table('recipe')->insert([
             'id' => 20,
             'title' => 'Guacamole',
@@ -851,6 +869,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Tortilla chipsszel vagy friss zöldségekkel tálaljuk.'],
         ]);
 
+        // Házi kenyér
         DB::table('recipe')->insert([
             'id' => 21,
             'title' => 'Házi kenyér',
@@ -894,6 +913,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Hagyjuk kihűlni, mielőtt felvágjuk, különben ragacsos lesz a belseje.'],
         ]);
 
+        // Kakaós csiga
         DB::table('recipe')->insert([
             'id' => 22,
             'title' => 'Kakaós csiga',
@@ -941,6 +961,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Langyosan a legjobb, egy bögre tejjel.'],
         ]);
 
+        // Narancsos smoothie
         DB::table('recipe')->insert([
             'id' => 23,
             'title' => 'Narancsos smoothie',
@@ -976,6 +997,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Rögtön igyuk meg, mert állás közben szétválik.'],
         ]);
 
+        // Banános turmix
         DB::table('recipe')->insert([
             'id' => 24,
             'title' => 'Banános turmix',
@@ -1009,6 +1031,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Hidegen a legfinomabb.'],
         ]);
 
+        // Almabefőtt
         DB::table('recipe')->insert([
             'id' => 25,
             'title' => 'Almabefőtt',
@@ -1053,6 +1076,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Hűvös helyen tároljuk, és desszertként vagy töltelékként tálaljuk.'],
         ]);
 
+        // Eperbefőtt
         DB::table('recipe')->insert([
             'id' => 26,
             'title' => 'Eperbefőtt',
@@ -1096,6 +1120,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Hűvös helyen tároljuk, palacsintához vagy desszertekhez tálaljuk.'],
         ]);
 
+        // Gyümölcssaláta
         DB::table('recipe')->insert([
             'id' => 27,
             'title' => 'Gyümölcssaláta',
@@ -1137,6 +1162,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Átforgatjuk, és hűtőben pihentetjük egy kicsit.'],
         ]);
 
+        // Mézes-diós sült alma
         DB::table('recipe')->insert([
             'id' => 28,
             'title' => 'Mézes-diós sült alma',
@@ -1178,6 +1204,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Melegen, a kisült levével meglocsolva tálaljuk.'],
         ]);
 
+        // Sült hal
         DB::table('recipe')->insert([
             'id' => 29,
             'title' => 'Sült hal',
@@ -1219,6 +1246,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'A rizzsel és citromkarikákkal tálaljuk, a halat meglocsoljuk citromlével.'],
         ]);
 
+        // Rák saláta
         DB::table('recipe')->insert([
             'id' => 30,
             'title' => 'Rák saláta',
@@ -1260,6 +1288,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'A rákot a zöldségekkel összeforgatjuk, meglocsoljuk, és szezámmaggal megszórjuk.'],
         ]);
 
+        // Zellerkrémleves
         DB::table('recipe')->insert([
             'id' => 31,
             'title' => 'Zellerkrémleves',
@@ -1306,6 +1335,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Frissen őrölt borssal megszórva, melegen tálaljuk.'],
         ]);
 
+        // Mustáros csirke
         DB::table('recipe')->insert([
             'id' => 32,
             'title' => 'Mustáros csirke',
@@ -1349,6 +1379,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'A szafttal együtt, rizzsel vagy burgonyával tálaljuk.'],
         ]);
 
+        // Szezámmagos csirke
         DB::table('recipe')->insert([
             'id' => 33,
             'title' => 'Szezámmagos csirke',
@@ -1390,6 +1421,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Szezámmagot szórunk rá, rizzsel az igazi.'],
         ]);
 
+        // Földimogyorós tészta
         DB::table('recipe')->insert([
             'id' => 34,
             'title' => 'Földimogyorós tészta',
@@ -1433,6 +1465,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'A tetejére szórjuk a földimogyorót, és melegen tálaljuk.'],
         ]);
 
+        // Diós süti
         DB::table('recipe')->insert([
             'id' => 35,
             'title' => 'Diós süti',
@@ -1472,6 +1505,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Kihűlés után szeletekre vágva tálaljuk.'],
         ]);
 
+        // Keto saláta
         DB::table('recipe')->insert([
             'id' => 36,
             'title' => 'Keto saláta',
@@ -1510,6 +1544,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Mindent tálra rendezünk, sózzuk, meglocsoljuk olajjal, és azonnal tálaljuk.'],
         ]);
 
+        // Low-carb csirke
         DB::table('recipe')->insert([
             'id' => 37,
             'title' => 'Low-carb csirke',
@@ -1555,6 +1590,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'A zöldségeket meglocsoljuk a maradék olajjal, és a csirkével együtt tálaljuk.'],
         ]);
 
+        // Chilis bab
         DB::table('recipe')->insert([
             'id' => 38,
             'title' => 'Chilis bab',
@@ -1600,6 +1636,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'Tejföllel vagy reszelt sajttal is nagyon jó.'],
         ]);
 
+        // Francia hagymaleves
         DB::table('recipe')->insert([
             'id' => 39,
             'title' => 'Francia hagymaleves',
@@ -1643,6 +1680,7 @@ class RecipeSeeder extends Seeder
                 'description' => 'A levest tányérba merjük, és a sajtos pirítóst a tetejére tesszük.'],
         ]);
 
+        // Zöldséges rizs
         DB::table('recipe')->insert([
             'id' => 40,
             'title' => 'Zöldséges rizs',
