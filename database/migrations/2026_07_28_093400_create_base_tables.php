@@ -112,7 +112,7 @@ return new class extends Migration
         Schema::create('step', function (Blueprint $table) {
             $table->id();
             $table->string('description', 1000);
-            $table->unsignedTinyInteger('position'); // order (from 1)
+            $table->unsignedTinyInteger('position');
             $table->foreignId('recipe_id')->constrained('recipe')->onDelete('CASCADE');
             $table->foreignId('step_category_id')->constrained('step_category')->onDelete('RESTRICT');
 
