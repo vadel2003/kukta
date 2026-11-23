@@ -52,7 +52,7 @@ return new class extends Migration
             $table->string('queue');
             $table->longText('payload');
             $table->longText('exception');
-            $table->timestamp('failed_at')->useCurrent();
+            $table->dateTime('failed_at')->useCurrent();
 
             $table->index(['connection', 'queue', 'failed_at']);
         });
@@ -69,7 +69,7 @@ return new class extends Migration
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
-            $table->timestamp('created_at')->nullable();
+            $table->dateTime('created_at')->nullable();
         });
 
         Schema::create('sessions', function (Blueprint $table) {
@@ -90,8 +90,8 @@ return new class extends Migration
             $table->unsignedTinyInteger('servings');
             $table->string('thumbnail', 255);
             $table->foreignId('user_id')->nullable()->constrained('user')->onDelete('SET NULL');
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->dateTime('created_at')->useCurrent();
+            $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
 
         Schema::create('ingredient', function (Blueprint $table) {
@@ -131,7 +131,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('user')->onDelete('CASCADE');
             $table->foreignId('recipe_id')->constrained('recipe')->onDelete('CASCADE');
-            $table->timestamps();
+            $table->datetimes();
 
             $table->unique(['user_id', 'recipe_id']);
         });
