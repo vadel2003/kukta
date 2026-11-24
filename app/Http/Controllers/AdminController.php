@@ -45,6 +45,8 @@ class AdminController extends Controller
             'carbohydrate' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],
             'protein' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],
             'fat' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],
+        ], [], [
+            'name' => 'név',
         ]);
 
         Ingredient::create($validated);
@@ -62,6 +64,8 @@ class AdminController extends Controller
             'carbohydrate' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],
             'protein' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],
             'fat' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],
+        ], [], [
+            'name' => 'név',
         ]);
 
         $ingredient->update($validated);

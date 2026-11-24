@@ -29,7 +29,7 @@ return [
     'date' => 'The :attribute field must be a valid date.',
     'date_equals' => 'The :attribute field must be a date equal to :date.',
     'date_format' => 'The :attribute field must match the format :format.',
-    'decimal' => 'A(z) :attribute értékének :decimal tizedesjegyet kell tartalmaznia.',
+    'decimal' => 'A(z) :attribute legfeljebb két tizedesjegyű lehet.',
     'declined' => 'The :attribute field must be declined.',
     'declined_if' => 'The :attribute field must be declined when :other is :value.',
     'different' => 'The :attribute field and :other must be different.',
@@ -192,7 +192,6 @@ return [
         'carbohydrate' => 'szénhidrát',
         'protein' => 'fehérje',
         'fat' => 'zsír',
-        'ids' => 'kijelölt elemek',
     ],
 
 ];

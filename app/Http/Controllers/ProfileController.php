@@ -25,6 +25,7 @@ class ProfileController extends Controller
             'avatar.image' => 'Csak JPG, PNG vagy WebP képet tölthetsz fel!',
             'avatar.mimes' => 'Csak JPG, PNG vagy WebP képet tölthetsz fel!',
             'avatar.max' => 'A kép legfeljebb 2 MB lehet!',
+            'avatar.uploaded' => 'A kép legfeljebb 2 MB lehet!',
         ]);
 
         $user->name = $validated['name'];

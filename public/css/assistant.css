@@ -1,3 +1,7 @@
+html {
+    overscroll-behavior-x: none;
+}
+
 body.assistant_page header,
 body.assistant_page .footer,
 body.assistant_page .up_button {

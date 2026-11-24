@@ -273,6 +273,7 @@ class RecipeController extends Controller
             'thumbnail_image.image' => 'Csak JPG, PNG vagy WebP képet tölthetsz fel!',
             'thumbnail_image.mimes' => 'Csak JPG, PNG vagy WebP képet tölthetsz fel!',
             'thumbnail_image.max' => 'A kép legfeljebb 2 MB lehet!',
+            'thumbnail_image.uploaded' => 'A kép legfeljebb 2 MB lehet!',
         ]);
 
         $steps = [];

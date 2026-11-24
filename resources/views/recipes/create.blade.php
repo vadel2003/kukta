@@ -101,7 +101,7 @@
             <p class="success">{{ session('success') }}</p>
         @endif
 
-        <form method="POST" action="{{ $formAction }}" enctype="multipart/form-data" class="recipe_form">
+        <form method="POST" action="{{ $formAction }}" enctype="multipart/form-data" class="recipe_form" novalidate>
             @csrf
             @if ($isEdit)
                 @method('PUT')

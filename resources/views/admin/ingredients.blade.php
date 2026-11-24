@@ -44,7 +44,7 @@
 
             @if (request('new'))
                 <div id="new_ingredient">
-                    <form action="{{ route('admin.ingredients.store') }}" method="POST" class="ingredient_form">
+                    <form action="{{ route('admin.ingredients.store') }}" method="POST" class="ingredient_form" novalidate>
                         @csrf
                         <label>Név
                             <input type="text" name="name" value="{{ old('name') }}" minlength="2" maxlength="50" required>
@@ -140,7 +140,7 @@
                             @if (request('edit') == $ingredient->id)
                                 <tr id="ingredient_edit_{{ $ingredient->id }}" class="edit_row">
                                     <td colspan="6">
-                                        <form action="{{ route('admin.ingredients.update', $ingredient->id) }}" method="POST" class="ingredient_form">
+                                        <form action="{{ route('admin.ingredients.update', $ingredient->id) }}" method="POST" class="ingredient_form" novalidate>
                                             @csrf
                                             @method('PUT')
                                             <label>Név
